@@ -1,0 +1,6 @@
+.eggs/*
+dist/*
+build/*
+tfparse.egg-info
+tfparse/_tfparse.py
+venv/**
