@@ -18,7 +18,7 @@ ffi.cdef(
             char *json;
             char *err;
         } parseResponse;
- 
+
         parseResponse Parse(char* a, int* e1, int* e2);
         void free(void *ptr);
         """
