@@ -21,7 +21,8 @@ jobs:
           CIBW_BUILD: "cp39-* cp10-*"
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: native
-
+          CIBW_TEST_REQUIRES: "pytest pytest-terraform"
+          CIBW_TEST_COMMAND: "pytest {project}/tests"
       - uses: actions/upload-artifact@v3
         with:
           name: wheels
