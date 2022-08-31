@@ -52,7 +52,7 @@ jobs:
 
       - name: Build wheels
         run:
-          python setup.py bdist_wheel --output wheelhouse
+          python setup.py bdist_wheel --dist-dir wheelhouse
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
