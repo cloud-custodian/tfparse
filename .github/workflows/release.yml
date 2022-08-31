@@ -1,0 +1,50 @@
+name: Release
+on: [push]
+
+jobs:
+  Build-Linux:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: arm64
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.9.0
+        env:
+          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
+          CIBW_BEFORE_ALL: sh setup-golang.sh
+          CIBW_BUILD: "cp38-* cp39-* cp10-*"
+          CIBW_SKIP: "*musllinux*"
+          CIBW_ARCHS: x86_64 aarch64
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./wheelhouse/*.whl
+
+  Build-MacOS:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.9.0
+        env:
+          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
+          CIBW_BEFORE_ALL: sh setup-golang.sh
+          CIBW_BUILD: "cp38-* cp39-* cp10-*"
+          CIBW_ARCHS: x86_64 universal2
+
+        - uses: actions/upload-artifact@v2
+          with:
+            name: wheels
+            path: ./wheelhouse/*.whl
+    
+    
+  
+          
