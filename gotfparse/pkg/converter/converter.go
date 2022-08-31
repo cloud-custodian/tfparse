@@ -112,7 +112,6 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			}
 
 			if id != nil {
-				obj["arn"] = id
 				obj["id"] = id
 			}
 
