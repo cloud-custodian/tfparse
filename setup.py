@@ -15,6 +15,7 @@ setup(
     author="Wayne Witzel III",
     author_email="wayne@stacklet.io",
     license='Apache-2.0',
+    version='0.0.1",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.10",
