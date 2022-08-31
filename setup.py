@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+# Copyright The Cloud Custodian Authors.
+# SPDX-License-Identifier: Apache-2.0
 import os
 import sys
 
@@ -9,7 +10,7 @@ os.chdir(os.path.dirname(sys.argv[0]) or ".")
 
 setup(
     name="tfparse",
-    description="Python bindings for AquaSecurity defsec parser",
+    description="Python HCL/Terraform parser via extension for AquaSecurity defsec",
     url="https://github.com/cloud-custodian/tfparse",
     author="Wayne Witzel III",
     author_email="wayne@stacklet.io",
