@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
-import os
-import sys
 
 from setuptools import Extension, find_packages, setup
-
-os.chdir(os.path.dirname(sys.argv[0]) or ".")
 
 setup(
     name="tfparse",
