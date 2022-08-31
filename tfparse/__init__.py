@@ -18,6 +18,10 @@ def load_lib():
 lib = load_lib()
 
 
+class ParseError(Exception):
+    pass
+
+
 def load_from_path(
     filePath: bytes, stop_on_hcl_error: bool = False, debug: bool = False
 ) -> tp.Dict:
@@ -25,6 +29,13 @@ def load_from_path(
     e1 = ffi.new("int*", 1 if stop_on_hcl_error else 0)
     e2 = ffi.new("int*", 1 if debug else 0)
     ret = lib.Parse(s, e1, e2)
+
+    if ret.err != ffi.NULL:
+        err = ffi.string(ret.err)
+        ffi.gc(ret.err, lib.free)
+        err = err.decode("utf8")
+        raise ParseError(err)
+
     ret_json = ffi.string(ret.json)
     ffi.gc(ret.json, lib.free)
     return json.loads(ret_json)
