@@ -50,7 +50,6 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
 
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
