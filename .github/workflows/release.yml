@@ -3,6 +3,7 @@ on: [push]
 
 jobs:
   Build-Linux:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
@@ -40,7 +41,7 @@ jobs:
           CIBW_BUILD: "cp38-* cp39-* cp10-*"
           CIBW_ARCHS: x86_64 arm64
 
-        - uses: actions/upload-artifact@v2
-          with:
-            name: wheels
-            path: ./wheelhouse/*.whl
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./wheelhouse/*.whl
