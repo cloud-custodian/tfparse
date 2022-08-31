@@ -23,7 +23,7 @@ jobs:
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh setup-golang.sh
-          CIBW_BUILD: "cp39-* cp10-*"
+          CIBW_BUILD: "cp39-* cp310-*"
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
 
@@ -48,7 +48,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.9.0
         env:
-          CIBW_BUILD: "cp10-*"
+          CIBW_BUILD: "cp310-*"
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 arm64"
 
@@ -64,7 +64,7 @@ jobs:
 #
 #      - name: Build wheels
 #        run:
-#          python setup.py bdist_wheel --dist-dir wheelhouse
+#          python setup.py bdist_wheel --universal --dist-dir wheelhouse
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
