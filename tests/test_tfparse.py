@@ -15,8 +15,6 @@ def init_module(module_name, tmp_path):
 
     src_mod_path = Path(__file__).parent / "terraform" / module_name
     mod_path = tmp_path / module_name
-    print(src_mod_path)
-    print(mod_path)    
     shutil.copytree(src_mod_path, mod_path)
 
     plugin_cache = Path(__file__).parent.parent / ".tfcache"
@@ -52,5 +50,3 @@ def test_parse_eks(tmp_path):
     assert parsed['aws_eks_cluster']['example']['__tfmeta'] == {
         'filename': 'main.tf', 'line_start': 1, 'line_end': 15
     }
-
-    
