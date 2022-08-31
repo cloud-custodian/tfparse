@@ -76,7 +76,7 @@ jobs:
           path: dist
 
       - name: Display downloaded artifacts
-        runs: ls -lh dist
+        run: ls -lh dist
 
       - uses:  pypa/gh-action-pypi-publish@v1.5.1
         with:
