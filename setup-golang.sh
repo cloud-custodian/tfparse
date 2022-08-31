@@ -2,6 +2,7 @@
 
 OS=$(uname -s)
 ARCH=$(uname -m)
+GOVER="1.18.5"
 case $ARCH in
     x86_64) ARCH="amd64" ;;
     aarch64) ARCH="arm64" ;;
