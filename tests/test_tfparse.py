@@ -24,6 +24,13 @@ def init_module(module_name, tmp_path):
     return mod_path
 
 
+def test_parse_vpc_module(tmp_path):
+    mod_path = init_module("vpc_module", tmp_path)
+    parsed = load_from_path(bytes(mod_path))
+    assert 'aws_vpc' in parsed
+    assert 'aws_subnet' in parsed
+
+
 def test_parse_eks(tmp_path):
     mod_path = init_module("eks", tmp_path)
     parsed = load_from_path(bytes(mod_path))
