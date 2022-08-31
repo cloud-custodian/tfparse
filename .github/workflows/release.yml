@@ -38,7 +38,7 @@ jobs:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh setup-golang.sh
           CIBW_BUILD: "cp38-* cp39-* cp10-*"
-          CIBW_ARCHS: x86_64 universal2
+          CIBW_ARCHS: x86_64 arm64
 
         - uses: actions/upload-artifact@v2
           with:
