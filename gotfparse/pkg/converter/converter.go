@@ -77,7 +77,6 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 
 				if b.ID() != "" {
 					blockJSON.SetP(b.ID(), fmt.Sprintf("%s.id", arrayKey))
-					blockJSON.SetP(b.ID(), fmt.Sprintf("%s.arn", arrayKey))
 				}
 			}
 		} else {
