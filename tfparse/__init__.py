@@ -29,7 +29,7 @@ def load_from_path(
     if not isinstance(filePath, (str, Path)):
         raise ValueError("filePath must be str or Path, got %s" % type(filePath))
 
-    filePath = str(filePath).encode('utf8')
+    filePath = str(filePath).encode("utf8")
 
     s = ffi.new("char[]", filePath)
     e1 = ffi.new("int*", 1 if stop_on_hcl_error else 0)
