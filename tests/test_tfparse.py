@@ -1,9 +1,10 @@
 import shutil
-
 from pathlib import Path
 
+import pytest
 from pytest_terraform.tf import TerraformRunner
-from tfparse import load_from_path
+
+from tfparse import load_from_path, ParseError
 
 
 def init_module(module_name, tmp_path):
@@ -22,6 +23,16 @@ def init_module(module_name, tmp_path):
     runner = TerraformRunner(mod_path, tf_bin=tf_bin, plugin_cache=plugin_cache)
     runner.init()
     return mod_path
+
+
+def test_parse_no_dir(tmp_path):
+    result = load_from_path(bytes(tmp_path))
+    assert result == {}
+
+    with pytest.raises(ParseError) as e_info:
+        load_from_path(bytes(tmp_path / "xyz"))
+
+    assert "no such file or directory" in str(e_info)
 
 
 def test_parse_vpc_module(tmp_path):
