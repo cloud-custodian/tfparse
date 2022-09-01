@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
     inputs: {}
 
+env:
+  CIBW_BUILD: "c939-* cp310-*"
+
 jobs:
   Build-Linux:
     runs-on: ubuntu-latest
@@ -23,7 +26,6 @@ jobs:
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh setup-golang.sh
-          CIBW_BUILD: "cp39-* cp310-*"
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
 
@@ -48,7 +50,6 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.9.0
         env:
-          CIBW_BUILD: "cp39-* cp310-*"
           CIBW_ARCHS: "x86_64 arm64"
 
       - name: Upload Artifacts
