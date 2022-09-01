@@ -61,7 +61,7 @@ jobs:
   Upload:
     needs: [Build-Linux, Build-MacOS]
     runs-on: ubuntu-latest
-#    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/download-artifact@v3.0.0
         with:
@@ -71,6 +71,6 @@ jobs:
       - name: Display downloaded artifacts
         run: ls -lh dist
 
-#      - uses:  pypa/gh-action-pypi-publish@v1.5.1
-#        with:
-#          password: ${{ secrets.PYPI_TOKEN }}
+      - uses:  pypa/gh-action-pypi-publish@v1.5.1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
