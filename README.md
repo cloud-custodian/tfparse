@@ -10,6 +10,25 @@ with the myriad real world usages of terraform, this library uses the
 canonical implementation from terraform, along with the interpolation and evaluation
 from defsec to offer a high level interface to parsing terraform modules.
 
+# Installation
+
+```
+pip install tfparse
+```
+
+We currently distribute binaries for MacOS (x86_64, arm64) and Linux (x86_64, aarch64).
+
+
+# Usage
+
+A terraform module root, with `terraform init` having been performed to resolve module references.
+
+```
+from tfparse import load_from_path
+parsed = load_from_path('path_to_terraform_root')
+print(parsed.keys())
+```
+
 # Building
 
 - requires a modern golang (1.18)
