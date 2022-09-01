@@ -3,15 +3,22 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from setuptools import Extension, find_packages, setup
+from pathlib import Path
+
+
+README = (Path(__file__).parent / "README.md").read_text()
+
 
 setup(
     name="tfparse",
     description="Python HCL/Terraform parser via extension for AquaSecurity defsec",
+    long_description=README,
+    long_description_content_type="text/markdown",
     url="https://github.com/cloud-custodian/tfparse",
     author="Wayne Witzel III",
     author_email="wayne@stacklet.io",
     license="Apache-2.0",
-    version="0.1.1",
+    version="0.1.2",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.10",
