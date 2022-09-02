@@ -3,5 +3,5 @@ flake8==5.0.4
 
 pytest==7.1.3
 pytest-forked==1.4.0
-pytest-terraform==0.6.1
+pytest-terraform==0.6.4
 pytest-xdist==2.5.0
