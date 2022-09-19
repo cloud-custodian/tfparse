@@ -18,7 +18,7 @@ jobs:
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@0abd6c205d5baf3066155b5bf85219147d770c61 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@225387a9d55a3df0ca48efc17acf4964b8ef4f10 # ratchet:pypa/cibuildwheel@v2.9.0
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh setup-golang.sh
@@ -40,7 +40,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@0abd6c205d5baf3066155b5bf85219147d770c61 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@225387a9d55a3df0ca48efc17acf4964b8ef4f10 # ratchet:pypa/cibuildwheel@v2.9.0
         env:
           CIBW_ARCHS: "x86_64 arm64"
       - name: Upload Artifacts
