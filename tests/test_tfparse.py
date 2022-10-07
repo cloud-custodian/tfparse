@@ -112,3 +112,8 @@ def test_parse_apprunner(tmp_path):
             }
         }
     }
+
+
+def test_parse_notify_slack(tmp_path):
+    mod_path = init_module("notify_slack", tmp_path)
+    parsed = load_from_path(mod_path)
