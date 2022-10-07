@@ -5,6 +5,7 @@ package converter
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -116,11 +117,31 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			}
 
 			if len(obj) > 0 {
-				blockJSON.ArrayAppendP(obj, arrayKey)
+				blockJSON.SetP(obj, arrayKey)
 			}
 		}
 
-		jsonOut.Merge(blockJSON)
+		// jsonOut.Merge(blockJSON)
+
+		jsonOut.MergeFn(blockJSON, func(dest, source interface{}) interface{} {
+			destMap, ok := dest.(map[string]*gabs.Container)
+			if !ok {
+				return errors.New("unable to cast dest to map type")
+			}
+
+			sourceMap, ok := source.(map[string]interface{})
+			if !ok {
+				return errors.New("unable to cast source to map type")
+			}
+			for k, v := range destMap {
+				containerValue, err := gabs.New().Set(v)
+				if err != nil {
+					return fmt.Errorf("%w", err)
+				}
+				sourceMap[k] = containerValue
+			}
+			return source
+		})
 
 		for _, b := range b.AllBlocks() {
 			parent := b.GetMetadata().Parent()

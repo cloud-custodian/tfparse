@@ -1,10 +1,10 @@
 import shutil
 from pathlib import Path
+from unittest.mock import ANY
 
 import pytest
 from pytest_terraform.tf import TerraformRunner
-
-from tfparse import load_from_path, ParseError
+from tfparse import ParseError, load_from_path
 
 
 def init_module(module_name, tmp_path):
@@ -68,4 +68,47 @@ def test_parse_eks(tmp_path):
         "filename": "main.tf",
         "line_start": 1,
         "line_end": 15,
+    }
+
+
+def test_parse_apprunner(tmp_path):
+    mod_path = init_module("apprunner", tmp_path)
+    parsed = load_from_path(mod_path)
+    assert parsed == {
+        "aws_apprunner_service": {
+            "example": {
+                "__tfmeta": {"filename": "main.tf", "line_start": 1, "line_end": 18},
+                "id": ANY,
+                "service_name": "example",
+                "source_configuration": {
+                    "__tfmeta": {
+                        "filename": "main.tf",
+                        "line_end": 13,
+                        "line_start": 4,
+                    },
+                    "auto_deployments_enabled": False,
+                    "id": ANY,
+                    "image_repository": {
+                        "__tfmeta": {
+                            "filename": "main.tf",
+                            "line_end": 11,
+                            "line_start": 5,
+                        },
+                        "id": ANY,
+                        "image_identifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "image_repository_type": "ECR_PUBLIC",
+                        "image_configuration": {
+                            "__tfmeta": {
+                                "filename": "main.tf",
+                                "line_end": 8,
+                                "line_start": 6,
+                            },
+                            "id": ANY,
+                            "port": "8000",
+                        },
+                    },
+                },
+                "tags": {"Name": "example-apprunner-service"},
+            }
+        }
     }
