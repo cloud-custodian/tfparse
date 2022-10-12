@@ -8,3 +8,10 @@ venv/**
 *.so
 .python-version
 __pycache__
+poetry.lock
+tfparse.cpython*
+.vscode
+
+.terraform
+.tf_providers
+.terraform.lock.hcl
