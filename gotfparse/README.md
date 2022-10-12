@@ -14,6 +14,5 @@ You can use the `tftest` helper command to easily iterate on terraform and previ
 
 When using a modern IDE like Visual Studio Code or Goland, open the `gotfparse` folder as the root of the workspace to ensure all of the Go tooling works as expected.
 
-# Links
 
 [defsec_repo]: https://github.com/aquasecurity/defsec
