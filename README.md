@@ -59,12 +59,12 @@ poetry build
 ```
 
 
-## Credits
+# Credits
 
 aquasecurity/defsec - golang module for parsing and evaluating terraform hcl
 
 Scalr/pygohcl - python bindings for terraform hcl via golang extension
 
-## Links
+# Links
 
 [poetry_website]: https://python-poetry.org/
