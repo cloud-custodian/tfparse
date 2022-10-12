@@ -8,6 +8,7 @@ from distutils.extension import Extension
 
 ext_modules = [Extension("tfparse", ["gotfparse/cmd/tfparse/main.go"])]
 cffi_modules = ["tfparse/build_cffi.py:ffi"]
+build_golang = {"root": "github.com/cloud-custodian/tfparse/gotfparse"}
 
 
 class BuildFailed(Exception):
@@ -34,6 +35,7 @@ def build(setup_kwargs):
     """
     setup_kwargs.update(
         {
+            "build_golang": build_golang,
             "ext_modules": ext_modules,
             "cffi_modules": cffi_modules,
             "cmdclass": {"build_ext": ExtBuilder},

@@ -29,12 +29,33 @@ parsed = load_from_path('path_to_terraform_root')
 print(parsed.keys())
 ```
 
-# Building
+# Developing
 
-- requires a modern golang (1.18)
+- requires Go >= 1.18
+- requires Python >= 3.10
+
+This project uses [Poetry][poetry_website] for package management, if you do not already have Poetry installed you can do so by running the following command:
+
+    curl -sSL https://install.python-poetry.org | python3 -
+
+
+
+## Installing from source
+
+Installing will build the module and install the local copy of tfparse in to the current Python environment.
 
 ```shell
-python setup.py develop
+poetry install
+python
+>>> import tfparse
+```
+
+## Building from source
+
+Building will produce a wheel and a source artifact for distribution or upload to package repositories.
+
+```shell
+poetry build
 ```
 
 
@@ -43,3 +64,7 @@ python setup.py develop
 aquasecurity/defsec - golang module for parsing and evaluating terraform hcl
 
 Scalr/pygohcl - python bindings for terraform hcl via golang extension
+
+## Links
+
+[poetry_website]: https://python-poetry.org/

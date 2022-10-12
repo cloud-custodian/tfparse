@@ -31,11 +31,12 @@ pytest-forked = "^1.4.0"
 pytest-terraform = "^0.6.4"
 pytest-xdist = "^2.5.0"
 flake8 = "^5.0.4"
+setuptools-golang = "^2.7.0"
 
 [tool.flake8]
 max-line-length = 100
 exclude = "tfparse/_tfparse.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "distutils", "wheel", "cffi >= 1.15.0"]
+requires = ["poetry-core>=1.0.0", "distutils", "wheel", "setuptools-golang", "cffi >= 1.15.0"]
 build-backend = "poetry.core.masonry.api"
