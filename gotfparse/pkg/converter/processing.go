@@ -13,7 +13,7 @@ import (
 
 // generateTFMeta generates a structure that contains the values
 // to store as `__tfmeta` for the block in the JSON output. Returns an error
-// is retured if the function is unable to generate metadata for the given block.
+// if the function is unable to generate metadata for the given block.
 func generateTFMeta(b *terraform.Block) (*gabs.Container, error) {
 	r := b.GetMetadata().Range()
 
