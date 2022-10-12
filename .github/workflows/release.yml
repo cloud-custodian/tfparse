@@ -14,14 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # ratchet:actions/checkout@v3.0.2
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8 # ratchet:docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 # ratchet:docker/setup-qemu-action@v2
         with:
           platforms: arm64
       - name: Build wheels
         uses: pypa/cibuildwheel@7c45799919d2dcd7ac59433924d763dd24d97483 # ratchet:pypa/cibuildwheel@v2.9.0
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_ALL: sh setup-golang.sh
+          CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
       - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # ratchet:actions/upload-artifact@v3
@@ -43,7 +43,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@268d8c0ca0432bb2cf416faae41297df9d262d7f # ratchet:actions/setup-go@v3
         with:
-          go-version: "1.18"
+          go-version: "1.19"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
