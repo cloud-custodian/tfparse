@@ -58,6 +58,7 @@ Building will produce a wheel and a source artifact for distribution or upload t
 
 ```shell
 poetry build
+ls -l dist/
 ```
 
 
