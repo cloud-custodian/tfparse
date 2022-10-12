@@ -47,7 +47,9 @@ Installing will build the module and install the local copy of tfparse in to the
 ```shell
 poetry install
 python
->>> import tfparse
+>>> from tfparse import load_from_path
+>>> parsed = load_from_path('<path_to_terraform>')
+>>> print(parsed.keys())
 ```
 
 ## Building from source
