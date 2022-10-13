@@ -35,23 +35,24 @@ func generateTFMeta(b *terraform.Block) (*gabs.Container, error) {
 // for the upstream c7n_left interface that wraps tfpase.
 //
 // *This function has side-effects and directly modifies the source.
-func collisionFn(dest, source interface{}) interface{} {
-	destMap, ok := dest.(map[string]*gabs.Container)
-	if !ok {
-		return source
-	}
-
-	sourceMap, ok := source.(map[string]interface{})
-	if !ok {
-		return dest
-	}
-
-	for k, v := range destMap {
-		containerValue, err := gabs.New().Set(v)
-		if err != nil {
-			return fmt.Errorf("%w", err)
+func collisionFn(key string) func(d, s interface{}) interface{} {
+	return func(destination, source interface{}) interface{} {
+		fmt.Println("SOURCE", key, source)
+		fmt.Println("DEST", key, destination)
+		if destination == nil {
+			return source
 		}
-		sourceMap[k] = containerValue
+
+		dest, ok := destination.(map[string]*gabs.Container)
+		if !ok {
+			return source
+		}
+
+		src, ok := source.(map[string]interface{})
+		if !ok {
+			return dest
+		}
+
+		return src
 	}
-	return source
 }

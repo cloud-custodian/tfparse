@@ -113,7 +113,7 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			}
 		}
 
-		jsonOut.MergeFn(blockJSON, collisionFn)
+		jsonOut.MergeFn(blockJSON, collisionFn(arrayKey))
 
 		for _, b := range b.AllBlocks() {
 			parent := b.GetMetadata().Parent()
