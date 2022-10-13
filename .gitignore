@@ -8,3 +8,4 @@ venv/**
 *.so
 .python-version
 __pycache__
+/tests/terraform/*/actual.json

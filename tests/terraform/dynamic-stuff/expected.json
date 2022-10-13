@@ -1,0 +1,104 @@
+{
+  "aws_lambda_function": {
+    "this": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_start": 11,
+        "line_end": 36
+      },
+      "environment": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_end": 35,
+          "line_start": 30
+        },
+        "for_each": [
+          true
+        ],
+        "id": "00000000-0000-0000-0000-000000000001",
+        "variables": {
+          "hello": "world"
+        }
+      },
+      "environment[0]": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_start": 32,
+          "line_end": 34
+        },
+        "id": "00000000-0000-0000-0000-000000000002",
+        "variables": {
+          "hello": "world"
+        }
+      },
+      "ephemeral_storage": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_end": 19,
+          "line_start": 13
+        },
+        "for_each": [
+          true
+        ],
+        "id": "00000000-0000-0000-0000-000000000003",
+        "size": 100
+      },
+      "ephemeral_storage[0]": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_start": 16,
+          "line_end": 18
+        },
+        "id": "00000000-0000-0000-0000-000000000004",
+        "size": 100
+      },
+      "image_config": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_end": 28,
+          "line_start": 21
+        },
+        "command": null,
+        "entry_point": null,
+        "for_each": [
+          true
+        ],
+        "id": "00000000-0000-0000-0000-000000000005",
+        "working_directory": null
+      },
+      "image_config[0]": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_start": 23,
+          "line_end": 27
+        },
+        "command": null,
+        "entry_point": null,
+        "id": "00000000-0000-0000-0000-000000000006",
+        "working_directory": null
+      }
+    }
+  },
+  "variable": {
+    "environment_variables": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_start": 1,
+        "line_end": 5
+      },
+      "default": {
+        "hello": "world"
+      },
+      "id": "00000000-0000-0000-0000-000000000007"
+    },
+    "ephemeral_storage_size": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_start": 7,
+        "line_end": 9
+      },
+      "default": 100,
+      "id": "00000000-0000-0000-0000-000000000008"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "aws_apprunner_service": {
+    "example": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_start": 1,
+        "line_end": 18
+      },
+      "id": "00000000-0000-0000-0000-000000000001",
+      "service_name": "example",
+      "source_configuration": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_end": 13,
+          "line_start": 4
+        },
+        "auto_deployments_enabled": false,
+        "id": "00000000-0000-0000-0000-000000000002",
+        "image_repository": {
+          "__tfmeta": {
+            "filename": "main.tf",
+            "line_end": 11,
+            "line_start": 5
+          },
+          "id": "00000000-0000-0000-0000-000000000003",
+          "image_configuration": {
+            "__tfmeta": {
+              "filename": "main.tf",
+              "line_end": 8,
+              "line_start": 6
+            },
+            "id": "00000000-0000-0000-0000-000000000004",
+            "port": "8000"
+          },
+          "image_identifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+          "image_repository_type": "ECR_PUBLIC"
+        }
+      },
+      "tags": {
+        "Name": "example-apprunner-service"
+      }
+    }
+  }
+}
