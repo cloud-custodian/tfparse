@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
@@ -40,11 +41,19 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	visitor = func(b *terraform.Block, parentKey string) {
 		blockName := b.GetMetadata().String()
 
+		if b.TypeLabel() == "dynamic" {
+			blockName = b.NameLabel()
+		}
+
 		blockJSON := gabs.New()
 		arrayKey := blockName
 
 		if parentKey != "" {
-			if parentKey != blockName {
+			if isDynamicContentBlock(b) {
+				arrayKey = parentKey
+				parentKey = ""
+			} else if parentKey != blockName {
+				blockName = strings.TrimPrefix(blockName, "dynamic.")
 				arrayKey = fmt.Sprintf("%s.%s", parentKey, blockName)
 			} else {
 				arrayKey = parentKey
@@ -58,7 +67,7 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 				LineStart: r.GetStartLine(),
 				LineEnd:   r.GetEndLine(),
 			}
-			blockJSON.SetP(meta, fmt.Sprintf("%s.__tfmeta", arrayKey))
+			setP(blockJSON, meta, fmt.Sprintf("%s.__tfmeta", arrayKey))
 
 			for _, a := range b.GetAttributes() {
 				attrCtyJSON := ctyjson.SimpleJSONValue{Value: a.Value()}
@@ -66,17 +75,17 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 				gv, _ := gabs.ParseJSON(jb)
 				if gv != nil {
 					childKey := fmt.Sprintf("%s.%s", arrayKey, a.Name())
-					blockJSON.SetP(gv, childKey)
+					setP(blockJSON, gv, childKey)
 				}
 
 				rb, _ := t.modules.GetReferencedBlock(a, b)
 				if rb != nil {
 					refKey := fmt.Sprintf("%s.%s", arrayKey, a.Name())
-					blockJSON.SetP(rb.ID(), refKey)
+					setP(blockJSON, rb.ID(), refKey)
 				}
 
 				if b.ID() != "" {
-					blockJSON.SetP(b.ID(), fmt.Sprintf("%s.id", arrayKey))
+					setP(blockJSON, b.ID(), fmt.Sprintf("%s.id", arrayKey))
 				}
 			}
 		} else {
@@ -116,7 +125,7 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			}
 
 			if len(obj) > 0 {
-				blockJSON.SetP(obj, arrayKey)
+				setP(blockJSON, obj, arrayKey)
 			}
 		}
 
@@ -144,12 +153,23 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 		for _, b := range b.AllBlocks() {
 			parent := b.GetMetadata().Parent()
 			if parent != nil {
-				if parentKey != "" && parentKey != parent.String() {
-					parentKey = fmt.Sprintf("%s.%s", parentKey, parent.String())
+				selfKey := parent.String()
+				if strings.HasPrefix(selfKey, "dynamic.") {
+					parentKey = parent.Parent().String()
+				}
+
+				if parentKey != "" && parentKey != selfKey {
+					selfKey = strings.TrimPrefix(selfKey, "dynamic.")
+					parentKey = fmt.Sprintf("%s.%s", parentKey, selfKey)
 				} else {
 					parentKey = parent.String()
 				}
 			}
+
+			//if strings.Contains(parentKey, "dynamic") {
+			//	continue
+			//}
+
 			visitor(b, parentKey)
 		}
 	}
@@ -159,6 +179,25 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	}
 
 	return jsonOut
+}
+
+func isDynamicContentBlock(b *terraform.Block) bool {
+	if b.LocalName() != "content" {
+		return false
+	}
+
+	if b.GetMetadata().Parent().Reference().(*terraform.Reference).TypeLabel() != "dynamic" {
+		return false
+	}
+
+	return true
+}
+
+func setP(blockJSON *gabs.Container, value interface{}, path string) {
+	_, err := blockJSON.SetP(value, path)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // NewTerraformConverter creates a new TerraformConverter.
