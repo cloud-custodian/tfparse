@@ -128,33 +128,69 @@ def test_dynamic_handling(tmp_path):
     mod_path = init_module('dynamic-stuff', tmp_path)
     parsed = load_from_path(mod_path)
 
-    environment = {
-        '__tfmeta': ANY,
-        'id': ANY,
-        'variables': {
-            'hello': 'world'
-        },
-    }
+    import pprint
+    pprint.pprint(parsed)
 
-    ephemeral_storage = {
-        '__tfmeta': ANY,
-        'id': ANY,
-        'size': 100,
-    }
-
-    image_config = {
-        "__tfmeta": ANY,
-        "command": None,
-        "entry_point": None,
-        "id": ANY,
-        "working_directory": None
-    }
+    assert set(parsed.keys()) == {'aws_lambda_function', 'variable'}
 
     assert parsed['aws_lambda_function'] == {
         'this': {
-            '__tfmeta': ANY,
-            'environment[0]': environment,
-            'ephemeral_storage[0]': ephemeral_storage,
-            'image_config[0]': image_config,
+            '__tfmeta': {
+                'filename': 'main.tf',
+                'line_end': 36,
+                'line_start': 11,
+            },
+            'environment[0]': {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'line_end': 34,
+                    'line_start': 32,
+                },
+                'id': ANY,
+                'variables': {
+                    'hello': 'world'
+                },
+            },
+            'ephemeral_storage[0]': {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'line_end': 18,
+                    'line_start': 16,
+                },
+                'id': ANY,
+                'size': 100,
+            },
+            'image_config[0]': {
+                "__tfmeta": {
+                    'filename': 'main.tf',
+                    'line_end': 27,
+                    'line_start': 23,
+                },
+                "command": None,
+                "entry_point": None,
+                "id": ANY,
+                "working_directory": None
+            },
+        },
+    }
+
+    assert parsed['variable'] == {
+        'environment_variables': {
+            '__tfmeta': {
+                'filename': 'main.tf',
+                'line_end': 5,
+                'line_start': 1,
+            },
+            'default': {'hello': 'world'},
+            'id': ANY,
+        },
+        'ephemeral_storage_size': {
+            '__tfmeta': {
+                'filename': 'main.tf',
+                'line_end': 9,
+                'line_start': 7,
+            },
+            'default': 100,
+            'id': ANY,
         },
     }

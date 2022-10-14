@@ -166,16 +166,7 @@ func isDynamicContentBlock(b *terraform.Block) bool {
 	return true
 }
 
-func arrayAppendP(b *terraform.Block, out *gabs.Container, where string, data *gabs.Container, path string) {
-	println("--- array append ", path, "@", where, "---", b.Type())
-	err := out.ArrayAppendP(data, path)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func setP(b *terraform.Block, blockJSON *gabs.Container, where string, value interface{}, path string) {
-	println("--- setting ", path, "@", where, "---", b.Type())
 	_, err := blockJSON.SetP(value, path)
 	if err != nil {
 		panic(err)
