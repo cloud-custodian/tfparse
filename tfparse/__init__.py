@@ -1,7 +1,7 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
-import distutils.sysconfig
 import json
+import sysconfig
 import typing as tp
 from pathlib import Path
 
@@ -9,7 +9,7 @@ from tfparse._tfparse import ffi
 
 
 def load_lib():
-    suffix = distutils.sysconfig.get_config_var("EXT_SUFFIX")
+    suffix = sysconfig.get_config_var("EXT_SUFFIX")
 
     libpath = Path(__file__).parent.parent / f"tfparse{suffix}"
     return ffi.dlopen(str(libpath))

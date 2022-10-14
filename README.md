@@ -61,6 +61,13 @@ poetry build
 ls -l dist/
 ```
 
+## Running the tests
+
+This project uses pytest
+
+```shell
+poetry run pytest
+```
 
 # Credits
 
@@ -68,6 +75,5 @@ aquasecurity/defsec - golang module for parsing and evaluating terraform hcl
 
 Scalr/pygohcl - python bindings for terraform hcl via golang extension
 
-# Links
 
 [poetry_website]: https://python-poetry.org/
