@@ -121,7 +121,8 @@ def test_parse_notify_slack(tmp_path):
     assert "notify_slack_qa" in module
     assert "notify_slack_saas" in module
     assert "lambda" in module
-    assert len(module["lambda"]) == 2
+
+    assert len(module["lambda"]) == 36
 
 
 def test_dynamic_handling(tmp_path):

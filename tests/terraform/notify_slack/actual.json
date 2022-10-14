@@ -1,0 +1,2447 @@
+{
+  "aws_cloudwatch_log_group": {
+    "lambda[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+        "line_end": 49,
+        "line_start": 41
+      },
+      "count": 1,
+      "id": "00000000-0000-0000-0000-000000000001",
+      "kms_key_id": null,
+      "name": "/aws/lambda/notify_slack_qa",
+      "retention_in_days": 0,
+      "tags": null
+    }
+  },
+  "aws_iam_policy": {
+    "additional_json[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+        "line_end": 287,
+        "line_start": 280
+      },
+      "count": 1,
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "-notify_slack_qa",
+      "path": null,
+      "policy": "",
+      "tags": null
+    }
+  },
+  "aws_iam_role": {
+    "lambda[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+        "line_end": 104,
+        "line_start": 93
+      },
+      "assume_role_policy": null,
+      "count": 1,
+      "description": null,
+      "force_detach_policies": true,
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "-notify_slack_qa",
+      "path": null,
+      "permissions_boundary": null,
+      "tags": null
+    }
+  },
+  "aws_iam_role_policy_attachment": {
+    "additional_json[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+        "line_end": 294,
+        "line_start": 289
+      },
+      "count": 1,
+      "id": "00000000-0000-0000-0000-000000000004",
+      "policy_arn": "00000000-0000-0000-0000-000000000002",
+      "role": "00000000-0000-0000-0000-000000000003"
+    }
+  },
+  "aws_lambda_function": {
+    "this[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+        "line_end": 109,
+        "line_start": 22
+      },
+      "architectures": null,
+      "count": 1,
+      "depends_on": "00000000-0000-0000-0000-000000000023",
+      "description": null,
+      "environment[0]": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+          "line_end": 69,
+          "line_start": 67
+        },
+        "id": "00000000-0000-0000-0000-000000000005",
+        "variables": {
+          "LOG_EVENTS": "False",
+          "SLACK_CHANNEL": "feed-ops-qa",
+          "SLACK_EMOJI": ":aws:",
+          "SLACK_USERNAME": "slack-user-2",
+          "SLACK_WEBHOOK_URL": "https://localhost"
+        }
+      },
+      "ephemeral_storage[0]": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+          "line_end": 46,
+          "line_start": 44
+        },
+        "id": "00000000-0000-0000-0000-000000000006",
+        "size": 512
+      },
+      "filename": null,
+      "function_name": "notify_slack_qa",
+      "handler": "notify_slack.lambda_handler",
+      "id": "00000000-0000-0000-0000-000000000007",
+      "image_uri": null,
+      "kms_key_arn": "",
+      "layers": null,
+      "memory_size": 128,
+      "package_type": "Zip",
+      "publish": true,
+      "reserved_concurrent_executions": -1,
+      "role": "00000000-0000-0000-0000-000000000003",
+      "runtime": "python3.8",
+      "s3_bucket": null,
+      "s3_key": null,
+      "s3_object_version": null,
+      "source_code_hash": null,
+      "tags": null,
+      "timeout": 30
+    }
+  },
+  "aws_lambda_permission": {
+    "current_version_triggers[\"AllowExecutionFromSNS\"]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+        "line_end": 218,
+        "line_start": 206
+      },
+      "action": "lambda:InvokeFunction",
+      "event_source_token": null,
+      "for_each": {
+        "AllowExecutionFromSNS": {
+          "principal": "sns.amazonaws.com",
+          "source_arn": ""
+        }
+      },
+      "function_name": "00000000-0000-0000-0000-000000000007",
+      "id": "00000000-0000-0000-0000-000000000008",
+      "principal": "sns.amazonaws.com",
+      "qualifier": "00000000-0000-0000-0000-000000000007",
+      "source_account": null,
+      "source_arn": "",
+      "statement_id": "AllowExecutionFromSNS"
+    },
+    "unqualified_alias_triggers[\"AllowExecutionFromSNS\"]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+        "line_end": 232,
+        "line_start": 221
+      },
+      "action": "lambda:InvokeFunction",
+      "event_source_token": null,
+      "for_each": {
+        "AllowExecutionFromSNS": {
+          "principal": "sns.amazonaws.com",
+          "source_arn": ""
+        }
+      },
+      "function_name": "00000000-0000-0000-0000-000000000007",
+      "id": "00000000-0000-0000-0000-000000000009",
+      "principal": "sns.amazonaws.com",
+      "source_account": null,
+      "source_arn": "",
+      "statement_id": "AllowExecutionFromSNS"
+    }
+  },
+  "aws_sns_topic": {
+    "this[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+        "line_end": 59,
+        "line_start": 51
+      },
+      "count": 1,
+      "id": "00000000-0000-0000-0000-00000000000a",
+      "kms_master_key_id": null,
+      "name": "slack-alert-qa",
+      "tags": null
+    }
+  },
+  "aws_sns_topic_subscription": {
+    "sns_notify_slack[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+        "line_end": 69,
+        "line_start": 62
+      },
+      "count": 1,
+      "endpoint": "00000000-0000-0000-0000-000000000007",
+      "filter_policy": null,
+      "id": "00000000-0000-0000-0000-00000000000b",
+      "protocol": "lambda",
+      "topic_arn": "00000000-0000-0000-0000-00000000000a"
+    }
+  },
+  "data": {
+    "aws_arn": {
+      "log_group_arn": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 114,
+          "line_start": 110
+        },
+        "arn": "",
+        "count": 0,
+        "id": "00000000-0000-0000-0000-00000000000c"
+      }
+    },
+    "aws_caller_identity": {
+      "current": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+          "line_end": 1,
+          "line_start": 1
+        }
+      }
+    },
+    "aws_cloudwatch_log_group": {
+      "lambda": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/main.tf",
+          "line_end": 152,
+          "line_start": 148
+        },
+        "count": 1,
+        "id": "00000000-0000-0000-0000-00000000000d",
+        "name": "/aws/lambda/notify_slack_qa"
+      }
+    },
+    "aws_iam_policy": {
+      "tracing": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 221,
+          "line_start": 217
+        },
+        "arn": null,
+        "count": 0,
+        "id": "00000000-0000-0000-0000-00000000000e"
+      },
+      "vpc": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 194,
+          "line_start": 190
+        },
+        "arn": null,
+        "count": 0,
+        "id": "00000000-0000-0000-0000-00000000000f"
+      }
+    },
+    "aws_iam_policy_document": {
+      "additional_inline": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 382,
+          "line_start": 342
+        },
+        "count": 0,
+        "id": "00000000-0000-0000-0000-000000000010"
+      },
+      "assume_role": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 91,
+          "line_start": 35
+        },
+        "count": 1,
+        "id": "00000000-0000-0000-0000-000000000011",
+        "statement": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+            "line_end": 54,
+            "line_start": 38
+          },
+          "actions": [
+            "sts:AssumeRole"
+          ],
+          "effect": "Allow",
+          "id": "00000000-0000-0000-0000-000000000012",
+          "principals": {
+            "__tfmeta": {
+              "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+              "line_end": 45,
+              "line_start": 42
+            },
+            "id": "00000000-0000-0000-0000-000000000013",
+            "identifiers": [
+              "lambda.amazonaws.com"
+            ],
+            "type": "Service"
+          }
+        }
+      },
+      "async": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 258,
+          "line_start": 243
+        },
+        "count": 0,
+        "id": "00000000-0000-0000-0000-000000000014",
+        "statement": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+            "line_end": 257,
+            "line_start": 246
+          },
+          "actions": [
+            "sns:Publish",
+            "sqs:SendMessage",
+            "events:PutEvents",
+            "lambda:InvokeFunction"
+          ],
+          "effect": "Allow",
+          "id": "00000000-0000-0000-0000-000000000015",
+          "resources": null
+        }
+      },
+      "dead_letter": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 167,
+          "line_start": 152
+        },
+        "count": 0,
+        "id": "00000000-0000-0000-0000-000000000016",
+        "statement": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+            "line_end": 166,
+            "line_start": 155
+          },
+          "actions": [
+            "sns:Publish",
+            "sqs:SendMessage"
+          ],
+          "effect": "Allow",
+          "id": "00000000-0000-0000-0000-000000000017",
+          "resources": [
+            null
+          ]
+        }
+      },
+      "lambda": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+          "line_end": 39,
+          "line_start": 27
+        },
+        "count": 1,
+        "id": "00000000-0000-0000-0000-000000000018",
+        "statement[0]": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+            "line_end": 37,
+            "line_start": 32
+          },
+          "actions": [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "effect": "Allow",
+          "id": "00000000-0000-0000-0000-000000000019",
+          "resources": [
+            ":*"
+          ],
+          "sid": "AllowWriteToCloudwatchLogs"
+        }
+      },
+      "logs": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+          "line_end": 130,
+          "line_start": 116
+        },
+        "count": 0,
+        "id": "00000000-0000-0000-0000-00000000001a",
+        "statement": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/iam.tf",
+            "line_end": 129,
+            "line_start": 119
+          },
+          "actions": [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "effect": "Allow",
+          "id": "00000000-0000-0000-0000-00000000001b",
+          "resources": [
+            ":*",
+            ":*:*"
+          ]
+        }
+      }
+    },
+    "aws_partition": {
+      "current": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+          "line_end": 2,
+          "line_start": 2
+        }
+      }
+    },
+    "aws_region": {
+      "current": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+          "line_end": 3,
+          "line_start": 3
+        }
+      }
+    },
+    "external": {
+      "archive_prepare": {
+        "__tfmeta": {
+          "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/package.tf",
+          "line_end": 42,
+          "line_start": 7
+        },
+        "count": 1,
+        "id": "00000000-0000-0000-0000-00000000001c",
+        "program": [
+          "python3",
+          ".terraform/modules/notify_slack_qa.lambda/package.py",
+          "prepare"
+        ],
+        "query": {
+          "artifacts_dir": "builds",
+          "docker": null,
+          "hash_extra": "",
+          "hash_extra_paths": "[]",
+          "paths": "{\"cwd\":\"/home/djeebus/code/stacklet/tfparse\",\"module\":\".terraform/modules/notify_slack_qa.lambda\",\"root\":\".\"}",
+          "recreate_missing_package": true,
+          "runtime": "python3.8",
+          "source_path": "\".terraform/modules/notify_slack_qa/functions/notify_slack.py\""
+        }
+      }
+    }
+  },
+  "local_file": {
+    "archive_plan[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/package.tf",
+        "line_end": 54,
+        "line_start": 47
+      },
+      "content": null,
+      "count": 1,
+      "directory_permission": "0755",
+      "file_permission": "0644",
+      "filename": null,
+      "id": "00000000-0000-0000-0000-00000000001d"
+    }
+  },
+  "locals": {
+    "__tfmeta": {
+      "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+      "line_end": 25,
+      "line_start": 5
+    },
+    "id": "00000000-0000-0000-0000-00000000001e",
+    "lambda_policy_document": {
+      "actions": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "effect": "Allow",
+      "resources": null,
+      "sid": "AllowWriteToCloudwatchLogs"
+    },
+    "lambda_policy_document_kms": {
+      "actions": [
+        "kms:Decrypt"
+      ],
+      "effect": "Allow",
+      "resources": [
+        ""
+      ],
+      "sid": "AllowKMSDecrypt"
+    },
+    "sns_topic_arn": "00000000-0000-0000-0000-00000000000a"
+  },
+  "module": {
+    "lambda": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
+        "line_end": 135,
+        "line_start": 71
+      },
+      "allowed_triggers": {
+        "AllowExecutionFromSNS": {
+          "principal": "sns.amazonaws.com",
+          "source_arn": "00000000-0000-0000-0000-00000000000a"
+        }
+      },
+      "attach_cloudwatch_logs_policy": false,
+      "attach_network_policy": false,
+      "attach_policy_json": true,
+      "create": true,
+      "create_role": true,
+      "depends_on": [
+        [
+          {
+            "arn": "00000000-0000-0000-0000-00000000001f",
+            "count": 1,
+            "id": "00000000-0000-0000-0000-00000000001f",
+            "kms_key_id": null,
+            "name": "/aws/lambda/notify_slack_qa",
+            "retention_in_days": 0,
+            "tags": null
+          }
+        ]
+      ],
+      "description": null,
+      "environment_variables": {
+        "LOG_EVENTS": "False",
+        "SLACK_CHANNEL": "feed-ops-qa",
+        "SLACK_EMOJI": ":aws:",
+        "SLACK_USERNAME": "slack-user-2",
+        "SLACK_WEBHOOK_URL": "https://localhost"
+      },
+      "ephemeral_storage_size": 512,
+      "function_name": "notify_slack_qa",
+      "handler": "notify_slack.lambda_handler",
+      "id": "00000000-0000-0000-0000-000000000020",
+      "kms_key_arn": "",
+      "lambda_role": "",
+      "policy_json": "",
+      "policy_path": null,
+      "publish": true,
+      "recreate_missing_package": true,
+      "reserved_concurrent_executions": -1,
+      "role_name": "-notify_slack_qa",
+      "role_path": null,
+      "role_permissions_boundary": null,
+      "role_tags": {},
+      "runtime": "python3.8",
+      "s3_bucket": null,
+      "source": "terraform-aws-modules/lambda/aws",
+      "source_path": ".terraform/modules/notify_slack_qa/functions/notify_slack.py",
+      "store_on_s3": false,
+      "tags": null,
+      "timeout": 30,
+      "use_existing_cloudwatch_log_group": true,
+      "version": "3.2.0",
+      "vpc_security_group_ids": null,
+      "vpc_subnet_ids": null
+    },
+    "notify_slack_qa": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 41,
+        "line_start": 22
+      },
+      "iam_role_name_prefix": null,
+      "id": "00000000-0000-0000-0000-000000000021",
+      "lambda_function_name": "notify_slack_qa",
+      "slack_channel": "feed-ops-qa",
+      "slack_username": "slack-user-2",
+      "slack_webhook_url": "https://localhost",
+      "sns_topic_kms_key_id": null,
+      "sns_topic_name": "slack-alert-qa",
+      "source": "terraform-aws-modules/notify-slack/aws",
+      "tags": null,
+      "version": "~> 5.1.0"
+    },
+    "notify_slack_saas": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 20,
+        "line_start": 1
+      },
+      "iam_role_name_prefix": null,
+      "id": "00000000-0000-0000-0000-000000000022",
+      "lambda_function_name": "notify_slack_saas",
+      "slack_channel": "feed-ops-saas",
+      "slack_username": "slack-user-1",
+      "slack_webhook_url": "https://localhost",
+      "sns_topic_kms_key_id": null,
+      "sns_topic_name": "slack-alert-saas",
+      "source": "terraform-aws-modules/notify-slack/aws",
+      "tags": null,
+      "version": "~> 5.3.0"
+    }
+  },
+  "null_resource": {
+    "archive[0]": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/package.tf",
+        "line_end": 74,
+        "line_start": 57
+      },
+      "count": 1,
+      "depends_on": "00000000-0000-0000-0000-00000000001d",
+      "id": "00000000-0000-0000-0000-000000000023",
+      "provisioner": {
+        "local-exec": {
+          "__tfmeta": {
+            "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/package.tf",
+            "line_end": 71,
+            "line_start": 65
+          },
+          "command": null,
+          "id": "00000000-0000-0000-0000-000000000024",
+          "interpreter": null
+        }
+      }
+    }
+  },
+  "output": {
+    "lambda_cloudwatch_log_group_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 50,
+        "line_start": 47
+      },
+      "description": "The Amazon Resource Name (ARN) specifying the log group",
+      "id": "00000000-0000-0000-0000-000000000025",
+      "value": "00000000-0000-0000-0000-00000000001f"
+    },
+    "lambda_cloudwatch_log_group_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 130,
+        "line_start": 127
+      },
+      "description": "The name of the Cloudwatch Log Group",
+      "id": "00000000-0000-0000-0000-000000000026",
+      "value": ""
+    },
+    "lambda_event_source_mapping_function_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 88,
+        "line_start": 85
+      },
+      "description": "The the ARN of the Lambda function the event source mapping is sending events to",
+      "id": "00000000-0000-0000-0000-000000000027",
+      "value": {}
+    },
+    "lambda_event_source_mapping_state": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 93,
+        "line_start": 90
+      },
+      "description": "The state of the event source mapping",
+      "id": "00000000-0000-0000-0000-000000000028",
+      "value": {}
+    },
+    "lambda_event_source_mapping_state_transition_reason": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 98,
+        "line_start": 95
+      },
+      "description": "The reason the event source mapping is in its current state",
+      "id": "00000000-0000-0000-0000-000000000029",
+      "value": {}
+    },
+    "lambda_event_source_mapping_uuid": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 103,
+        "line_start": 100
+      },
+      "description": "The UUID of the created event source mapping",
+      "id": "00000000-0000-0000-0000-00000000002a",
+      "value": {}
+    },
+    "lambda_function_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 5,
+        "line_start": 2
+      },
+      "description": "The ARN of the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000002b",
+      "value": "00000000-0000-0000-0000-000000000007"
+    },
+    "lambda_function_invoke_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 10,
+        "line_start": 7
+      },
+      "description": "The Invoke ARN of the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000002c",
+      "value": ""
+    },
+    "lambda_function_kms_key_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 35,
+        "line_start": 32
+      },
+      "description": "The ARN for the KMS encryption key of Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000002d",
+      "value": ""
+    },
+    "lambda_function_last_modified": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 30,
+        "line_start": 27
+      },
+      "description": "The date Lambda Function resource was last modified",
+      "id": "00000000-0000-0000-0000-00000000002e",
+      "value": ""
+    },
+    "lambda_function_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 15,
+        "line_start": 12
+      },
+      "description": "The name of the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000002f",
+      "value": "notify_slack_qa"
+    },
+    "lambda_function_qualified_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 20,
+        "line_start": 17
+      },
+      "description": "The ARN identifying your Lambda Function Version",
+      "id": "00000000-0000-0000-0000-000000000030",
+      "value": ""
+    },
+    "lambda_function_source_code_hash": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 40,
+        "line_start": 37
+      },
+      "description": "Base64-encoded representation of raw SHA-256 sum of the zip file",
+      "id": "00000000-0000-0000-0000-000000000031",
+      "value": null
+    },
+    "lambda_function_source_code_size": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 45,
+        "line_start": 42
+      },
+      "description": "The size in bytes of the function .zip file",
+      "id": "00000000-0000-0000-0000-000000000032",
+      "value": ""
+    },
+    "lambda_function_url": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 51,
+        "line_start": 48
+      },
+      "description": "The URL of the Lambda Function URL",
+      "id": "00000000-0000-0000-0000-000000000033",
+      "value": ""
+    },
+    "lambda_function_url_id": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 56,
+        "line_start": 53
+      },
+      "description": "The Lambda Function URL generated id",
+      "id": "00000000-0000-0000-0000-000000000034",
+      "value": ""
+    },
+    "lambda_function_version": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 25,
+        "line_start": 22
+      },
+      "description": "Latest published version of Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000035",
+      "value": ""
+    },
+    "lambda_iam_role_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 15,
+        "line_start": 12
+      },
+      "description": "The ARN of the IAM role used by Lambda function",
+      "id": "00000000-0000-0000-0000-000000000036",
+      "value": "00000000-0000-0000-0000-000000000003"
+    },
+    "lambda_iam_role_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 20,
+        "line_start": 17
+      },
+      "description": "The name of the IAM role used by Lambda function",
+      "id": "00000000-0000-0000-0000-000000000037",
+      "value": "-notify_slack_qa"
+    },
+    "lambda_layer_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 62,
+        "line_start": 59
+      },
+      "description": "The ARN of the Lambda Layer with version",
+      "id": "00000000-0000-0000-0000-000000000038",
+      "value": ""
+    },
+    "lambda_layer_created_date": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 72,
+        "line_start": 69
+      },
+      "description": "The date Lambda Layer resource was created",
+      "id": "00000000-0000-0000-0000-000000000039",
+      "value": ""
+    },
+    "lambda_layer_layer_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 67,
+        "line_start": 64
+      },
+      "description": "The ARN of the Lambda Layer without version",
+      "id": "00000000-0000-0000-0000-00000000003a",
+      "value": ""
+    },
+    "lambda_layer_source_code_size": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 77,
+        "line_start": 74
+      },
+      "description": "The size in bytes of the Lambda Layer .zip file",
+      "id": "00000000-0000-0000-0000-00000000003b",
+      "value": ""
+    },
+    "lambda_layer_version": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 82,
+        "line_start": 79
+      },
+      "description": "The Lambda Layer version",
+      "id": "00000000-0000-0000-0000-00000000003c",
+      "value": ""
+    },
+    "lambda_role_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 109,
+        "line_start": 106
+      },
+      "description": "The ARN of the IAM role created for the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000003d",
+      "value": "00000000-0000-0000-0000-000000000003"
+    },
+    "lambda_role_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 114,
+        "line_start": 111
+      },
+      "description": "The name of the IAM role created for the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000003e",
+      "value": "-notify_slack_qa"
+    },
+    "lambda_role_unique_id": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 119,
+        "line_start": 116
+      },
+      "description": "The unique id of the IAM role created for the Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000003f",
+      "value": ""
+    },
+    "local_filename": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 136,
+        "line_start": 133
+      },
+      "description": "The filename of zip archive deployed (if deployment was from local)",
+      "id": "00000000-0000-0000-0000-000000000040",
+      "value": null
+    },
+    "notify_slack_lambda_function_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 25,
+        "line_start": 22
+      },
+      "description": "The ARN of the Lambda function",
+      "id": "00000000-0000-0000-0000-000000000041",
+      "value": "00000000-0000-0000-0000-000000000007"
+    },
+    "notify_slack_lambda_function_invoke_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 35,
+        "line_start": 32
+      },
+      "description": "The ARN to be used for invoking Lambda function from API Gateway",
+      "id": "00000000-0000-0000-0000-000000000042",
+      "value": ""
+    },
+    "notify_slack_lambda_function_last_modified": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 40,
+        "line_start": 37
+      },
+      "description": "The date Lambda function was last modified",
+      "id": "00000000-0000-0000-0000-000000000043",
+      "value": ""
+    },
+    "notify_slack_lambda_function_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 30,
+        "line_start": 27
+      },
+      "description": "The name of the Lambda function",
+      "id": "00000000-0000-0000-0000-000000000044",
+      "value": "notify_slack_qa"
+    },
+    "notify_slack_lambda_function_version": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 45,
+        "line_start": 42
+      },
+      "description": "Latest published version of your Lambda function",
+      "id": "00000000-0000-0000-0000-000000000045",
+      "value": ""
+    },
+    "s3_object": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/outputs.tf",
+        "line_end": 145,
+        "line_start": 138
+      },
+      "description": "The map with S3 object data of zip archive deployed (if deployment was from S3)",
+      "id": "00000000-0000-0000-0000-000000000046",
+      "value": {
+        "bucket": null,
+        "key": null,
+        "version_id": null
+      }
+    },
+    "slack_topic_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 4,
+        "line_start": 1
+      },
+      "description": "The ARN of the SNS topic from which messages will be sent to Slack",
+      "id": "00000000-0000-0000-0000-000000000047",
+      "value": "00000000-0000-0000-0000-00000000000a"
+    },
+    "this_slack_topic_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/outputs.tf",
+        "line_end": 10,
+        "line_start": 7
+      },
+      "description": "The ARN of the SNS topic from which messages will be sent to Slack (backward compatibility for version 4.x)",
+      "id": "00000000-0000-0000-0000-000000000048",
+      "value": "00000000-0000-0000-0000-00000000000a"
+    }
+  },
+  "terraform": {
+    "__tfmeta": {
+      "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/versions.tf",
+      "line_end": 10,
+      "line_start": 1
+    },
+    "id": "00000000-0000-0000-0000-000000000049",
+    "required_providers": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/versions.tf",
+        "line_end": 9,
+        "line_start": 4
+      },
+      "aws": {
+        "source": "hashicorp/aws",
+        "version": ">= 4.8"
+      },
+      "id": "00000000-0000-0000-0000-00000000004a"
+    },
+    "required_version": ">= 0.13.1"
+  },
+  "variable": {
+    "allowed_triggers": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 346,
+        "line_start": 342
+      },
+      "default": {},
+      "description": "Map of allowed triggers to create Lambda permissions",
+      "id": "00000000-0000-0000-0000-00000000004b",
+      "type": null
+    },
+    "architectures": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 98,
+        "line_start": 94
+      },
+      "default": null,
+      "description": "Instruction set architecture for your Lambda function. Valid values are [\"x86_64\"] and [\"arm64\"].",
+      "id": "00000000-0000-0000-0000-00000000004c",
+      "type": null
+    },
+    "artifacts_dir": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 570,
+        "line_start": 566
+      },
+      "default": "builds",
+      "description": "Directory name where artifacts should be stored",
+      "id": "00000000-0000-0000-0000-00000000004d",
+      "type": null
+    },
+    "assume_role_policy_statements": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 518,
+        "line_start": 514
+      },
+      "default": {},
+      "description": "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)",
+      "id": "00000000-0000-0000-0000-00000000004e",
+      "type": null
+    },
+    "attach_async_event_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 458,
+        "line_start": 454
+      },
+      "default": false,
+      "description": "Controls whether async event policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000004f",
+      "type": null
+    },
+    "attach_cloudwatch_logs_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 434,
+        "line_start": 430
+      },
+      "default": true,
+      "description": "Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000050",
+      "type": null
+    },
+    "attach_dead_letter_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 440,
+        "line_start": 436
+      },
+      "default": false,
+      "description": "Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000051",
+      "type": null
+    },
+    "attach_network_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 446,
+        "line_start": 442
+      },
+      "default": false,
+      "description": "Controls whether VPC/network policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000052",
+      "type": null
+    },
+    "attach_policies": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 482,
+        "line_start": 478
+      },
+      "default": false,
+      "description": "Controls whether list of policies should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000053",
+      "type": null
+    },
+    "attach_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 476,
+        "line_start": 472
+      },
+      "default": false,
+      "description": "Controls whether policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000054",
+      "type": null
+    },
+    "attach_policy_json": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 464,
+        "line_start": 460
+      },
+      "default": false,
+      "description": "Controls whether policy_json should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000055",
+      "type": null
+    },
+    "attach_policy_jsons": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 470,
+        "line_start": 466
+      },
+      "default": false,
+      "description": "Controls whether policy_jsons should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000056",
+      "type": null
+    },
+    "attach_policy_statements": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 506,
+        "line_start": 502
+      },
+      "default": false,
+      "description": "Controls whether policy_statements should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000057",
+      "type": null
+    },
+    "attach_tracing_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 452,
+        "line_start": 448
+      },
+      "default": false,
+      "description": "Controls whether X-Ray tracing policy should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000058",
+      "type": null
+    },
+    "authorization_type": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 228,
+        "line_start": 224
+      },
+      "default": "NONE",
+      "description": "The type of authentication that the Lambda Function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint.",
+      "id": "00000000-0000-0000-0000-000000000059",
+      "type": null
+    },
+    "build_in_docker": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 642,
+        "line_start": 638
+      },
+      "default": false,
+      "description": "Whether to build dependencies in Docker",
+      "id": "00000000-0000-0000-0000-00000000005a",
+      "type": null
+    },
+    "cloudwatch_log_group_kms_key_id": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 97,
+        "line_start": 93
+      },
+      "default": null,
+      "description": "The ARN of the KMS Key to use when encrypting log data for Lambda",
+      "id": "00000000-0000-0000-0000-00000000005b",
+      "type": null
+    },
+    "cloudwatch_log_group_retention_in_days": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 91,
+        "line_start": 87
+      },
+      "default": 0,
+      "description": "Specifies the number of days you want to retain log events in log group for Lambda.",
+      "id": "00000000-0000-0000-0000-00000000005c",
+      "type": null
+    },
+    "cloudwatch_log_group_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 181,
+        "line_start": 177
+      },
+      "default": {},
+      "description": "Additional tags for the Cloudwatch log group",
+      "id": "00000000-0000-0000-0000-00000000005d",
+      "type": null
+    },
+    "cloudwatch_logs_kms_key_id": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 378,
+        "line_start": 374
+      },
+      "default": null,
+      "description": "The ARN of the KMS Key to use when encrypting log data.",
+      "id": "00000000-0000-0000-0000-00000000005e",
+      "type": null
+    },
+    "cloudwatch_logs_retention_in_days": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 372,
+        "line_start": 368
+      },
+      "default": null,
+      "description": "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.",
+      "id": "00000000-0000-0000-0000-00000000005f",
+      "type": null
+    },
+    "cloudwatch_logs_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 384,
+        "line_start": 380
+      },
+      "default": {},
+      "description": "A map of tags to assign to the resource.",
+      "id": "00000000-0000-0000-0000-000000000060",
+      "type": null
+    },
+    "compatible_architectures": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 268,
+        "line_start": 264
+      },
+      "default": null,
+      "description": "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified.",
+      "id": "00000000-0000-0000-0000-000000000061",
+      "type": null
+    },
+    "compatible_runtimes": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 262,
+        "line_start": 258
+      },
+      "default": [],
+      "description": "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified.",
+      "id": "00000000-0000-0000-0000-000000000062",
+      "type": null
+    },
+    "cors": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 234,
+        "line_start": 230
+      },
+      "default": {},
+      "description": "CORS settings to be used by the Lambda Function URL",
+      "id": "00000000-0000-0000-0000-000000000063",
+      "type": null
+    },
+    "create": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 5,
+        "line_start": 1
+      },
+      "default": true,
+      "description": "Whether to create all resources",
+      "id": "00000000-0000-0000-0000-000000000064",
+      "type": null
+    },
+    "create_async_event_config": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 278,
+        "line_start": 274
+      },
+      "default": false,
+      "description": "Controls whether async event configuration for Lambda Function/Alias should be created",
+      "id": "00000000-0000-0000-0000-000000000065",
+      "type": null
+    },
+    "create_current_version_allowed_triggers": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 334,
+        "line_start": 330
+      },
+      "default": true,
+      "description": "Whether to allow triggers on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources)",
+      "id": "00000000-0000-0000-0000-000000000066",
+      "type": null
+    },
+    "create_current_version_async_event_config": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 284,
+        "line_start": 280
+      },
+      "default": true,
+      "description": "Whether to allow async event configuration on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources)",
+      "id": "00000000-0000-0000-0000-000000000067",
+      "type": null
+    },
+    "create_function": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 17,
+        "line_start": 13
+      },
+      "default": true,
+      "description": "Controls whether Lambda Function resource should be created",
+      "id": "00000000-0000-0000-0000-000000000068",
+      "type": null
+    },
+    "create_lambda_function_url": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 35,
+        "line_start": 31
+      },
+      "default": false,
+      "description": "Controls whether the Lambda Function URL resource should be created",
+      "id": "00000000-0000-0000-0000-000000000069",
+      "type": null
+    },
+    "create_layer": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 23,
+        "line_start": 19
+      },
+      "default": false,
+      "description": "Controls whether Lambda Layer resource should be created",
+      "id": "00000000-0000-0000-0000-00000000006a",
+      "type": null
+    },
+    "create_package": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 11,
+        "line_start": 7
+      },
+      "default": true,
+      "description": "Controls whether Lambda package should be created",
+      "id": "00000000-0000-0000-0000-00000000006b",
+      "type": null
+    },
+    "create_role": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 29,
+        "line_start": 25
+      },
+      "default": true,
+      "description": "Controls whether IAM role for Lambda Function should be created",
+      "id": "00000000-0000-0000-0000-00000000006c",
+      "type": null
+    },
+    "create_sns_topic": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 11,
+        "line_start": 7
+      },
+      "default": true,
+      "description": "Whether to create new SNS topic",
+      "id": "00000000-0000-0000-0000-00000000006d",
+      "type": null
+    },
+    "create_unqualified_alias_allowed_triggers": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 340,
+        "line_start": 336
+      },
+      "default": true,
+      "description": "Whether to allow triggers on unqualified alias pointing to $LATEST version",
+      "id": "00000000-0000-0000-0000-00000000006e",
+      "type": null
+    },
+    "create_unqualified_alias_async_event_config": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 290,
+        "line_start": 286
+      },
+      "default": true,
+      "description": "Whether to allow async event configuration on unqualified alias pointing to $LATEST version",
+      "id": "00000000-0000-0000-0000-00000000006f",
+      "type": null
+    },
+    "create_unqualified_alias_lambda_function_url": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 222,
+        "line_start": 218
+      },
+      "default": true,
+      "description": "Whether to use unqualified alias pointing to $LATEST version in Lambda Function URL",
+      "id": "00000000-0000-0000-0000-000000000070",
+      "type": null
+    },
+    "dead_letter_target_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 140,
+        "line_start": 136
+      },
+      "default": null,
+      "description": "The ARN of an SNS topic or SQS queue to notify when an invocation fails.",
+      "id": "00000000-0000-0000-0000-000000000071",
+      "type": null
+    },
+    "description": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 86,
+        "line_start": 82
+      },
+      "default": "",
+      "description": "Description of your Lambda Function (or Layer)",
+      "id": "00000000-0000-0000-0000-000000000072",
+      "type": null
+    },
+    "destination_on_failure": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 308,
+        "line_start": 304
+      },
+      "default": null,
+      "description": "Amazon Resource Name (ARN) of the destination resource for failed asynchronous invocations",
+      "id": "00000000-0000-0000-0000-000000000073",
+      "type": null
+    },
+    "destination_on_success": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 314,
+        "line_start": 310
+      },
+      "default": null,
+      "description": "Amazon Resource Name (ARN) of the destination resource for successful asynchronous invocations",
+      "id": "00000000-0000-0000-0000-000000000074",
+      "type": null
+    },
+    "docker_build_root": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 654,
+        "line_start": 650
+      },
+      "default": "",
+      "description": "Root dir where to build in Docker",
+      "id": "00000000-0000-0000-0000-000000000075",
+      "type": null
+    },
+    "docker_file": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 648,
+        "line_start": 644
+      },
+      "default": "",
+      "description": "Path to a Dockerfile when building in Docker",
+      "id": "00000000-0000-0000-0000-000000000076",
+      "type": null
+    },
+    "docker_image": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 660,
+        "line_start": 656
+      },
+      "default": "",
+      "description": "Docker image to use for the build",
+      "id": "00000000-0000-0000-0000-000000000077",
+      "type": null
+    },
+    "docker_pip_cache": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 672,
+        "line_start": 668
+      },
+      "default": null,
+      "description": "Whether to mount a shared pip cache folder into docker environment or not",
+      "id": "00000000-0000-0000-0000-000000000078",
+      "type": null
+    },
+    "docker_with_ssh_agent": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 666,
+        "line_start": 662
+      },
+      "default": false,
+      "description": "Whether to pass SSH_AUTH_SOCK into docker environment or not",
+      "id": "00000000-0000-0000-0000-000000000079",
+      "type": null
+    },
+    "environment_variables": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 146,
+        "line_start": 142
+      },
+      "default": {},
+      "description": "A map that defines environment variables for the Lambda Function.",
+      "id": "00000000-0000-0000-0000-00000000007a",
+      "type": null
+    },
+    "ephemeral_storage_size": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 116,
+        "line_start": 112
+      },
+      "default": 512,
+      "description": "Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB).",
+      "id": "00000000-0000-0000-0000-00000000007b",
+      "type": null
+    },
+    "event_source_mapping": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 356,
+        "line_start": 352
+      },
+      "default": {},
+      "description": "Map of event source mapping",
+      "id": "00000000-0000-0000-0000-00000000007c",
+      "type": null
+    },
+    "file_system_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 554,
+        "line_start": 550
+      },
+      "default": null,
+      "description": "The Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system.",
+      "id": "00000000-0000-0000-0000-00000000007d",
+      "type": null
+    },
+    "file_system_local_mount_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 560,
+        "line_start": 556
+      },
+      "default": null,
+      "description": "The path where the function can access the file system, starting with /mnt/.",
+      "id": "00000000-0000-0000-0000-00000000007e",
+      "type": null
+    },
+    "function_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 57,
+        "line_start": 53
+      },
+      "default": "",
+      "description": "A unique name for your Lambda Function",
+      "id": "00000000-0000-0000-0000-00000000007f",
+      "type": null
+    },
+    "handler": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 63,
+        "line_start": 59
+      },
+      "default": "",
+      "description": "Lambda Function entrypoint in your code",
+      "id": "00000000-0000-0000-0000-000000000080",
+      "type": null
+    },
+    "hash_extra": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 636,
+        "line_start": 632
+      },
+      "default": "",
+      "description": "The string to add into hashing function. Useful when building same source path for different functions.",
+      "id": "00000000-0000-0000-0000-000000000081",
+      "type": null
+    },
+    "iam_policy_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 133,
+        "line_start": 129
+      },
+      "default": null,
+      "description": "Path of policies to that should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000082",
+      "type": null
+    },
+    "iam_role_boundary_policy_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 115,
+        "line_start": 111
+      },
+      "default": null,
+      "description": "The ARN of the policy that is used to set the permissions boundary for the role",
+      "id": "00000000-0000-0000-0000-000000000083",
+      "type": null
+    },
+    "iam_role_name_prefix": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 121,
+        "line_start": 117
+      },
+      "default": "lambda",
+      "description": "A unique role name beginning with the specified prefix",
+      "id": "00000000-0000-0000-0000-000000000084",
+      "type": null
+    },
+    "iam_role_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 127,
+        "line_start": 123
+      },
+      "default": null,
+      "description": "Path of IAM role to use for Lambda Function",
+      "id": "00000000-0000-0000-0000-000000000085",
+      "type": null
+    },
+    "iam_role_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 109,
+        "line_start": 105
+      },
+      "default": {},
+      "description": "Additional tags for the IAM role",
+      "id": "00000000-0000-0000-0000-000000000086",
+      "type": null
+    },
+    "ignore_source_code_hash": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 582,
+        "line_start": 578
+      },
+      "default": false,
+      "description": "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately.",
+      "id": "00000000-0000-0000-0000-000000000087",
+      "type": null
+    },
+    "image_config_command": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 206,
+        "line_start": 202
+      },
+      "default": [],
+      "description": "The CMD for the docker image",
+      "id": "00000000-0000-0000-0000-000000000088",
+      "type": null
+    },
+    "image_config_entry_point": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 201,
+        "line_start": 196
+      },
+      "default": [],
+      "description": "The ENTRYPOINT for the docker image",
+      "id": "00000000-0000-0000-0000-000000000089",
+      "type": null
+    },
+    "image_config_working_directory": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 212,
+        "line_start": 208
+      },
+      "default": null,
+      "description": "The working directory for the docker image",
+      "id": "00000000-0000-0000-0000-00000000008a",
+      "type": null
+    },
+    "image_uri": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 194,
+        "line_start": 190
+      },
+      "default": null,
+      "description": "The ECR image URI containing the function's deployment package.",
+      "id": "00000000-0000-0000-0000-00000000008b",
+      "type": null
+    },
+    "kms_key_arn": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 67,
+        "line_start": 63
+      },
+      "default": "",
+      "description": "ARN of the KMS key used for decrypting slack webhook url",
+      "id": "00000000-0000-0000-0000-00000000008c",
+      "type": null
+    },
+    "lambda_at_edge": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 51,
+        "line_start": 47
+      },
+      "default": false,
+      "description": "Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function",
+      "id": "00000000-0000-0000-0000-00000000008d",
+      "type": null
+    },
+    "lambda_description": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 29,
+        "line_start": 25
+      },
+      "default": null,
+      "description": "The description of the Lambda function",
+      "id": "00000000-0000-0000-0000-00000000008e",
+      "type": null
+    },
+    "lambda_function_ephemeral_storage_size": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 169,
+        "line_start": 165
+      },
+      "default": 512,
+      "description": "Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB).",
+      "id": "00000000-0000-0000-0000-00000000008f",
+      "type": null
+    },
+    "lambda_function_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 23,
+        "line_start": 19
+      },
+      "default": "notify_slack",
+      "description": "The name of the Lambda function to create",
+      "id": "00000000-0000-0000-0000-000000000090",
+      "type": null
+    },
+    "lambda_function_s3_bucket": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 163,
+        "line_start": 159
+      },
+      "default": null,
+      "description": "S3 bucket to store artifacts",
+      "id": "00000000-0000-0000-0000-000000000091",
+      "type": null
+    },
+    "lambda_function_store_on_s3": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 157,
+        "line_start": 153
+      },
+      "default": false,
+      "description": "Whether to store produced artifacts on S3 or locally.",
+      "id": "00000000-0000-0000-0000-000000000092",
+      "type": null
+    },
+    "lambda_function_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 139,
+        "line_start": 135
+      },
+      "default": {},
+      "description": "Additional tags for the Lambda function",
+      "id": "00000000-0000-0000-0000-000000000093",
+      "type": null
+    },
+    "lambda_function_vpc_security_group_ids": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 151,
+        "line_start": 147
+      },
+      "default": null,
+      "description": "List of security group ids when Lambda Function should run in the VPC.",
+      "id": "00000000-0000-0000-0000-000000000094",
+      "type": null
+    },
+    "lambda_function_vpc_subnet_ids": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 145,
+        "line_start": 141
+      },
+      "default": null,
+      "description": "List of subnet ids when Lambda Function should run in the VPC. Usually private or intra subnets.",
+      "id": "00000000-0000-0000-0000-000000000095",
+      "type": null
+    },
+    "lambda_role": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 17,
+        "line_start": 13
+      },
+      "default": "",
+      "description": "IAM role attached to the Lambda Function.  If this is set then a role will not be created for you.",
+      "id": "00000000-0000-0000-0000-000000000096",
+      "type": null
+    },
+    "lambda_source_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_saas/variables.tf",
+        "line_end": 35,
+        "line_start": 31
+      },
+      "default": null,
+      "description": "The source path of the custom Lambda function",
+      "id": "00000000-0000-0000-0000-000000000097",
+      "type": null
+    },
+    "layer_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 244,
+        "line_start": 240
+      },
+      "default": "",
+      "description": "Name of Lambda Layer to create",
+      "id": "00000000-0000-0000-0000-000000000098",
+      "type": null
+    },
+    "layer_skip_destroy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 250,
+        "line_start": 246
+      },
+      "default": false,
+      "description": "Whether to retain the old version of a previously deployed Lambda Layer.",
+      "id": "00000000-0000-0000-0000-000000000099",
+      "type": null
+    },
+    "layers": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 92,
+        "line_start": 88
+      },
+      "default": null,
+      "description": "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function.",
+      "id": "00000000-0000-0000-0000-00000000009a",
+      "type": null
+    },
+    "license_info": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 256,
+        "line_start": 252
+      },
+      "default": "",
+      "description": "License info for your Lambda Layer. Eg, MIT or full url of a license.",
+      "id": "00000000-0000-0000-0000-00000000009b",
+      "type": null
+    },
+    "local_existing_package": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 588,
+        "line_start": 584
+      },
+      "default": null,
+      "description": "The absolute path to an existing zip-file to use",
+      "id": "00000000-0000-0000-0000-00000000009c",
+      "type": null
+    },
+    "log_events": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 79,
+        "line_start": 75
+      },
+      "default": false,
+      "description": "Boolean flag to enabled/disable logging of incoming events",
+      "id": "00000000-0000-0000-0000-00000000009d",
+      "type": null
+    },
+    "maximum_event_age_in_seconds": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 296,
+        "line_start": 292
+      },
+      "default": null,
+      "description": "Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600.",
+      "id": "00000000-0000-0000-0000-00000000009e",
+      "type": null
+    },
+    "maximum_retry_attempts": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 302,
+        "line_start": 298
+      },
+      "default": null,
+      "description": "Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2.",
+      "id": "00000000-0000-0000-0000-00000000009f",
+      "type": null
+    },
+    "memory_size": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 110,
+        "line_start": 106
+      },
+      "default": 128,
+      "description": "Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments.",
+      "id": "00000000-0000-0000-0000-0000000000a0",
+      "type": null
+    },
+    "number_of_policies": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 500,
+        "line_start": 496
+      },
+      "default": 0,
+      "description": "Number of policies to attach to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000a1",
+      "type": null
+    },
+    "number_of_policy_jsons": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 494,
+        "line_start": 490
+      },
+      "default": 0,
+      "description": "Number of policies JSON to attach to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000a2",
+      "type": null
+    },
+    "package_type": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 188,
+        "line_start": 184
+      },
+      "default": "Zip",
+      "description": "The Lambda deployment package type. Valid options: Zip or Image",
+      "id": "00000000-0000-0000-0000-0000000000a3",
+      "type": null
+    },
+    "policies": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 542,
+        "line_start": 538
+      },
+      "default": [],
+      "description": "List of policy statements ARN to attach to Lambda Function role",
+      "id": "00000000-0000-0000-0000-0000000000a4",
+      "type": null
+    },
+    "policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 536,
+        "line_start": 532
+      },
+      "default": null,
+      "description": "An additional policy document ARN to attach to the Lambda Function role",
+      "id": "00000000-0000-0000-0000-0000000000a5",
+      "type": null
+    },
+    "policy_json": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 524,
+        "line_start": 520
+      },
+      "default": null,
+      "description": "An additional policy document as JSON to attach to the Lambda Function role",
+      "id": "00000000-0000-0000-0000-0000000000a6",
+      "type": null
+    },
+    "policy_jsons": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 530,
+        "line_start": 526
+      },
+      "default": [],
+      "description": "List of additional policy documents as JSON to attach to Lambda Function role",
+      "id": "00000000-0000-0000-0000-0000000000a7",
+      "type": null
+    },
+    "policy_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 488,
+        "line_start": 484
+      },
+      "default": null,
+      "description": "Path of policies to that should be added to IAM role for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000a8",
+      "type": null
+    },
+    "policy_statements": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 548,
+        "line_start": 544
+      },
+      "default": {},
+      "description": "Map of dynamic policy statements to attach to Lambda Function role",
+      "id": "00000000-0000-0000-0000-0000000000a9",
+      "type": null
+    },
+    "provisioned_concurrent_executions": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 324,
+        "line_start": 320
+      },
+      "default": -1,
+      "description": "Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency.",
+      "id": "00000000-0000-0000-0000-0000000000aa",
+      "type": null
+    },
+    "publish": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 122,
+        "line_start": 118
+      },
+      "default": false,
+      "description": "Whether to publish creation/change as new Lambda Function Version.",
+      "id": "00000000-0000-0000-0000-0000000000ab",
+      "type": null
+    },
+    "putin_khuylo": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 41,
+        "line_start": 37
+      },
+      "default": true,
+      "description": "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!",
+      "id": "00000000-0000-0000-0000-0000000000ac",
+      "type": null
+    },
+    "recreate_missing_package": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 73,
+        "line_start": 69
+      },
+      "default": true,
+      "description": "Whether to recreate missing Lambda package if it is missing locally or not",
+      "id": "00000000-0000-0000-0000-0000000000ad",
+      "type": null
+    },
+    "reserved_concurrent_executions": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 85,
+        "line_start": 81
+      },
+      "default": -1,
+      "description": "The amount of reserved concurrent executions for this lambda function. A value of 0 disables lambda from being triggered and -1 removes any concurrency limitations",
+      "id": "00000000-0000-0000-0000-0000000000ae",
+      "type": null
+    },
+    "role_description": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 400,
+        "line_start": 396
+      },
+      "default": null,
+      "description": "Description of IAM role to use for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000af",
+      "type": null
+    },
+    "role_force_detach_policies": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 412,
+        "line_start": 408
+      },
+      "default": true,
+      "description": "Specifies to force detaching any policies the IAM role has before destroying it.",
+      "id": "00000000-0000-0000-0000-0000000000b0",
+      "type": null
+    },
+    "role_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 394,
+        "line_start": 390
+      },
+      "default": null,
+      "description": "Name of IAM role to use for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000b1",
+      "type": null
+    },
+    "role_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 406,
+        "line_start": 402
+      },
+      "default": null,
+      "description": "Path of IAM role to use for Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000b2",
+      "type": null
+    },
+    "role_permissions_boundary": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 418,
+        "line_start": 414
+      },
+      "default": null,
+      "description": "The ARN of the policy that is used to set the permissions boundary for the IAM role used by Lambda Function",
+      "id": "00000000-0000-0000-0000-0000000000b3",
+      "type": null
+    },
+    "role_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 424,
+        "line_start": 420
+      },
+      "default": {},
+      "description": "A map of tags to assign to IAM role",
+      "id": "00000000-0000-0000-0000-0000000000b4",
+      "type": null
+    },
+    "runtime": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 74,
+        "line_start": 65
+      },
+      "default": "",
+      "description": "Lambda Function runtime",
+      "id": "00000000-0000-0000-0000-0000000000b5",
+      "type": null
+    },
+    "s3_acl": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 618,
+        "line_start": 614
+      },
+      "default": "private",
+      "description": "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private.",
+      "id": "00000000-0000-0000-0000-0000000000b6",
+      "type": null
+    },
+    "s3_bucket": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 612,
+        "line_start": 608
+      },
+      "default": null,
+      "description": "S3 bucket to store artifacts",
+      "id": "00000000-0000-0000-0000-0000000000b7",
+      "type": null
+    },
+    "s3_existing_package": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 594,
+        "line_start": 590
+      },
+      "default": null,
+      "description": "The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use",
+      "id": "00000000-0000-0000-0000-0000000000b8",
+      "type": null
+    },
+    "s3_object_storage_class": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 606,
+        "line_start": 602
+      },
+      "default": "ONEZONE_IA",
+      "description": "Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED_REDUNDANCY, ONEZONE_IA, INTELLIGENT_TIERING, or STANDARD_IA.",
+      "id": "00000000-0000-0000-0000-0000000000b9",
+      "type": null
+    },
+    "s3_object_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 176,
+        "line_start": 172
+      },
+      "default": {},
+      "description": "A map of tags to assign to S3 bucket object.",
+      "id": "00000000-0000-0000-0000-0000000000ba",
+      "type": null
+    },
+    "s3_object_tags_only": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 182,
+        "line_start": 178
+      },
+      "default": false,
+      "description": "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit.",
+      "id": "00000000-0000-0000-0000-0000000000bb",
+      "type": null
+    },
+    "s3_prefix": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 576,
+        "line_start": 572
+      },
+      "default": null,
+      "description": "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used",
+      "id": "00000000-0000-0000-0000-0000000000bc",
+      "type": null
+    },
+    "s3_server_side_encryption": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 624,
+        "line_start": 620
+      },
+      "default": null,
+      "description": "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\".",
+      "id": "00000000-0000-0000-0000-0000000000bd",
+      "type": null
+    },
+    "slack_channel": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 50,
+        "line_start": 47
+      },
+      "description": "The name of the channel in Slack for notifications",
+      "id": "00000000-0000-0000-0000-0000000000be",
+      "type": null
+    },
+    "slack_emoji": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 61,
+        "line_start": 57
+      },
+      "default": ":aws:",
+      "description": "A custom emoji that will appear on Slack messages",
+      "id": "00000000-0000-0000-0000-0000000000bf",
+      "type": null
+    },
+    "slack_username": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 55,
+        "line_start": 52
+      },
+      "description": "The username that will appear on Slack messages",
+      "id": "00000000-0000-0000-0000-0000000000c0",
+      "type": null
+    },
+    "slack_webhook_url": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 45,
+        "line_start": 42
+      },
+      "description": "The URL of Slack webhook",
+      "id": "00000000-0000-0000-0000-0000000000c1",
+      "type": null
+    },
+    "sns_topic_kms_key_id": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 40,
+        "line_start": 36
+      },
+      "default": "",
+      "description": "ARN of the KMS key used for enabling SSE on the topic",
+      "id": "00000000-0000-0000-0000-0000000000c2",
+      "type": null
+    },
+    "sns_topic_name": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 34,
+        "line_start": 31
+      },
+      "description": "The name of the SNS topic to create",
+      "id": "00000000-0000-0000-0000-0000000000c3",
+      "type": null
+    },
+    "sns_topic_tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 175,
+        "line_start": 171
+      },
+      "default": {},
+      "description": "Additional tags for the SNS topic",
+      "id": "00000000-0000-0000-0000-0000000000c4",
+      "type": null
+    },
+    "source_path": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 630,
+        "line_start": 626
+      },
+      "default": null,
+      "description": "The absolute path to a local file or directory containing your Lambda source code",
+      "id": "00000000-0000-0000-0000-0000000000c5",
+      "type": null
+    },
+    "store_on_s3": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 600,
+        "line_start": 596
+      },
+      "default": false,
+      "description": "Whether to store produced artifacts on S3 or locally.",
+      "id": "00000000-0000-0000-0000-0000000000c6",
+      "type": null
+    },
+    "subscription_filter_policy": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 187,
+        "line_start": 183
+      },
+      "default": null,
+      "description": "(Optional) A valid filter policy that will be used in the subscription to filter messages seen by the target resource.",
+      "id": "00000000-0000-0000-0000-0000000000c7",
+      "type": null
+    },
+    "tags": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/variables.tf",
+        "line_end": 103,
+        "line_start": 99
+      },
+      "default": {},
+      "description": "A map of tags to add to all resources",
+      "id": "00000000-0000-0000-0000-0000000000c8",
+      "type": null
+    },
+    "timeout": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 134,
+        "line_start": 130
+      },
+      "default": 3,
+      "description": "The amount of time your Lambda Function has to run in seconds.",
+      "id": "00000000-0000-0000-0000-0000000000c9",
+      "type": null
+    },
+    "tracing_mode": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 152,
+        "line_start": 148
+      },
+      "default": null,
+      "description": "Tracing mode of the Lambda Function. Valid value can be either PassThrough or Active.",
+      "id": "00000000-0000-0000-0000-0000000000ca",
+      "type": null
+    },
+    "trusted_entities": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 512,
+        "line_start": 508
+      },
+      "default": [],
+      "description": "List of additional trusted entities for assuming Lambda Function role (trust relationship)",
+      "id": "00000000-0000-0000-0000-0000000000cb",
+      "type": null
+    },
+    "use_existing_cloudwatch_log_group": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 366,
+        "line_start": 362
+      },
+      "default": false,
+      "description": "Whether to use an existing CloudWatch log group or create new",
+      "id": "00000000-0000-0000-0000-0000000000cc",
+      "type": null
+    },
+    "vpc_security_group_ids": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 164,
+        "line_start": 160
+      },
+      "default": null,
+      "description": "List of security group ids when Lambda Function should run in the VPC.",
+      "id": "00000000-0000-0000-0000-0000000000cd",
+      "type": null
+    },
+    "vpc_subnet_ids": {
+      "__tfmeta": {
+        "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
+        "line_end": 158,
+        "line_start": 154
+      },
+      "default": null,
+      "description": "List of subnet ids when Lambda Function should run in the VPC. Usually private or intra subnets.",
+      "id": "00000000-0000-0000-0000-0000000000ce",
+      "type": null
+    }
+  }
+}

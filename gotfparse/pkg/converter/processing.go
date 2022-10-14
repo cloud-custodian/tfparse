@@ -65,6 +65,16 @@ func collisionFn(key string) func(d, s interface{}) interface{} {
 								c.Set(v)
 								innerT[lastKey] = c
 							}
+						case map[string]*gabs.Container:
+							keys := strings.Split(key, ".")
+							lastKey := keys[len(keys)-1]
+							srcMap := s[k].(map[string]*gabs.Container)
+							v := srcMap[lastKey]
+							if v != nil {
+								c := gabs.New()
+								c.Set(v)
+								innerT[lastKey] = c
+							}
 						default:
 							log.Fatalf("s[k] unhandled type %s", reflect.TypeOf(s[k]))
 						}

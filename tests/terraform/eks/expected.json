@@ -1,0 +1,292 @@
+{
+  "aws_default_route_table": {
+    "example": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 8,
+        "line_start": 1
+      },
+      "default_route_table_id": "00000000-0000-0000-0000-00000000001b",
+      "id": "00000000-0000-0000-0000-000000000001",
+      "route": {
+        "__tfmeta": {
+          "filename": "network.tf",
+          "line_end": 7,
+          "line_start": 4
+        },
+        "cidr_block": "0.0.0.0/0",
+        "gateway_id": "00000000-0000-0000-0000-000000000016",
+        "id": "00000000-0000-0000-0000-000000000002"
+      }
+    }
+  },
+  "aws_eks_cluster": {
+    "example": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 15,
+        "line_start": 1
+      },
+      "depends_on": "00000000-0000-0000-0000-000000000012",
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "example",
+      "role_arn": "00000000-0000-0000-0000-00000000000f",
+      "vpc_config": {
+        "__tfmeta": {
+          "filename": "main.tf",
+          "line_end": 7,
+          "line_start": 5
+        },
+        "id": "00000000-0000-0000-0000-000000000004",
+        "subnet_ids": [
+          "00000000-0000-0000-0000-000000000005",
+          "00000000-0000-0000-0000-000000000006"
+        ]
+      }
+    }
+  },
+  "aws_eks_node_group": {
+    "deleted_example": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 25,
+        "line_start": 1
+      },
+      "cluster_name": "00000000-0000-0000-0000-000000000003",
+      "depends_on": "00000000-0000-0000-0000-000000000014",
+      "id": "00000000-0000-0000-0000-000000000007",
+      "node_group_name": "deleted-example",
+      "node_role_arn": "00000000-0000-0000-0000-000000000010",
+      "scaling_config": {
+        "__tfmeta": {
+          "filename": "eks-nodegroup.tf",
+          "line_end": 11,
+          "line_start": 7
+        },
+        "desired_size": 1,
+        "id": "00000000-0000-0000-0000-000000000008",
+        "max_size": 1,
+        "min_size": 1
+      },
+      "subnet_ids": [
+        "00000000-0000-0000-0000-000000000009",
+        "00000000-0000-0000-0000-00000000000a"
+      ],
+      "tags": {
+        "ClusterName": "example",
+        "Name": "deleted-example"
+      }
+    },
+    "not_deleted_example": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 51,
+        "line_start": 27
+      },
+      "cluster_name": "00000000-0000-0000-0000-000000000003",
+      "depends_on": "00000000-0000-0000-0000-000000000014",
+      "id": "00000000-0000-0000-0000-00000000000b",
+      "node_group_name": "not_deleted_example",
+      "node_role_arn": "00000000-0000-0000-0000-000000000010",
+      "scaling_config": {
+        "__tfmeta": {
+          "filename": "eks-nodegroup.tf",
+          "line_end": 37,
+          "line_start": 33
+        },
+        "desired_size": 1,
+        "id": "00000000-0000-0000-0000-00000000000c",
+        "max_size": 1,
+        "min_size": 1
+      },
+      "subnet_ids": [
+        "00000000-0000-0000-0000-00000000000d",
+        "00000000-0000-0000-0000-00000000000e"
+      ],
+      "tags": {
+        "ClusterName": "example",
+        "Name": "not-deleted-example"
+      }
+    }
+  },
+  "aws_iam_role": {
+    "cluster_example": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 34,
+        "line_start": 17
+      },
+      "assume_role_policy": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\n",
+      "id": "00000000-0000-0000-0000-00000000000f",
+      "name": "eks-cluster-example"
+    },
+    "node_group_example": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 66,
+        "line_start": 53
+      },
+      "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+      "id": "00000000-0000-0000-0000-000000000010",
+      "name": "eks-node-group-example"
+    }
+  },
+  "aws_iam_role_policy_attachment": {
+    "example-AmazonEC2ContainerRegistryReadOnly": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 81,
+        "line_start": 78
+      },
+      "id": "00000000-0000-0000-0000-000000000011",
+      "policy_arn": "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+      "role": "00000000-0000-0000-0000-000000000010"
+    },
+    "example-AmazonEKSClusterPolicy": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 39,
+        "line_start": 36
+      },
+      "id": "00000000-0000-0000-0000-000000000012",
+      "policy_arn": "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+      "role": "00000000-0000-0000-0000-00000000000f"
+    },
+    "example-AmazonEKSVPCResourceController": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 46,
+        "line_start": 43
+      },
+      "id": "00000000-0000-0000-0000-000000000013",
+      "policy_arn": "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+      "role": "00000000-0000-0000-0000-00000000000f"
+    },
+    "example-AmazonEKSWorkerNodePolicy": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 71,
+        "line_start": 68
+      },
+      "id": "00000000-0000-0000-0000-000000000014",
+      "policy_arn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      "role": "00000000-0000-0000-0000-000000000010"
+    },
+    "example-AmazonEKS_CNI_Policy": {
+      "__tfmeta": {
+        "filename": "eks-nodegroup.tf",
+        "line_end": 76,
+        "line_start": 73
+      },
+      "id": "00000000-0000-0000-0000-000000000015",
+      "policy_arn": "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+      "role": "00000000-0000-0000-0000-000000000010"
+    }
+  },
+  "aws_internet_gateway": {
+    "example": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 42,
+        "line_start": 40
+      },
+      "id": "00000000-0000-0000-0000-000000000016",
+      "vpc_id": "00000000-0000-0000-0000-00000000001b"
+    }
+  },
+  "aws_subnet": {
+    "cluster_example[0]": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 25,
+        "line_start": 18
+      },
+      "availability_zone": null,
+      "cidr_block": "10.0.0.0/24",
+      "count": 2,
+      "id": "00000000-0000-0000-0000-000000000017",
+      "map_public_ip_on_launch": true,
+      "vpc_id": "00000000-0000-0000-0000-00000000001b"
+    },
+    "cluster_example[1]": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 25,
+        "line_start": 18
+      },
+      "availability_zone": null,
+      "cidr_block": "10.0.1.0/24",
+      "count": 2,
+      "id": "00000000-0000-0000-0000-000000000018",
+      "map_public_ip_on_launch": true,
+      "vpc_id": "00000000-0000-0000-0000-00000000001b"
+    },
+    "node_group_example[0]": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 38,
+        "line_start": 27
+      },
+      "availability_zone": null,
+      "cidr_block": "10.0.2.0/24",
+      "count": 2,
+      "id": "00000000-0000-0000-0000-000000000019",
+      "map_public_ip_on_launch": true,
+      "tags": {
+        "kubernetes.io/cluster/example": "shared"
+      },
+      "vpc_id": "00000000-0000-0000-0000-00000000001b"
+    },
+    "node_group_example[1]": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 38,
+        "line_start": 27
+      },
+      "availability_zone": null,
+      "cidr_block": "10.0.3.0/24",
+      "count": 2,
+      "id": "00000000-0000-0000-0000-00000000001a",
+      "map_public_ip_on_launch": true,
+      "tags": {
+        "kubernetes.io/cluster/example": "shared"
+      },
+      "vpc_id": "00000000-0000-0000-0000-00000000001b"
+    }
+  },
+  "aws_vpc": {
+    "example": {
+      "__tfmeta": {
+        "filename": "network.tf",
+        "line_end": 12,
+        "line_start": 10
+      },
+      "cidr_block": "10.0.0.0/16",
+      "id": "00000000-0000-0000-0000-00000000001b"
+    }
+  },
+  "data": {
+    "aws_availability_zones": {
+      "available": {
+        "__tfmeta": {
+          "filename": "network.tf",
+          "line_end": 16,
+          "line_start": 14
+        },
+        "id": "00000000-0000-0000-0000-00000000001c",
+        "state": "available"
+      }
+    }
+  },
+  "provider": {
+    "aws": {
+      "__tfmeta": {
+        "filename": "providers.tf",
+        "line_end": 3,
+        "line_start": 1
+      },
+      "id": "00000000-0000-0000-0000-00000000001d",
+      "region": "eu-central-1"
+    }
+  }
+}

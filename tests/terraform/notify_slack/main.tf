@@ -6,7 +6,7 @@ module "notify_slack_saas" {
   sns_topic_name       = "slack-alert-saas"
   slack_webhook_url    = "https://localhost"
   slack_channel        = "feed-ops-saas"
-  slack_username       = "${data.aws_caller_identity.current.account_id}-sns"
+  slack_username       = "slack-user-1"
   lambda_function_name = "notify_slack_saas"
   sns_topic_kms_key_id = local.sns_kms_key_arn
 
@@ -27,7 +27,7 @@ module "notify_slack_qa" {
   sns_topic_name       = "slack-alert-qa"
   slack_webhook_url    = "https://localhost"
   slack_channel        = "feed-ops-qa"
-  slack_username       = "${data.aws_caller_identity.current.account_id}-sns"
+  slack_username       = "slack-user-2"
   lambda_function_name = "notify_slack_qa"
   sns_topic_kms_key_id = local.sns_kms_key_arn
 
