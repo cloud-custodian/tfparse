@@ -61,6 +61,13 @@ poetry build
 ls -l dist/
 ```
 
+## Running the tests
+
+This project uses pytest
+
+```shell
+poetry run pytest
+```
 
 # Credits
 
