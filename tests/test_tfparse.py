@@ -122,3 +122,39 @@ def test_parse_notify_slack(tmp_path):
     assert "notify_slack_saas" in module
     assert "lambda" in module
     assert len(module["lambda"]) == 2
+
+
+def test_dynamic_handling(tmp_path):
+    mod_path = init_module('dynamic-stuff', tmp_path)
+    parsed = load_from_path(mod_path)
+
+    environment = {
+        '__tfmeta': ANY,
+        'id': ANY,
+        'variables': {
+            'hello': 'world'
+        },
+    }
+
+    ephemeral_storage = {
+        '__tfmeta': ANY,
+        'id': ANY,
+        'size': 100,
+    }
+
+    image_config = {
+        "__tfmeta": ANY,
+        "command": None,
+        "entry_point": None,
+        "id": ANY,
+        "working_directory": None
+    }
+
+    assert parsed['aws_lambda_function'] == {
+        'this': {
+            '__tfmeta': ANY,
+            'environment[0]': environment,
+            'ephemeral_storage[0]': ephemeral_storage,
+            'image_config[0]': image_config,
+        },
+    }
