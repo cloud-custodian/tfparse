@@ -117,11 +117,8 @@ def test_parse_apprunner(tmp_path):
 def test_parse_notify_slack(tmp_path):
     mod_path = init_module("notify_slack", tmp_path)
     parsed = load_from_path(mod_path)
-    # TODO: determine the expected output of the JSON from the notify_slack terraform test
-    assert parsed == {}
-
-
-def test_parse_lambda(tmp_path):
-    mod_path = init_module("lambda", tmp_path)
-    parsed = load_from_path(mod_path)
-    assert parsed == {}
+    module = parsed["module"]
+    assert "notify_slack_qa" in module
+    assert "notify_slack_saas" in module
+    assert "lambda" in module
+    assert len(module["lambda"]) == 2

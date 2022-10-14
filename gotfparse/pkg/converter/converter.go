@@ -37,6 +37,7 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	jsonOut := gabs.New()
 
 	var visitor func(b *terraform.Block, parentKey string)
+
 	visitor = func(b *terraform.Block, parentKey string) {
 		blockName := b.GetMetadata().String()
 
@@ -52,13 +53,10 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 		}
 
 		if parentKey == "" {
-			r := b.GetMetadata().Range()
-			meta := terraformMeta{
-				Filename:  r.GetFilename(),
-				LineStart: r.GetStartLine(),
-				LineEnd:   r.GetEndLine(),
+			meta := generateTFMeta(b)
+			if meta != nil {
+				blockJSON.SetP(meta, fmt.Sprintf("%s.__tfmeta", arrayKey))
 			}
-			blockJSON.SetP(meta, fmt.Sprintf("%s.__tfmeta", arrayKey))
 
 			for _, a := range b.GetAttributes() {
 				attrCtyJSON := ctyjson.SimpleJSONValue{Value: a.Value()}
@@ -99,8 +97,8 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			idJ, _ := json.Marshal(b.ID())
 			id, _ := gabs.ParseJSON(idJ)
 
-			meta, err := generateTFMeta(b)
-			if err == nil {
+			meta := generateTFMeta(b)
+			if meta != nil {
 				obj["__tfmeta"] = meta
 			}
 
@@ -113,7 +111,12 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 			}
 		}
 
-		jsonOut.MergeFn(blockJSON, collisionFn(arrayKey))
+		if jsonOut.ExistsP(arrayKey) {
+			data := blockJSON.Path(arrayKey)
+			jsonOut.ArrayAppendP(data, arrayKey)
+		} else {
+			jsonOut.MergeFn(blockJSON, collisionFn(arrayKey))
+		}
 
 		for _, b := range b.AllBlocks() {
 			parent := b.GetMetadata().Parent()
