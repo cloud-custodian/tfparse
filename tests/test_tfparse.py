@@ -77,7 +77,7 @@ def test_parse_apprunner(tmp_path):
     assert parsed == {
         "aws_apprunner_service": {
             "example": {
-                "__tfmeta": {"filename": "main.tf", "line_start": 1, "line_end": 18},
+                "__tfmeta": {"filename": "main.tf", "line_end": 18, "line_start": 1},
                 "id": ANY,
                 "service_name": "example",
                 "source_configuration": {
@@ -95,8 +95,6 @@ def test_parse_apprunner(tmp_path):
                             "line_start": 5,
                         },
                         "id": ANY,
-                        "image_identifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
-                        "image_repository_type": "ECR_PUBLIC",
                         "image_configuration": {
                             "__tfmeta": {
                                 "filename": "main.tf",
@@ -106,6 +104,8 @@ def test_parse_apprunner(tmp_path):
                             "id": ANY,
                             "port": "8000",
                         },
+                        "image_identifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "image_repository_type": "ECR_PUBLIC",
                     },
                 },
                 "tags": {"Name": "example-apprunner-service"},

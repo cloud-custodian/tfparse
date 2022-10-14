@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"reflect"
+	"strings"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/defsec/pkg/terraform"
@@ -45,9 +46,30 @@ func collisionFn(key string) func(d, s interface{}) interface{} {
 				log.Fatal("failed to convert source to map[string]intreface{} during map[string]*gabs.Container processing")
 			}
 			for k, v := range s {
-				c := gabs.New()
-				c.Set(v)
-				t[k] = c
+				tc, ok := t[k]
+				if !ok {
+					c := gabs.New()
+					c.Set(v)
+					t[k] = c
+				} else {
+					switch innerT := tc.Data().(type) {
+					case map[string]*gabs.Container:
+						switch s[k].(type) {
+						case map[string]interface{}:
+							keys := strings.Split(key, ".")
+							lastKey := keys[len(keys)-1]
+							srcMap := s[k].(map[string]interface{})
+							v := srcMap[lastKey]
+							if v != nil {
+								c := gabs.New()
+								c.Set(v)
+								innerT[lastKey] = c
+							}
+						default:
+							log.Fatalf("s[k] unhandled type %s", reflect.TypeOf(s[k]))
+						}
+					}
+				}
 			}
 			return t
 		case []interface{}:
