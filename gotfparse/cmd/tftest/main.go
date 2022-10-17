@@ -18,15 +18,31 @@ func main() {
 
 	path := os.Args[1]
 	tfd, err := converter.NewTerraformConverter(path)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
+	checkError(err)
+
 	data := tfd.VisitJSON().Data()
+
 	j, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		fmt.Print(err)
+	checkError(err)
+
+	fmt.Print(string(j))
+
+	flags := os.O_CREATE | os.O_APPEND | os.O_TRUNC | os.O_RDWR
+	f, err := os.OpenFile("output.json", flags, 0o666)
+	checkError(err)
+	defer f.Close()
+
+	err = f.Truncate(0)
+	checkError(err)
+
+	_, err = f.Write(j)
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err == nil {
 		return
 	}
-	fmt.Print(string(j))
+
+	panic(err)
 }

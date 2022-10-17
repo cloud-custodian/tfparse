@@ -1,3 +1,4 @@
+import os.path
 import shutil
 from pathlib import Path
 from unittest.mock import ANY
@@ -38,8 +39,15 @@ def test_parse_no_dir(tmp_path):
 def test_parse_vpc_module(tmp_path):
     mod_path = init_module("vpc_module", tmp_path)
     parsed = load_from_path(mod_path)
-    assert "aws_vpc" in parsed
-    assert "aws_subnet" in parsed
+    assert parsed == {
+        "module": {
+            "vpc": ANY,
+        }
+    }
+
+    vpc_module = parsed["module"]["vpc"]
+    assert "aws_vpc" in vpc_module
+    assert "aws_subnet" in vpc_module
 
 
 def test_parse_eks(tmp_path):
@@ -77,10 +85,14 @@ def test_parse_apprunner(tmp_path):
     assert parsed == {
         "aws_apprunner_service": {
             "example": {
-                "__tfmeta": {"filename": "main.tf", "line_end": 18, "line_start": 1},
+                "__tfmeta": {
+                    "filename": "main.tf",
+                    "line_end": 18,
+                    "line_start": 1,
+                },
                 "id": ANY,
                 "service_name": "example",
-                "source_configuration": {
+                "source_configuration[0]": {
                     "__tfmeta": {
                         "filename": "main.tf",
                         "line_end": 13,
@@ -88,14 +100,14 @@ def test_parse_apprunner(tmp_path):
                     },
                     "auto_deployments_enabled": False,
                     "id": ANY,
-                    "image_repository": {
+                    "image_repository[0]": {
                         "__tfmeta": {
                             "filename": "main.tf",
                             "line_end": 11,
                             "line_start": 5,
                         },
                         "id": ANY,
-                        "image_configuration": {
+                        "image_configuration[0]": {
                             "__tfmeta": {
                                 "filename": "main.tf",
                                 "line_end": 8,
@@ -117,8 +129,147 @@ def test_parse_apprunner(tmp_path):
 def test_parse_notify_slack(tmp_path):
     mod_path = init_module("notify_slack", tmp_path)
     parsed = load_from_path(mod_path)
+
+    assert set(parsed) == {"module"}
     module = parsed["module"]
-    assert "notify_slack_qa" in module
-    assert "notify_slack_saas" in module
-    assert "lambda" in module
-    assert len(module["lambda"]) == 2
+    assert set(module) == {
+        "notify_slack_qa",
+        "notify_slack_saas",
+    }
+
+    assert isinstance(module['notify_slack_qa']['module']['lambda'], dict)
+    assert isinstance(module['notify_slack_saas']['module']['lambda'], dict)
+
+
+def test_parse_dynamic_content(tmp_path):
+    here = os.path.dirname(__file__)
+    mod_path = os.path.join(here, "terraform", "dynamic-stuff")
+
+    # mod_path = init_module("dynamic-stuff", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    resource = {
+        "__tfmeta": {
+            "filename": "main.tf",
+            "line_end": 41,
+            "line_start": 1,
+        },
+
+        "count": 2,
+        "id": ANY,
+
+        "prop1": "one",
+        "prop2": "two",
+        "prop3": "end",
+
+        "loop_one[0]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 11,
+                "line_start": 9
+            },
+            "id": ANY,
+            "other": True,
+        },
+        "loop_one[1]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 11,
+                "line_start": 9
+            },
+            "id": ANY,
+            "other": False,
+        },
+        "loop_one[2]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 11,
+                "line_start": 9
+            },
+            "id": ANY,
+            "other": None,
+        },
+
+        "loop_two[0]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 25,
+                "line_start": 23
+            },
+            "id": ANY,
+            "other": 1,
+        },
+        "loop_two[1]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 25,
+                "line_start": 23
+            },
+            "id": ANY,
+            "other": 2,
+        },
+        "loop_two[2]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 25,
+                "line_start": 23
+            },
+            "id": ANY,
+            "other": 3,
+        },
+
+        "static[0]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 16,
+                "line_start": 14
+            },
+            "id": ANY,
+            "name": "first"
+
+        },
+        "static[1]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 30,
+                "line_start": 28
+            },
+            "id": ANY,
+            "name": "second"
+        },
+
+        "loop_one[3]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 37,
+                "line_start": 35
+            },
+            "id": ANY,
+            "other": "aaa",
+        },
+        "loop_one[4]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 37,
+                "line_start": 35
+            },
+            "id": ANY,
+            "other": "bbb",
+        },
+        "loop_one[5]": {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "line_end": 37,
+                "line_start": 35
+            },
+            "id": ANY,
+            "other": "ccc",
+        },
+    }
+
+    assert parsed == {
+        "some_resource": {
+            "this[0]": resource,
+            "this[1]": resource,
+        },
+    }
