@@ -1,7 +1,7 @@
 
 [tool.poetry]
 name = "tfparse"
-version = "0.1.4"
+version = "0.2.0"
 description = "Python HCL/Terraform parser via extension for AquaSecurity defsec"
 authors = ["Wayne Witzel III <wayne@stacklet.io>"]
 maintainers = ["Cloud Custodian Project <cloud-custodian@googlegroups.com>"]
