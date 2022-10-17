@@ -3,7 +3,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -22,11 +21,11 @@ func main() {
 		fmt.Print(err)
 		return
 	}
-	data := tfd.VisitJSON().Data()
-	j, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-	fmt.Print(string(j))
+	/*data := */ tfd.VisitJSON().Data()
+	//j, err := json.MarshalIndent(data, "", "\t")
+	//if err != nil {
+	//	fmt.Print(err)
+	//	return
+	//}
+	//fmt.Print(string(j))
 }

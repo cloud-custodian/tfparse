@@ -11,7 +11,11 @@
       "kms_key_id": null,
       "name": "/aws/lambda/notify_slack_qa",
       "retention_in_days": 0,
-      "tags": null
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      }
     }
   },
   "aws_iam_policy": {
@@ -23,10 +27,14 @@
       },
       "count": 1,
       "id": "00000000-0000-0000-0000-000000000002",
-      "name": "-notify_slack_qa",
+      "name": "this-is-a-prefix-notify_slack_qa",
       "path": null,
       "policy": "",
-      "tags": null
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      }
     }
   },
   "aws_iam_role": {
@@ -41,10 +49,14 @@
       "description": null,
       "force_detach_policies": true,
       "id": "00000000-0000-0000-0000-000000000003",
-      "name": "-notify_slack_qa",
+      "name": "this-is-a-prefix-notify_slack_qa",
       "path": null,
       "permissions_boundary": null,
-      "tags": null
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      }
     }
   },
   "aws_iam_role_policy_attachment": {
@@ -112,7 +124,11 @@
       "s3_key": null,
       "s3_object_version": null,
       "source_code_hash": null,
-      "tags": null,
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      },
       "timeout": 30
     }
   },
@@ -170,9 +186,13 @@
       },
       "count": 1,
       "id": "00000000-0000-0000-0000-00000000000a",
-      "kms_master_key_id": null,
+      "kms_master_key_id": "blah",
       "name": "slack-alert-qa",
-      "tags": null
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      }
     }
   },
   "aws_sns_topic_subscription": {
@@ -454,31 +474,15 @@
   },
   "locals": {
     "__tfmeta": {
-      "filename": "terraform-aws-modules/notify-slack/aws/.terraform/modules/notify_slack_qa/main.tf",
-      "line_end": 25,
+      "filename": "main.tf",
+      "line_end": 11,
       "line_start": 5
     },
     "id": "00000000-0000-0000-0000-00000000001e",
-    "lambda_policy_document": {
-      "actions": [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "effect": "Allow",
-      "resources": null,
-      "sid": "AllowWriteToCloudwatchLogs"
-    },
-    "lambda_policy_document_kms": {
-      "actions": [
-        "kms:Decrypt"
-      ],
-      "effect": "Allow",
-      "resources": [
-        ""
-      ],
-      "sid": "AllowKMSDecrypt"
-    },
-    "sns_topic_arn": "00000000-0000-0000-0000-00000000000a"
+    "sns_kms_key_arn": "blah",
+    "tags": {
+      "tag1": "tag2"
+    }
   },
   "module": {
     "lambda": {
@@ -507,7 +511,11 @@
             "kms_key_id": null,
             "name": "/aws/lambda/notify_slack_qa",
             "retention_in_days": 0,
-            "tags": null
+            "tags": {
+              "Source": "shared-infra/deploy/operations",
+              "TFModule": "terraform-aws-modules/notify-slack/aws",
+              "tag1": "tag2"
+            }
           }
         ]
       ],
@@ -530,7 +538,7 @@
       "publish": true,
       "recreate_missing_package": true,
       "reserved_concurrent_executions": -1,
-      "role_name": "-notify_slack_qa",
+      "role_name": "this-is-a-prefix-notify_slack_qa",
       "role_path": null,
       "role_permissions_boundary": null,
       "role_tags": {},
@@ -539,7 +547,11 @@
       "source": "terraform-aws-modules/lambda/aws",
       "source_path": ".terraform/modules/notify_slack_qa/functions/notify_slack.py",
       "store_on_s3": false,
-      "tags": null,
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      },
       "timeout": 30,
       "use_existing_cloudwatch_log_group": true,
       "version": "3.2.0",
@@ -549,37 +561,45 @@
     "notify_slack_qa": {
       "__tfmeta": {
         "filename": "main.tf",
-        "line_end": 41,
-        "line_start": 22
+        "line_end": 53,
+        "line_start": 34
       },
-      "iam_role_name_prefix": null,
+      "iam_role_name_prefix": "this-is-a-prefix",
       "id": "00000000-0000-0000-0000-000000000021",
       "lambda_function_name": "notify_slack_qa",
       "slack_channel": "feed-ops-qa",
       "slack_username": "slack-user-2",
       "slack_webhook_url": "https://localhost",
-      "sns_topic_kms_key_id": null,
+      "sns_topic_kms_key_id": "blah",
       "sns_topic_name": "slack-alert-qa",
       "source": "terraform-aws-modules/notify-slack/aws",
-      "tags": null,
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      },
       "version": "~> 5.1.0"
     },
     "notify_slack_saas": {
       "__tfmeta": {
         "filename": "main.tf",
-        "line_end": 20,
-        "line_start": 1
+        "line_end": 32,
+        "line_start": 13
       },
-      "iam_role_name_prefix": null,
+      "iam_role_name_prefix": "this-is-a-prefix",
       "id": "00000000-0000-0000-0000-000000000022",
       "lambda_function_name": "notify_slack_saas",
       "slack_channel": "feed-ops-saas",
       "slack_username": "slack-user-1",
       "slack_webhook_url": "https://localhost",
-      "sns_topic_kms_key_id": null,
+      "sns_topic_kms_key_id": "blah",
       "sns_topic_name": "slack-alert-saas",
       "source": "terraform-aws-modules/notify-slack/aws",
-      "tags": null,
+      "tags": {
+        "Source": "shared-infra/deploy/operations",
+        "TFModule": "terraform-aws-modules/notify-slack/aws",
+        "tag1": "tag2"
+      },
       "version": "~> 5.3.0"
     }
   },
@@ -796,7 +816,7 @@
       },
       "description": "The name of the IAM role used by Lambda function",
       "id": "00000000-0000-0000-0000-000000000037",
-      "value": "-notify_slack_qa"
+      "value": "this-is-a-prefix-notify_slack_qa"
     },
     "lambda_layer_arn": {
       "__tfmeta": {
@@ -866,7 +886,7 @@
       },
       "description": "The name of the IAM role created for the Lambda Function",
       "id": "00000000-0000-0000-0000-00000000003e",
-      "value": "-notify_slack_qa"
+      "value": "this-is-a-prefix-notify_slack_qa"
     },
     "lambda_role_unique_id": {
       "__tfmeta": {
@@ -2040,6 +2060,15 @@
       "id": "00000000-0000-0000-0000-0000000000a9",
       "type": null
     },
+    "prefix": {
+      "__tfmeta": {
+        "filename": "main.tf",
+        "line_end": 3,
+        "line_start": 1
+      },
+      "default": "this-is-a-prefix",
+      "id": "00000000-0000-0000-0000-0000000000aa"
+    },
     "provisioned_concurrent_executions": {
       "__tfmeta": {
         "filename": "terraform-aws-modules/lambda/aws/.terraform/modules/notify_slack_qa.lambda/variables.tf",
@@ -2048,7 +2077,7 @@
       },
       "default": -1,
       "description": "Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency.",
-      "id": "00000000-0000-0000-0000-0000000000aa",
+      "id": "00000000-0000-0000-0000-0000000000ab",
       "type": null
     },
     "publish": {
@@ -2059,7 +2088,7 @@
       },
       "default": false,
       "description": "Whether to publish creation/change as new Lambda Function Version.",
-      "id": "00000000-0000-0000-0000-0000000000ab",
+      "id": "00000000-0000-0000-0000-0000000000ac",
       "type": null
     },
     "putin_khuylo": {
@@ -2070,7 +2099,7 @@
       },
       "default": true,
       "description": "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!",
-      "id": "00000000-0000-0000-0000-0000000000ac",
+      "id": "00000000-0000-0000-0000-0000000000ad",
       "type": null
     },
     "recreate_missing_package": {
@@ -2081,7 +2110,7 @@
       },
       "default": true,
       "description": "Whether to recreate missing Lambda package if it is missing locally or not",
-      "id": "00000000-0000-0000-0000-0000000000ad",
+      "id": "00000000-0000-0000-0000-0000000000ae",
       "type": null
     },
     "reserved_concurrent_executions": {
@@ -2092,7 +2121,7 @@
       },
       "default": -1,
       "description": "The amount of reserved concurrent executions for this lambda function. A value of 0 disables lambda from being triggered and -1 removes any concurrency limitations",
-      "id": "00000000-0000-0000-0000-0000000000ae",
+      "id": "00000000-0000-0000-0000-0000000000af",
       "type": null
     },
     "role_description": {
@@ -2103,7 +2132,7 @@
       },
       "default": null,
       "description": "Description of IAM role to use for Lambda Function",
-      "id": "00000000-0000-0000-0000-0000000000af",
+      "id": "00000000-0000-0000-0000-0000000000b0",
       "type": null
     },
     "role_force_detach_policies": {
@@ -2114,7 +2143,7 @@
       },
       "default": true,
       "description": "Specifies to force detaching any policies the IAM role has before destroying it.",
-      "id": "00000000-0000-0000-0000-0000000000b0",
+      "id": "00000000-0000-0000-0000-0000000000b1",
       "type": null
     },
     "role_name": {
@@ -2125,7 +2154,7 @@
       },
       "default": null,
       "description": "Name of IAM role to use for Lambda Function",
-      "id": "00000000-0000-0000-0000-0000000000b1",
+      "id": "00000000-0000-0000-0000-0000000000b2",
       "type": null
     },
     "role_path": {
@@ -2136,7 +2165,7 @@
       },
       "default": null,
       "description": "Path of IAM role to use for Lambda Function",
-      "id": "00000000-0000-0000-0000-0000000000b2",
+      "id": "00000000-0000-0000-0000-0000000000b3",
       "type": null
     },
     "role_permissions_boundary": {
@@ -2147,7 +2176,7 @@
       },
       "default": null,
       "description": "The ARN of the policy that is used to set the permissions boundary for the IAM role used by Lambda Function",
-      "id": "00000000-0000-0000-0000-0000000000b3",
+      "id": "00000000-0000-0000-0000-0000000000b4",
       "type": null
     },
     "role_tags": {
@@ -2158,7 +2187,7 @@
       },
       "default": {},
       "description": "A map of tags to assign to IAM role",
-      "id": "00000000-0000-0000-0000-0000000000b4",
+      "id": "00000000-0000-0000-0000-0000000000b5",
       "type": null
     },
     "runtime": {
@@ -2169,7 +2198,7 @@
       },
       "default": "",
       "description": "Lambda Function runtime",
-      "id": "00000000-0000-0000-0000-0000000000b5",
+      "id": "00000000-0000-0000-0000-0000000000b6",
       "type": null
     },
     "s3_acl": {
@@ -2180,7 +2209,7 @@
       },
       "default": "private",
       "description": "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private.",
-      "id": "00000000-0000-0000-0000-0000000000b6",
+      "id": "00000000-0000-0000-0000-0000000000b7",
       "type": null
     },
     "s3_bucket": {
@@ -2191,7 +2220,7 @@
       },
       "default": null,
       "description": "S3 bucket to store artifacts",
-      "id": "00000000-0000-0000-0000-0000000000b7",
+      "id": "00000000-0000-0000-0000-0000000000b8",
       "type": null
     },
     "s3_existing_package": {
@@ -2202,7 +2231,7 @@
       },
       "default": null,
       "description": "The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use",
-      "id": "00000000-0000-0000-0000-0000000000b8",
+      "id": "00000000-0000-0000-0000-0000000000b9",
       "type": null
     },
     "s3_object_storage_class": {
@@ -2213,7 +2242,7 @@
       },
       "default": "ONEZONE_IA",
       "description": "Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED_REDUNDANCY, ONEZONE_IA, INTELLIGENT_TIERING, or STANDARD_IA.",
-      "id": "00000000-0000-0000-0000-0000000000b9",
+      "id": "00000000-0000-0000-0000-0000000000ba",
       "type": null
     },
     "s3_object_tags": {
@@ -2224,7 +2253,7 @@
       },
       "default": {},
       "description": "A map of tags to assign to S3 bucket object.",
-      "id": "00000000-0000-0000-0000-0000000000ba",
+      "id": "00000000-0000-0000-0000-0000000000bb",
       "type": null
     },
     "s3_object_tags_only": {
@@ -2235,7 +2264,7 @@
       },
       "default": false,
       "description": "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit.",
-      "id": "00000000-0000-0000-0000-0000000000bb",
+      "id": "00000000-0000-0000-0000-0000000000bc",
       "type": null
     },
     "s3_prefix": {
@@ -2246,7 +2275,7 @@
       },
       "default": null,
       "description": "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used",
-      "id": "00000000-0000-0000-0000-0000000000bc",
+      "id": "00000000-0000-0000-0000-0000000000bd",
       "type": null
     },
     "s3_server_side_encryption": {
@@ -2257,7 +2286,7 @@
       },
       "default": null,
       "description": "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\".",
-      "id": "00000000-0000-0000-0000-0000000000bd",
+      "id": "00000000-0000-0000-0000-0000000000be",
       "type": null
     },
     "slack_channel": {
@@ -2267,7 +2296,7 @@
         "line_start": 47
       },
       "description": "The name of the channel in Slack for notifications",
-      "id": "00000000-0000-0000-0000-0000000000be",
+      "id": "00000000-0000-0000-0000-0000000000bf",
       "type": null
     },
     "slack_emoji": {
@@ -2278,7 +2307,7 @@
       },
       "default": ":aws:",
       "description": "A custom emoji that will appear on Slack messages",
-      "id": "00000000-0000-0000-0000-0000000000bf",
+      "id": "00000000-0000-0000-0000-0000000000c0",
       "type": null
     },
     "slack_username": {
@@ -2288,7 +2317,7 @@
         "line_start": 52
       },
       "description": "The username that will appear on Slack messages",
-      "id": "00000000-0000-0000-0000-0000000000c0",
+      "id": "00000000-0000-0000-0000-0000000000c1",
       "type": null
     },
     "slack_webhook_url": {
@@ -2298,7 +2327,7 @@
         "line_start": 42
       },
       "description": "The URL of Slack webhook",
-      "id": "00000000-0000-0000-0000-0000000000c1",
+      "id": "00000000-0000-0000-0000-0000000000c2",
       "type": null
     },
     "sns_topic_kms_key_id": {
@@ -2309,7 +2338,7 @@
       },
       "default": "",
       "description": "ARN of the KMS key used for enabling SSE on the topic",
-      "id": "00000000-0000-0000-0000-0000000000c2",
+      "id": "00000000-0000-0000-0000-0000000000c3",
       "type": null
     },
     "sns_topic_name": {
@@ -2319,7 +2348,7 @@
         "line_start": 31
       },
       "description": "The name of the SNS topic to create",
-      "id": "00000000-0000-0000-0000-0000000000c3",
+      "id": "00000000-0000-0000-0000-0000000000c4",
       "type": null
     },
     "sns_topic_tags": {
@@ -2330,7 +2359,7 @@
       },
       "default": {},
       "description": "Additional tags for the SNS topic",
-      "id": "00000000-0000-0000-0000-0000000000c4",
+      "id": "00000000-0000-0000-0000-0000000000c5",
       "type": null
     },
     "source_path": {
@@ -2341,7 +2370,7 @@
       },
       "default": null,
       "description": "The absolute path to a local file or directory containing your Lambda source code",
-      "id": "00000000-0000-0000-0000-0000000000c5",
+      "id": "00000000-0000-0000-0000-0000000000c6",
       "type": null
     },
     "store_on_s3": {
@@ -2352,7 +2381,7 @@
       },
       "default": false,
       "description": "Whether to store produced artifacts on S3 or locally.",
-      "id": "00000000-0000-0000-0000-0000000000c6",
+      "id": "00000000-0000-0000-0000-0000000000c7",
       "type": null
     },
     "subscription_filter_policy": {
@@ -2363,7 +2392,7 @@
       },
       "default": null,
       "description": "(Optional) A valid filter policy that will be used in the subscription to filter messages seen by the target resource.",
-      "id": "00000000-0000-0000-0000-0000000000c7",
+      "id": "00000000-0000-0000-0000-0000000000c8",
       "type": null
     },
     "tags": {
@@ -2374,7 +2403,7 @@
       },
       "default": {},
       "description": "A map of tags to add to all resources",
-      "id": "00000000-0000-0000-0000-0000000000c8",
+      "id": "00000000-0000-0000-0000-0000000000c9",
       "type": null
     },
     "timeout": {
@@ -2385,7 +2414,7 @@
       },
       "default": 3,
       "description": "The amount of time your Lambda Function has to run in seconds.",
-      "id": "00000000-0000-0000-0000-0000000000c9",
+      "id": "00000000-0000-0000-0000-0000000000ca",
       "type": null
     },
     "tracing_mode": {
@@ -2396,7 +2425,7 @@
       },
       "default": null,
       "description": "Tracing mode of the Lambda Function. Valid value can be either PassThrough or Active.",
-      "id": "00000000-0000-0000-0000-0000000000ca",
+      "id": "00000000-0000-0000-0000-0000000000cb",
       "type": null
     },
     "trusted_entities": {
@@ -2407,7 +2436,7 @@
       },
       "default": [],
       "description": "List of additional trusted entities for assuming Lambda Function role (trust relationship)",
-      "id": "00000000-0000-0000-0000-0000000000cb",
+      "id": "00000000-0000-0000-0000-0000000000cc",
       "type": null
     },
     "use_existing_cloudwatch_log_group": {
@@ -2418,7 +2447,7 @@
       },
       "default": false,
       "description": "Whether to use an existing CloudWatch log group or create new",
-      "id": "00000000-0000-0000-0000-0000000000cc",
+      "id": "00000000-0000-0000-0000-0000000000cd",
       "type": null
     },
     "vpc_security_group_ids": {
@@ -2429,7 +2458,7 @@
       },
       "default": null,
       "description": "List of security group ids when Lambda Function should run in the VPC.",
-      "id": "00000000-0000-0000-0000-0000000000cd",
+      "id": "00000000-0000-0000-0000-0000000000ce",
       "type": null
     },
     "vpc_subnet_ids": {
@@ -2440,7 +2469,7 @@
       },
       "default": null,
       "description": "List of subnet ids when Lambda Function should run in the VPC. Usually private or intra subnets.",
-      "id": "00000000-0000-0000-0000-0000000000ce",
+      "id": "00000000-0000-0000-0000-0000000000cf",
       "type": null
     }
   }

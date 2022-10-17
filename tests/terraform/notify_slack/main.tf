@@ -1,3 +1,15 @@
+variable "prefix" {
+  default = "this-is-a-prefix"
+}
+
+locals {
+  sns_kms_key_arn = "blah"
+
+  tags = {
+    "tag1" : "tag2"
+  }
+}
+
 module "notify_slack_saas" {
   source  = "terraform-aws-modules/notify-slack/aws"
   version = "~> 5.3.0"

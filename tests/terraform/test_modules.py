@@ -1,3 +1,4 @@
+import logging
 import os
 import pytest
 import uuid
@@ -62,7 +63,11 @@ def _clean_volatiles(obj, wipes):
 def _wipe_by_path(obj, path):
     *parts, final = path.split('.')
     for part in parts:
-        obj = obj[part]
+        obj = obj.get(part)
+        if obj is None:
+            logging.warning(f'failed to wipe {path}')
+            return
+
     obj[final] = None
 
 
