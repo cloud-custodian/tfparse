@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aquasecurity/defsec/pkg/scanners/terraform/parser"
@@ -12,23 +13,25 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 || len(os.Args) > 2 {
+		log.Fatal("expected 1 argument, path")
+	}
+
 	var (
 		err error
 		ctx = context.TODO()
-		fs  = os.DirFS("../tests/terraform/notify_slack/")
 	)
 
+	path := os.Args[1]
+	fs := os.DirFS(path)
 	p := parser.New(fs, "")
 
-	if err = p.ParseFS(ctx, "."); err != nil {
-		panic(err)
-	}
+	err = p.ParseFS(ctx, ".")
+	check(err)
 
 	// second parameter always seems to be an empty map
 	modules, _, err := p.EvaluateAll(ctx)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 
 	objects, err := dumpJson(modules)
 	check(err)

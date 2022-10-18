@@ -243,6 +243,8 @@ func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Containe
 }
 
 func getModName(b *terraform.Block) string {
+	// This field is unexported, but necessary to generate the path of the
+	// module. Hopefully aquasecurity/defsec exports this in a future release.
 	moduleBlockV := getPrivateValue(b, "moduleBlock")
 	moduleBlock := moduleBlockV.Interface().(*terraform.Block)
 	if moduleBlock == nil {

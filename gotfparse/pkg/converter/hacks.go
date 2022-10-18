@@ -5,6 +5,7 @@ import (
 	"unsafe"
 )
 
+// getPrivateValue returns an unexported field in a struct
 func getPrivateValue(obj interface{}, key string) reflect.Value {
 	objValue := reflect.ValueOf(obj).Elem()
 	field := objValue.FieldByName(key)
