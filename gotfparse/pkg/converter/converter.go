@@ -37,44 +37,56 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	return jsonOut
 }
 
-func (t *terraformConverter) shouldWalk(b *terraform.Block) bool {
-	switch b.Type() {
-	case "locals", "output", "terraform", "variable":
-		return false
+// visitModule takes a module and walks each of the blocks underneath it.
+func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Container) {
+	path := t.getModulePath(m)
+
+	for _, b := range m.GetBlocks() {
+		t.visitBlock(b, path, out)
 	}
-
-	return true
 }
 
-func (t *terraformConverter) isResource(b *terraform.Block) bool {
-	return b.Type() == "resource"
+// visitBlock takes a block, and either builds a json model of the resource or ignores it.
+func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
+	switch b.Type() {
+	// These blocks don't have to conform to policies, and they don't have
+	//children that should have policies applied to them, so we ignore them.
+	case "data", "locals", "output", "provider", "terraform", "variable", "module":
+		return
+	case "resource":
+		json := t.buildBlock(b)
+
+		arrayKey := t.getPath(b, parentPath)
+		json["__tfmeta"].(map[string]interface{})["path"] = arrayKey
+
+		jsonOut.ArrayAppendP(json, b.TypeLabel())
+	default:
+		panic("unexpected resource type: " + b.Type())
+	}
 }
 
+// getList gets a slice from
+func getList(obj map[string]interface{}, key string) []interface{} {
+	value, ok := obj[key]
+	if !ok {
+		value = make([]interface{}, 0)
+		obj[key] = value
+	}
+	return value.([]interface{})
+}
+
+// buildBlock converts a terraform.Block's attributes and children to a json map.
 func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface{} {
 	obj := make(map[string]interface{})
 
-	process := handleDynamicBlocks(func(block *terraform.Block) {
-		key := block.Type()
-		value, ok := obj[key]
-		if !ok {
-			value = make([]interface{}, 0)
-			obj[key] = value
-		}
-		list := value.([]interface{})
-		obj[key] = append(list, t.buildBlock(block))
-	})
-
-	for _, child := range b.AllBlocks() {
-		process(child)
+	for _, child := range getChildBlocks(b) {
+		key := child.Type()
+		list := getList(obj, key)
+		obj[key] = append(list, t.buildBlock(child))
 	}
 
 	for _, a := range b.GetAttributes() {
-		rb, _ := t.modules.GetReferencedBlock(a, b)
-		if rb != nil {
-			obj[a.Name()] = rb.ID()
-		} else {
-			obj[a.Name()] = toRawValue(a)
-		}
+		obj[a.Name()] = t.getAttributeValue(a, b)
 	}
 
 	id := b.ID()
@@ -82,43 +94,39 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		obj["id"] = id
 	}
 
-	obj["__tfmeta"] = generateTFMeta(b)
+	r := b.GetMetadata().Range()
+	obj["__tfmeta"] = map[string]interface{}{
+		"filename":   r.GetFilename(),
+		"line_start": r.GetStartLine(),
+		"line_end":   r.GetEndLine(),
+	}
 
 	return obj
 }
 
-func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
-	arrayKey := t.getPath(b, parentPath)
-
-	if !t.shouldWalk(b) {
-		return
+// getAttributeValue converts the attribute into a value that can be
+//encoded into json.
+func (t *terraformConverter) getAttributeValue(
+		a *terraform.Attribute,
+		b *terraform.Block,
+) interface{} {
+	rb, _ := t.modules.GetReferencedBlock(a, b)
+	if rb != nil {
+		return rb.ID()
 	}
 
-	if t.isResource(b) {
-		json := t.buildBlock(b)
-		json["__tfmeta"].(map[string]interface{})["path"] = arrayKey
-		jsonOut.ArrayAppendP(json, b.TypeLabel())
-	}
-
-	process := handleDynamicBlocks(func(block *terraform.Block) {
-		t.visitBlock(block, arrayKey, jsonOut)
-	})
-	for _, child := range b.AllBlocks() {
-		process(child)
-	}
-}
-
-func toRawValue(a *terraform.Attribute) interface{} {
 	val := a.Value()
-
-	if raw, ok := fromValueToRawValue(val); ok {
+	if raw, ok := convertCtyToNativeValue(val); ok {
 		return raw
 	}
 
 	return a.GetRawValue()
 }
 
-func fromValueToRawValue(val cty.Value) (interface{}, bool) {
+// convertCtyToNativeValue converts a `cty.Value`, used by the
+//aquasecurity/defsec library, to a value that can be converted into json by
+//the Jeffail/gabs library.
+func convertCtyToNativeValue(val cty.Value) (interface{}, bool) {
 	var (
 		ok bool
 
@@ -137,17 +145,18 @@ func fromValueToRawValue(val cty.Value) (interface{}, bool) {
 		valueMap := val.AsValueMap()
 		interfaceMap := make(map[string]interface{})
 		for key, val := range valueMap {
-			if interfaceMap[key], ok = fromValueToRawValue(val); !ok {
+			if interfaceMap[key], ok = convertCtyToNativeValue(val); !ok {
 				return nil, false
 			}
 		}
 		return interfaceMap, true
 	}
+
 	if vType.IsListType() || vType.IsTupleType() {
 		valueSlice := val.AsValueSlice()
 		interfaceSlice := make([]interface{}, len(valueSlice))
 		for idx, item := range valueSlice {
-			if interfaceSlice[idx], ok = fromValueToRawValue(item); !ok {
+			if interfaceSlice[idx], ok = convertCtyToNativeValue(item); !ok {
 				return nil, false
 			}
 		}
@@ -163,10 +172,10 @@ func fromValueToRawValue(val cty.Value) (interface{}, bool) {
 		if num.IsInt() {
 			i, _ := num.Int64()
 			return i, true
-		} else {
-			f, _ := num.Float64()
-			return f, true
 		}
+
+		f, _ := num.Float64()
+		return f, true
 	}
 
 	if vType == cty.Bool {
@@ -176,20 +185,34 @@ func fromValueToRawValue(val cty.Value) (interface{}, bool) {
 	return nil, false
 }
 
-type blockVisitor func(block *terraform.Block)
+// getChildBlocks iterates over all children of a given `terraform.Block` and
+// returns a filtered list of the unique children. This is mostly here to avoid
+// issues with dynamic/content blocks.
+// For unknown reasons, dynamic blocks cause two issues:
+// - the block with type 'dynamic' is a template, not a real resource, and
+//   should be skipped
+// - blocks created by the template seem to be duplicated
+func getChildBlocks(b *terraform.Block) []*terraform.Block {
+	var (
+		expectedContentBlocks int
 
-func handleDynamicBlocks(visit blockVisitor) blockVisitor {
-	var expectedContentBlocks int
-	prevMaxEnd := 0
+		prevMaxEnd = 0
+		children   = make([]*terraform.Block, 0)
+	)
 
-	return func(block *terraform.Block) {
+	getForEachCount := func(b *terraform.Block) int {
+		attr := b.GetAttribute("for_each")
+		return len(attr.Value().AsValueSlice())
+	}
+
+	for _, block := range b.AllBlocks() {
 		// track dynamic blocks
 		if block.Type() == "dynamic" {
 			// no reason to track these, they're just templates
 			// track the expected values though
 			forEachCount := getForEachCount(block)
 			expectedContentBlocks += forEachCount
-			return
+			continue
 		}
 
 		// deal with normal blocks
@@ -197,34 +220,20 @@ func handleDynamicBlocks(visit blockVisitor) blockVisitor {
 		start := blockRange.GetStartLine()
 		if start >= prevMaxEnd {
 			prevMaxEnd = blockRange.GetEndLine()
-			visit(block)
-			return
+			children = append(children, block)
+			continue
 		}
 
 		// once we start reprocessing previous blocks, assume
 		// they're instances of the dynamic templates
 		expectedContentBlocks--
 		if expectedContentBlocks > 0 {
-			visit(block)
+			children = append(children, block)
+			continue
 		}
 	}
-}
 
-type metadata interface {
-	String() string
-}
-
-func (t *terraformConverter) getJSONPathFromMetadata(parent metadata) string {
-	if parent == nil {
-		return ""
-	}
-
-	return parent.String()
-}
-
-func getForEachCount(b *terraform.Block) int {
-	attr := b.GetAttribute("for_each")
-	return len(attr.Value().AsValueSlice())
+	return children
 }
 
 // NewTerraformConverter creates a new TerraformConverter.
@@ -272,14 +281,6 @@ func (t *terraformConverter) SetStopOnHCLError() {
 	t.parserOptions = append(t.parserOptions, parser.OptionStopOnHCLError(true))
 }
 
-func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Container) {
-	path := t.getModulePath(m)
-
-	for _, b := range m.GetBlocks() {
-		t.visitBlock(b, path, out)
-	}
-}
-
 func getModName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.
@@ -298,6 +299,9 @@ func getModName(b *terraform.Block) string {
 	return modName
 }
 
+// getModulePath gets a string describing the module's path, such as
+//"module.notify_slack_qa.module.lambda", which would refer to a module called
+//"lambda", which was included in a module called "notify_slack_qa"
 func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 	prefixes := make(map[string]struct{})
 	for _, b := range m.GetBlocks() {
@@ -318,6 +322,10 @@ func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 	return ""
 }
 
+// getPath returns a string describing the location of the block.
+// For example, "module.notify_slack_qa.aws_cloudwatch_log_group.lambda[0]"
+//would describe the first item in the "aws_cloudwatch_log_group" resource
+//array called "lambda", which was created inside a module called "notify_slack_qa".
 func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) string {
 	blockName := b.GetMetadata().String()
 
