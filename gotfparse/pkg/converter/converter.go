@@ -281,7 +281,7 @@ func (t *terraformConverter) SetStopOnHCLError() {
 	t.parserOptions = append(t.parserOptions, parser.OptionStopOnHCLError(true))
 }
 
-func getModName(b *terraform.Block) string {
+func getModuleName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.
 	moduleBlockV := getPrivateValue(b, "moduleBlock")
@@ -290,13 +290,13 @@ func getModName(b *terraform.Block) string {
 		return ""
 	}
 
-	modName := moduleBlock.LocalName()
-	parentName := getModName(moduleBlock)
+	moduleName := moduleBlock.LocalName()
+	parentName := getModuleName(moduleBlock)
 	if parentName != "" {
-		modName = fmt.Sprintf("%s.%s", parentName, modName)
+		moduleName = fmt.Sprintf("%s.%s", parentName, moduleName)
 	}
 
-	return modName
+	return moduleName
 }
 
 // getModulePath gets a string describing the module's path, such as
@@ -305,9 +305,9 @@ func getModName(b *terraform.Block) string {
 func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 	prefixes := make(map[string]struct{})
 	for _, b := range m.GetBlocks() {
-		modName := getModName(b)
-		if modName != "" {
-			prefixes[modName] = struct{}{}
+		moduleName := getModuleName(b)
+		if moduleName != "" {
+			prefixes[moduleName] = struct{}{}
 		}
 	}
 
