@@ -60,11 +60,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 			value = make([]interface{}, 0)
 			obj[key] = value
 		}
-		list, ok := value.([]interface{})
-		if !ok {
-			panic("unexpected!")
-		}
-
+		list := value.([]interface{})
 		obj[key] = append(list, t.buildBlock(block))
 	})
 
@@ -86,8 +82,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		obj["id"] = id
 	}
 
-	meta := generateTFMeta(b)
-	obj["__tfmeta"] = meta
+	obj["__tfmeta"] = generateTFMeta(b)
 
 	return obj
 }
@@ -101,7 +96,7 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 
 	if t.isResource(b) {
 		json := t.buildBlock(b)
-		json["__path"] = arrayKey
+		json["__tfmeta"].(map[string]interface{})["path"] = arrayKey
 		jsonOut.ArrayAppendP(json, b.TypeLabel())
 	}
 

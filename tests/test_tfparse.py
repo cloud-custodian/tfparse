@@ -71,7 +71,7 @@ def test_parse_eks(tmp_path):
         "aws_eks_cluster",
         "aws_internet_gateway",
     }
-    assert {item["__path"] for item in parsed["aws_subnet"]} == {
+    assert {item["__tfmeta"]["path"] for item in parsed["aws_subnet"]} == {
         'aws_subnet.cluster_example[0]',
         'aws_subnet.cluster_example[1]',
         'aws_subnet.node_group_example[0]',
@@ -82,6 +82,7 @@ def test_parse_eks(tmp_path):
         "filename": "main.tf",
         "line_start": 1,
         "line_end": 15,
+        "path": "aws_eks_cluster.example",
     }
 
 
@@ -91,11 +92,12 @@ def test_parse_apprunner(tmp_path):
     assert parsed == {
         "aws_apprunner_service": [
             {
-                "__path": "aws_apprunner_service.example",
+
                 "__tfmeta": {
                     "filename": "main.tf",
                     "line_end": 18,
                     "line_start": 1,
+                    "path": "aws_apprunner_service.example",
                 },
                 "id": ANY,
                 "service_name": "example",
@@ -168,11 +170,12 @@ def test_parse_dynamic_content(tmp_path):
     parsed = load_from_path(mod_path)
 
     resource = {
-        "__path": ANY,
+
         "__tfmeta": {
             "filename": "main.tf",
             "line_end": 41,
             "line_start": 1,
+            "path": ANY,
         },
 
         "count": 2,
