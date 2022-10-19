@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
@@ -38,17 +37,47 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	return jsonOut
 }
 
-func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
-	arrayKey := t.getPath(b, parentPath)
+func (t *terraformConverter) shouldWalk(b *terraform.Block) bool {
+	switch b.Type() {
+	case "locals", "output", "terraform", "variable":
+		return false
+	}
 
+	return true
+}
+
+func (t *terraformConverter) isResource(b *terraform.Block) bool {
+	return b.Type() == "resource"
+}
+
+func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface{} {
 	obj := make(map[string]interface{})
 
-	for _, a := range b.GetAttributes() {
-		obj[a.Name()] = toRawValue(a)
+	process := handleDynamicBlocks(func(block *terraform.Block) {
+		key := block.Type()
+		value, ok := obj[key]
+		if !ok {
+			value = make([]interface{}, 0)
+			obj[key] = value
+		}
+		list, ok := value.([]interface{})
+		if !ok {
+			panic("unexpected!")
+		}
 
+		obj[key] = append(list, t.buildBlock(block))
+	})
+
+	for _, child := range b.AllBlocks() {
+		process(child)
+	}
+
+	for _, a := range b.GetAttributes() {
 		rb, _ := t.modules.GetReferencedBlock(a, b)
 		if rb != nil {
 			obj[a.Name()] = rb.ID()
+		} else {
+			obj[a.Name()] = toRawValue(a)
 		}
 	}
 
@@ -60,13 +89,27 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 	meta := generateTFMeta(b)
 	obj["__tfmeta"] = meta
 
-	jsonOut.SetP(obj, arrayKey)
+	return obj
+}
 
-	process := handleDynamicBlocks(func(block *terraform.Block, parentPath string) {
-		t.visitBlock(block, parentPath, jsonOut)
+func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
+	arrayKey := t.getPath(b, parentPath)
+
+	if !t.shouldWalk(b) {
+		return
+	}
+
+	if t.isResource(b) {
+		json := t.buildBlock(b)
+		json["__path"] = arrayKey
+		jsonOut.ArrayAppendP(json, b.TypeLabel())
+	}
+
+	process := handleDynamicBlocks(func(block *terraform.Block) {
+		t.visitBlock(block, arrayKey, jsonOut)
 	})
 	for _, child := range b.AllBlocks() {
-		process(child, arrayKey)
+		process(child)
 	}
 }
 
@@ -138,13 +181,13 @@ func fromValueToRawValue(val cty.Value) (interface{}, bool) {
 	return nil, false
 }
 
-type blockVisitor func(block *terraform.Block, parentPath string)
+type blockVisitor func(block *terraform.Block)
 
 func handleDynamicBlocks(visit blockVisitor) blockVisitor {
 	var expectedContentBlocks int
 	prevMaxEnd := 0
 
-	return func(block *terraform.Block, parentPath string) {
+	return func(block *terraform.Block) {
 		// track dynamic blocks
 		if block.Type() == "dynamic" {
 			// no reason to track these, they're just templates
@@ -159,7 +202,7 @@ func handleDynamicBlocks(visit blockVisitor) blockVisitor {
 		start := blockRange.GetStartLine()
 		if start >= prevMaxEnd {
 			prevMaxEnd = blockRange.GetEndLine()
-			visit(block, parentPath)
+			visit(block)
 			return
 		}
 
@@ -167,7 +210,7 @@ func handleDynamicBlocks(visit blockVisitor) blockVisitor {
 		// they're instances of the dynamic templates
 		expectedContentBlocks--
 		if expectedContentBlocks > 0 {
-			visit(block, parentPath)
+			visit(block)
 		}
 	}
 }
@@ -282,11 +325,6 @@ func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 
 func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) string {
 	blockName := b.GetMetadata().String()
-	strings.TrimPrefix(blockName, "dynamic.")
-
-	if parentPath == "" {
-		return blockName
-	}
 
 	if blockName == "content" {
 		blockName = b.Type()
@@ -295,6 +333,10 @@ func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) stri
 				blockName = b.Type()
 			}
 		}
+	}
+
+	if parentPath == "" {
+		return blockName
 	}
 
 	path := fmt.Sprintf("%s.%s", parentPath, blockName)
