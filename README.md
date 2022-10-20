@@ -46,7 +46,7 @@ pip install --user pipenv
 Installing will build the module and install the local copy of tfparse in to the current Python environment.
 
 ```shell
-> pipenv install
+> pipenv install -e . --skip-lock
 > pipenv shell
 > python
 >>> from tfparse import load_from_path
@@ -68,7 +68,7 @@ ls -l dist/
 This project uses pytest
 
 ```shell
-pytest
+pipenv run pytest
 ```
 
 ## Testing CI Builds for cross compiling
@@ -88,6 +88,12 @@ From there you can run:
 
 ```
 pipenv lock
+```
+
+We also include a `requirements-dev.txt` file, so generating that is useful:
+
+```
+pipenv requirements --dev > requirements-dev.txt
 ```
 
 # Credits
