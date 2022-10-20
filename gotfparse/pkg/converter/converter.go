@@ -236,7 +236,14 @@ func getChildBlocks(b *terraform.Block) []*terraform.Block {
 
 	getForEachCount := func(b *terraform.Block) int {
 		attr := b.GetAttribute("for_each")
-		return len(attr.Value().AsValueSlice())
+
+		value := attr.Value()
+		if value.IsNull() {
+			return 0
+		}
+
+		slice := value.AsValueSlice()
+		return len(slice)
 	}
 
 	for _, block := range b.AllBlocks() {
