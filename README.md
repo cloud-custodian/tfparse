@@ -35,7 +35,7 @@ print(parsed.keys())
 - requires Python >= 3.10
 
 This project uses [Pipenv][https://pipenv.pypa.io/en/latest/] for package management, if you do not
-already have Poetry installed you can do so by running the following command:
+already have pipenv installed you can do so by running the following command:
 
 ```
 pip install --user pipenv
@@ -95,6 +95,3 @@ pipenv lock
 aquasecurity/defsec - golang module for parsing and evaluating terraform hcl
 
 Scalr/pygohcl - python bindings for terraform hcl via golang extension
-
-
-[poetry_website]: https://python-poetry.org/
