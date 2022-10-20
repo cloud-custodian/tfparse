@@ -1,40 +1,6 @@
-
-[tool.poetry]
-name = "tfparse"
-version = "0.2.0"
-description = "Python HCL/Terraform parser via extension for AquaSecurity defsec"
-authors = ["Wayne Witzel III <wayne@stacklet.io>"]
-maintainers = ["Cloud Custodian Project <cloud-custodian@googlegroups.com>"]
-repository = "https://github.com/cloud-custodian/tfparse"
-license = "Apache-2.0"
-readme = "README.md"
-include = [
-    "LICENSE",
-]
-classifiers=[
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.10",
-    "License :: OSI Approved :: Apache Software License",
-]
-build = "build.py"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-cffi = ">=1.0.0"
-
-[tool.poetry.dev-dependencies]
-cffi = "^1.15.1"
-black = "^22.10.0"
-pytest = "^7.1.3"
-pytest-forked = "^1.4.0"
-pytest-terraform = "^0.6.4"
-pytest-xdist = "^2.5.0"
-flake8 = "^5.0.4"
-setuptools-golang = "^2.7.0"
-wheel = "^0.37.1"
-setuptools = "^65.4.1"
-
+# Poetry doesn't allow a separate build system if it manages the package,
+# so we don't allow it to manage this currently:
+# https://github.com/python-poetry/poetry/issues/6154
 [build-system]
-requires = ["poetry-core>=1.0.0", "wheel", "setuptools", "setuptools-golang", "cffi >= 1.15.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["wheel", "setuptools", "setuptools-golang", "cffi >= 1.15.0"]
+build-backend = "setuptools.build_meta"
