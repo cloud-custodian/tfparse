@@ -100,40 +100,34 @@ def test_parse_apprunner(tmp_path):
                 },
                 "id": ANY,
                 "service_name": "example",
-                "source_configuration": [
-                    {
+                "source_configuration": {
+                    "__tfmeta": {
+                        "filename": "main.tf",
+                        "line_end": 13,
+                        "line_start": 4,
+                    },
+                    "auto_deployments_enabled": False,
+                    "id": ANY,
+                    "image_repository": {
                         "__tfmeta": {
                             "filename": "main.tf",
-                            "line_end": 13,
-                            "line_start": 4,
+                            "line_end": 11,
+                            "line_start": 5,
                         },
-                        "auto_deployments_enabled": False,
                         "id": ANY,
-                        "image_repository": [
-                            {
-                                "__tfmeta": {
-                                    "filename": "main.tf",
-                                    "line_end": 11,
-                                    "line_start": 5,
-                                },
-                                "id": ANY,
-                                "image_configuration": [
-                                    {
-                                        "__tfmeta": {
-                                            "filename": "main.tf",
-                                            "line_end": 8,
-                                            "line_start": 6,
-                                        },
-                                        "id": ANY,
-                                        "port": "8000",
-                                    },
-                                ],
-                                "image_identifier": image_id,
-                                "image_repository_type": "ECR_PUBLIC",
+                        "image_configuration": {
+                            "__tfmeta": {
+                                "filename": "main.tf",
+                                "line_end": 8,
+                                "line_start": 6,
                             },
-                        ],
+                            "id": ANY,
+                            "port": "8000",
+                        },
+                        "image_identifier": image_id,
+                        "image_repository_type": "ECR_PUBLIC",
                     },
-                ],
+                },
                 "tags": {"Name": "example-apprunner-service"},
             }
         ]

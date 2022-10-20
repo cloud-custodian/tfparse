@@ -66,23 +66,57 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 }
 
 // getList gets a slice from
-func getList(obj map[string]interface{}, key string) []interface{} {
+func getList(obj map[string][]interface{}, key string) []interface{} {
 	value, ok := obj[key]
 	if !ok {
 		value = make([]interface{}, 0)
 		obj[key] = value
 	}
-	return value.([]interface{})
+	return value
+}
+
+type add func(string, interface{})
+type dump func() map[string]interface{}
+
+// newBlockCollector creates a few closures to help flatten
+//lists that are actually singletons.
+//Note: This doesn't guarantee that they're _supposed_ to be singeltons, only
+//that there is only a single item in the list as rendered.
+func newBlockCollector() (add, dump) {
+	collection := make(map[string][]interface{})
+
+	add := func(key string, value interface{}) {
+		list := getList(collection, key)
+		collection[key] = append(list, value)
+	}
+
+	dump := func() map[string]interface{} {
+		results := make(map[string]interface{})
+		for key, items := range collection {
+			if len(items) == 1 {
+				results[key] = items[0]
+			} else {
+				results[key] = items
+			}
+		}
+		return results
+	}
+
+	return add, dump
 }
 
 // buildBlock converts a terraform.Block's attributes and children to a json map.
 func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface{} {
 	obj := make(map[string]interface{})
 
+	add, dump := newBlockCollector()
 	for _, child := range getChildBlocks(b) {
 		key := child.Type()
-		list := getList(obj, key)
-		obj[key] = append(list, t.buildBlock(child))
+		add(key, t.buildBlock(child))
+	}
+	grouped := dump()
+	for key, result := range grouped {
+		obj[key] = result
 	}
 
 	for _, a := range b.GetAttributes() {
