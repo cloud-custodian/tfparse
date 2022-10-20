@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/aquasecurity/defsec/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/defsec/pkg/terraform"
@@ -14,7 +15,8 @@ import (
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 2 {
-		log.Fatal("expected 1 argument, path")
+		executable := filepath.Base(os.Args[0])
+		log.Fatalf("usage: %s PATH", executable)
 	}
 
 	var (
@@ -37,18 +39,6 @@ func main() {
 	check(err)
 
 	data, err := json.MarshalIndent(objects, "", "  ")
-	check(err)
-
-	f, err := os.OpenFile("output.json", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o666)
-	check(err)
-
-	err = f.Truncate(0)
-	check(err)
-
-	_, err = f.Seek(0, 0)
-	check(err)
-
-	_, err = f.Write(data)
 	check(err)
 
 	fmt.Println(string(data))

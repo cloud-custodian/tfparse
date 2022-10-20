@@ -7,13 +7,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/cloud-custodian/tfparse/gotfparse/pkg/converter"
 )
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 2 {
-		log.Fatal("expected 1 argument, path")
+		executable := filepath.Base(os.Args[0])
+		log.Fatalf("usage: %s PATH", executable)
 	}
 
 	path := os.Args[1]
@@ -26,17 +28,6 @@ func main() {
 	checkError(err)
 
 	fmt.Print(string(j))
-
-	flags := os.O_CREATE | os.O_APPEND | os.O_TRUNC | os.O_RDWR
-	f, err := os.OpenFile("output.json", flags, 0o666)
-	checkError(err)
-	defer f.Close()
-
-	err = f.Truncate(0)
-	checkError(err)
-
-	_, err = f.Write(j)
-	checkError(err)
 }
 
 func checkError(err error) {
