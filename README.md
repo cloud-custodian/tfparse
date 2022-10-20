@@ -34,20 +34,12 @@ print(parsed.keys())
 - requires Go >= 1.18
 - requires Python >= 3.10
 
-This project uses [Pipenv][https://pipenv.pypa.io/en/latest/] for package management, if you do not
-already have pipenv installed you can do so by running the following command:
-
-```
-pip install --user pipenv
-```
-
 ## Installing from source
 
 Installing will build the module and install the local copy of tfparse in to the current Python environment.
 
 ```shell
-> pipenv install -e . --skip-lock
-> pipenv shell
+> pip install -e .
 > python
 >>> from tfparse import load_from_path
 >>> parsed = load_from_path('<path_to_terraform>')
@@ -68,7 +60,7 @@ ls -l dist/
 This project uses pytest
 
 ```shell
-pipenv run pytest
+pytest
 ```
 
 ## Testing CI Builds for cross compiling
@@ -79,22 +71,6 @@ CIBW_BUILD=cp310* cibuildwheel --platform macos --archs x86_64
 ```
 This will try to build an intel wheel on python3.10
 
-
-## Adding a new dependency / Updating versions
-To add a new dependency for dev and the primary package you can update the
-`Pipfile` with the requirement or add it via `pipenv install <package>`.
-
-From there you can run:
-
-```
-pipenv lock
-```
-
-We also include a `requirements-dev.txt` file, so generating that is useful:
-
-```
-pipenv requirements --dev > requirements-dev.txt
-```
 
 # Credits
 
