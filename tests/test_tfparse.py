@@ -5,6 +5,7 @@ from unittest.mock import ANY
 
 import pytest
 from pytest_terraform.tf import TerraformRunner
+
 from tfparse import ParseError, load_from_path
 
 
@@ -85,6 +86,9 @@ def test_parse_eks(tmp_path):
 def test_parse_apprunner(tmp_path):
     mod_path = init_module("apprunner", tmp_path)
     parsed = load_from_path(mod_path)
+
+    image_id = "public.ecr.aws/aws-containers/hello-app-runner:latest"
+
     assert parsed == {
         "aws_apprunner_service": [
             {
@@ -124,7 +128,7 @@ def test_parse_apprunner(tmp_path):
                                         "port": "8000",
                                     },
                                 ],
-                                "image_identifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                                "image_identifier": image_id,
                                 "image_repository_type": "ECR_PUBLIC",
                             },
                         ],
