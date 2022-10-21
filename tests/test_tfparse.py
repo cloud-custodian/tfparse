@@ -52,6 +52,7 @@ def test_parse_vpc_module(tmp_path):
         "aws_subnet": 6,
         "aws_vpc": 1,
         "aws_vpn_gateway": 1,
+        "module": 1,
     }
 
 
@@ -148,6 +149,7 @@ def test_parse_notify_slack(tmp_path):
         "aws_sns_topic": 2,
         "aws_sns_topic_subscription": 2,
         "local_file": 2,
+        "module": 4,
         "null_resource": 2,
     }
 
