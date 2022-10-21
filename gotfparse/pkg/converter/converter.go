@@ -130,7 +130,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 
 	r := b.GetMetadata().Range()
 	obj["__tfmeta"] = map[string]interface{}{
-		"filename":   r.GetFilename(),
+		"filename":   r.GetLocalFilename(),
 		"line_start": r.GetStartLine(),
 		"line_end":   r.GetEndLine(),
 	}
@@ -369,36 +369,9 @@ func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 //array called "lambda", which was created inside a module called "notify_slack_qa".
 func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) string {
 	blockName := b.GetMetadata().String()
-
-	if blockName == "content" {
-		blockName = b.Type()
-		if ref, ok := b.GetMetadata().Parent().Reference().(*terraform.Reference); ok {
-			if ref.TypeLabel() == "dynamic" {
-				blockName = b.Type()
-			}
-		}
-	}
-
 	if parentPath == "" {
 		return blockName
 	}
 
-	path := fmt.Sprintf("%s.%s", parentPath, blockName)
-	parent := b.GetMetadata().Parent()
-	if parent != nil {
-		ref, ok := parent.Reference().(*terraform.Reference)
-		if ok && ref.BlockType() == terraform.TypeResource {
-			counts, ok := t.countsByParentPathBlockName[parentPath]
-			if !ok {
-				counts = make(map[string]int)
-				t.countsByParentPathBlockName[parentPath] = counts
-			}
-			index := counts[blockName]
-			counts[blockName]++
-
-			path += fmt.Sprintf("[%d]", index)
-		}
-	}
-
-	return path
+	return fmt.Sprintf("%s.%s", parentPath, blockName)
 }
