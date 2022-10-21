@@ -5,6 +5,7 @@ package converter
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Jeffail/gabs/v2"
@@ -13,6 +14,8 @@ import (
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/zclconf/go-cty/cty"
 )
+
+var logger = log.New(os.Stderr, "converter", 1)
 
 type terraformConverter struct {
 	filePath      string
@@ -61,7 +64,7 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 
 		jsonOut.ArrayAppendP(json, b.TypeLabel())
 	default:
-		panic("unexpected resource type: " + b.Type())
+		logger.Printf("unknown block type: %s", b.Type())
 	}
 }
 

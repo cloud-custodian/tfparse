@@ -137,6 +137,14 @@ func dumpAttribute(m *terraform.Module, parent *terraform.Block, attr *terraform
 }
 
 func getRawValue(a cty.Value) interface{} {
+	if !a.IsKnown() {
+		return "<<unknown>>"
+	}
+
+	if a.IsNull() {
+		return nil
+	}
+
 	switch typ := a.Type(); typ {
 	case cty.String:
 		return a.AsString()
