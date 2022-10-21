@@ -34,19 +34,13 @@ print(parsed.keys())
 - requires Go >= 1.18
 - requires Python >= 3.10
 
-This project uses [Poetry][poetry_website] for package management, if you do not already have Poetry installed you can do so by running the following command:
-
-    curl -sSL https://install.python-poetry.org | python3 -
-
-
-
 ## Installing from source
 
 Installing will build the module and install the local copy of tfparse in to the current Python environment.
 
 ```shell
-poetry install
-python
+> pip install -e .
+> python
 >>> from tfparse import load_from_path
 >>> parsed = load_from_path('<path_to_terraform>')
 >>> print(parsed.keys())
@@ -57,7 +51,7 @@ python
 Building will produce a wheel and a source artifact for distribution or upload to package repositories.
 
 ```shell
-poetry build
+python setup.py bdist_wheel
 ls -l dist/
 ```
 
@@ -66,14 +60,20 @@ ls -l dist/
 This project uses pytest
 
 ```shell
-poetry run pytest
+pytest
 ```
+
+## Testing CI Builds for cross compiling
+You can test our cross compiling CI/CD builds by running the following:
+
+```
+CIBW_BUILD=cp310* cibuildwheel --platform macos --archs x86_64
+```
+This will try to build an intel wheel on python3.10
+
 
 # Credits
 
 aquasecurity/defsec - golang module for parsing and evaluating terraform hcl
 
 Scalr/pygohcl - python bindings for terraform hcl via golang extension
-
-
-[poetry_website]: https://python-poetry.org/
