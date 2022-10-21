@@ -78,6 +78,7 @@ def test_parse_eks(tmp_path):
 
     assert parsed["aws_eks_cluster"][0]["__tfmeta"] == {
         "filename": "main.tf",
+        "label": "aws_eks_cluster",
         "line_start": 1,
         "line_end": 15,
         "path": "aws_eks_cluster.example",
@@ -95,6 +96,7 @@ def test_parse_apprunner(tmp_path):
             {
                 "__tfmeta": {
                     "filename": "main.tf",
+                    "label": "aws_apprunner_service",
                     "line_end": 18,
                     "line_start": 1,
                     "path": "aws_apprunner_service.example",
@@ -153,6 +155,13 @@ def test_parse_notify_slack(tmp_path):
         "null_resource": 2,
     }
 
+    assert [m["__tfmeta"]["label"] for m in parsed["module"]] == [
+        "notify_slack_qa",
+        "notify_slack_saas",
+        "lambda",
+        "lambda",
+    ]
+
 
 def test_parse_dynamic_content(tmp_path):
     here = os.path.dirname(__file__)
@@ -164,6 +173,7 @@ def test_parse_dynamic_content(tmp_path):
     resource = {
         "__tfmeta": {
             "filename": "main.tf",
+            "label": "some_resource",
             "line_end": 41,
             "line_start": 1,
             "path": ANY,

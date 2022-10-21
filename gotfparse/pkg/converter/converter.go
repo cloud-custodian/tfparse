@@ -138,11 +138,15 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 	}
 
 	r := b.GetMetadata().Range()
-	obj["__tfmeta"] = map[string]interface{}{
+	meta := map[string]interface{}{
 		"filename":   r.GetLocalFilename(),
 		"line_start": r.GetStartLine(),
 		"line_end":   r.GetEndLine(),
 	}
+	if tl := b.TypeLabel(); tl != "" {
+		meta["label"] = tl
+	}
+	obj["__tfmeta"] = meta
 
 	return obj
 }
