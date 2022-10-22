@@ -163,6 +163,15 @@ def test_parse_notify_slack(tmp_path):
     ]
 
 
+def test_moved_blocks(tmp_path):
+    mod_path = init_module("moved", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    item, = parsed["moved"]
+    assert item["from"] is None
+    assert len(item["to"]) == 2
+
+
 def test_parse_dynamic_content(tmp_path):
     here = os.path.dirname(__file__)
     mod_path = os.path.join(here, "terraform", "dynamic-stuff")
