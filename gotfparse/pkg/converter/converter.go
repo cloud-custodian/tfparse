@@ -54,20 +54,22 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 	switch b.Type() {
 	// These blocks don't have to conform to policies, and they don't have
 	//children that should have policies applied to them, so we ignore them.
-	case "data", "locals", "output", "provider", "terraform", "variable":
-		return
-	case "module", "moved", "resource":
+	case "data", "locals", "output", "provider", "terraform", "variable", "module", "moved", "resource":
 		json := t.buildBlock(b)
+		meta := json["__tfmeta"].(map[string]interface{})
 
 		arrayKey := t.getPath(b, parentPath)
-		json["__tfmeta"].(map[string]interface{})["path"] = arrayKey
+
+		meta["path"] = arrayKey
 
 		var key string
 		switch b.Type() {
-		case "module", "moved":
-			key = b.Type()
-		default:
+		case "data", "resource":
 			key = b.TypeLabel()
+			meta["type"] = b.Type()
+
+		default:
+			key = b.Type()
 		}
 
 		jsonOut.ArrayAppendP(json, key)

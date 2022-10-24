@@ -22,7 +22,8 @@ def init_module(module_name, tmp_path):
     if not plugin_cache.exists():
         plugin_cache.mkdir()
 
-    runner = TerraformRunner(mod_path, tf_bin=tf_bin, plugin_cache=plugin_cache)
+    runner = TerraformRunner(mod_path, tf_bin=tf_bin,
+                             plugin_cache=plugin_cache)
     runner.init()
     return mod_path
 
@@ -40,10 +41,12 @@ def test_parse_no_dir(tmp_path):
 def test_parse_vpc_module(tmp_path):
     mod_path = init_module("vpc_module", tmp_path)
     parsed = load_from_path(mod_path)
-    summary = {resource_type: len(items) for resource_type, items in parsed.items()}
+    summary = {resource_type: len(items) for resource_type, items in
+               parsed.items()}
 
     assert summary == {
         "aws_eip": 3,
+        "aws_iam_policy_document": 2,
         "aws_internet_gateway": 1,
         "aws_nat_gateway": 3,
         "aws_route": 4,
@@ -52,14 +55,20 @@ def test_parse_vpc_module(tmp_path):
         "aws_subnet": 6,
         "aws_vpc": 1,
         "aws_vpn_gateway": 1,
+        "locals": 3,
         "module": 1,
+        "output": 109,
+        "terraform": 1,
+        "variable": 183,
     }
 
 
 def test_parse_eks(tmp_path):
     mod_path = init_module("eks", tmp_path)
     parsed = load_from_path(mod_path)
+    print(parsed["aws_availability_zones"])
     assert set(parsed) == {
+        "aws_availability_zones",
         "aws_default_route_table",
         "aws_eks_node_group",
         "aws_subnet",
@@ -68,6 +77,7 @@ def test_parse_eks(tmp_path):
         "aws_iam_role",
         "aws_eks_cluster",
         "aws_internet_gateway",
+        "provider",
     }
     assert {item["__tfmeta"]["path"] for item in parsed["aws_subnet"]} == {
         "aws_subnet.cluster_example[0]",
@@ -82,6 +92,7 @@ def test_parse_eks(tmp_path):
         "line_start": 1,
         "line_end": 15,
         "path": "aws_eks_cluster.example",
+        "type": "resource",
     }
 
 
@@ -100,6 +111,7 @@ def test_parse_apprunner(tmp_path):
                     "line_end": 18,
                     "line_start": 1,
                     "path": "aws_apprunner_service.example",
+                    "type": "resource",
                 },
                 "id": ANY,
                 "service_name": "example",
@@ -141,19 +153,30 @@ def test_parse_notify_slack(tmp_path):
     mod_path = init_module("notify_slack", tmp_path)
     parsed = load_from_path(mod_path)
 
-    assert {resource_type: len(items) for resource_type, items in parsed.items()} == {
-        "aws_cloudwatch_log_group": 2,
-        "aws_iam_policy": 2,
-        "aws_iam_role": 2,
-        "aws_iam_role_policy_attachment": 2,
-        "aws_lambda_function": 2,
-        "aws_lambda_permission": 4,
-        "aws_sns_topic": 2,
-        "aws_sns_topic_subscription": 2,
-        "local_file": 2,
-        "module": 4,
-        "null_resource": 2,
-    }
+    assert {resource_type: len(items) for resource_type, items in
+            parsed.items()} == {
+               'aws_arn': 2,
+               'aws_caller_identity': 2,
+               "aws_cloudwatch_log_group": 4,
+               "aws_iam_policy": 6,
+               'aws_iam_policy_document': 12,
+               "aws_iam_role": 2,
+               "aws_iam_role_policy_attachment": 2,
+               "aws_lambda_function": 2,
+               "aws_lambda_permission": 4,
+               'aws_partition': 4,
+               'aws_region': 2,
+               "aws_sns_topic": 2,
+               "aws_sns_topic_subscription": 2,
+               'external': 2,
+               "local_file": 2,
+               'locals': 10,
+               "module": 4,
+               "null_resource": 2,
+               'output': 74,
+               'terraform': 4,
+               'variable': 275,
+           }
 
     assert [m["__tfmeta"]["label"] for m in parsed["module"]] == [
         "notify_slack_qa",
@@ -186,6 +209,7 @@ def test_parse_dynamic_content(tmp_path):
             "line_end": 41,
             "line_start": 1,
             "path": ANY,
+            "type": "resource",
         },
         "count": 2,
         "id": ANY,
@@ -194,61 +218,72 @@ def test_parse_dynamic_content(tmp_path):
         "prop3": "end",
         "loop_one": [
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
+                "__tfmeta": {"filename": "main.tf", "line_end": 11,
+                             "line_start": 9},
                 "id": ANY,
                 "other": True,
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
+                "__tfmeta": {"filename": "main.tf", "line_end": 11,
+                             "line_start": 9},
                 "id": ANY,
                 "other": False,
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
+                "__tfmeta": {"filename": "main.tf", "line_end": 11,
+                             "line_start": 9},
                 "id": ANY,
                 "other": None,
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 37, "line_start": 35},
+                "__tfmeta": {"filename": "main.tf", "line_end": 37,
+                             "line_start": 35},
                 "id": ANY,
                 "other": "aaa",
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 37, "line_start": 35},
+                "__tfmeta": {"filename": "main.tf", "line_end": 37,
+                             "line_start": 35},
                 "id": ANY,
                 "other": "bbb",
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 37, "line_start": 35},
+                "__tfmeta": {"filename": "main.tf", "line_end": 37,
+                             "line_start": 35},
                 "id": ANY,
                 "other": "ccc",
             },
         ],
         "loop_two": [
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 25, "line_start": 23},
+                "__tfmeta": {"filename": "main.tf", "line_end": 25,
+                             "line_start": 23},
                 "id": ANY,
                 "other": 1,
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 25, "line_start": 23},
+                "__tfmeta": {"filename": "main.tf", "line_end": 25,
+                             "line_start": 23},
                 "id": ANY,
                 "other": 2,
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 25, "line_start": 23},
+                "__tfmeta": {"filename": "main.tf", "line_end": 25,
+                             "line_start": 23},
                 "id": ANY,
                 "other": 3,
             },
         ],
         "static": [
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 16, "line_start": 14},
+                "__tfmeta": {"filename": "main.tf", "line_end": 16,
+                             "line_start": 14},
                 "id": ANY,
                 "name": "first",
             },
             {
-                "__tfmeta": {"filename": "main.tf", "line_end": 30, "line_start": 28},
+                "__tfmeta": {"filename": "main.tf", "line_end": 30,
+                             "line_start": 28},
                 "id": ANY,
                 "name": "second",
             },
@@ -259,5 +294,75 @@ def test_parse_dynamic_content(tmp_path):
         "some_resource": [
             resource,
             resource,
+        ],
+    }
+
+
+def test_parse_variables(tmp_path):
+    here = os.path.dirname(__file__)
+    mod_path = os.path.join(here, "terraform", "variables-and-locals")
+
+    # mod_path = init_module("dynamic-stuff", tmp_path)
+    parsed = load_from_path(mod_path)
+    print(parsed)
+    assert parsed == {
+        'locals': [
+            {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'line_end': 17,
+                    'line_start': 1,
+                    'path': 'locals',
+                },
+                'bool': True,
+                'complex': {
+                    'list': [
+                        {'index': 1},
+                        {'index': 2},
+                        {'index': 3},
+                    ],
+                },
+                'hello': 'world',
+                'id': ANY,
+                'list': [1, 2, 3],
+                'list_count': 3,
+                'number': 3,
+                'object': {'hello': 'world'},
+            },
+        ],
+        'variable': [
+            {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'label': 'has_default',
+                    'line_end': 21,
+                    'line_start': 19,
+                    'path': 'variable.has_default',
+                },
+                'default': 'the default',
+                'id': ANY,
+            },
+            {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'label': 'local_ref',
+                    'line_end': 29,
+                    'line_start': 27,
+                    'path': 'variable.local_ref',
+                },
+                'default': True,
+                'id': ANY,
+            },
+            {
+                '__tfmeta': {
+                    'filename': 'main.tf',
+                    'label': 'no_default',
+                    'line_end': 25,
+                    'line_start': 23,
+                    'path': 'variable.no_default',
+                },
+                'id': ANY,
+                'type': None,
+            },
         ],
     }
