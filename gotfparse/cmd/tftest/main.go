@@ -7,26 +7,33 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/cloud-custodian/tfparse/gotfparse/pkg/converter"
 )
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 2 {
-		log.Fatal("expected 1 argument, path")
+		executable := filepath.Base(os.Args[0])
+		log.Fatalf("usage: %s PATH", executable)
 	}
 
 	path := os.Args[1]
 	tfd, err := converter.NewTerraformConverter(path)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
+	checkError(err)
+
 	data := tfd.VisitJSON().Data()
+
 	j, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		fmt.Print(err)
+	checkError(err)
+
+	fmt.Print(string(j))
+}
+
+func checkError(err error) {
+	if err == nil {
 		return
 	}
-	fmt.Print(string(j))
+
+	panic(err)
 }
