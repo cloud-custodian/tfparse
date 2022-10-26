@@ -64,7 +64,6 @@ def test_parse_vpc_module(tmp_path):
 def test_parse_eks(tmp_path):
     mod_path = init_module("eks", tmp_path)
     parsed = load_from_path(mod_path)
-    print(parsed["aws_availability_zones"])
     assert set(parsed) == {
         "aws_availability_zones",
         "aws_default_route_table",
@@ -196,6 +195,8 @@ def test_parse_dynamic_content(tmp_path):
     here = os.path.dirname(__file__)
     mod_path = os.path.join(here, "terraform", "dynamic-stuff")
 
+    # this test uses invalid terraform, so we skip the init phase
+    # and just parse the hcl as-is.
     # mod_path = init_module("dynamic-stuff", tmp_path)
     parsed = load_from_path(mod_path)
 
@@ -288,9 +289,10 @@ def test_parse_variables(tmp_path):
     here = os.path.dirname(__file__)
     mod_path = os.path.join(here, "terraform", "variables-and-locals")
 
+    # this test uses invalid terraform, so we skip the init phase
+    # and just parse the hcl as-is.
     # mod_path = init_module("dynamic-stuff", tmp_path)
     parsed = load_from_path(mod_path)
-    print(parsed)
     assert parsed == {
         "locals": [
             {
@@ -351,4 +353,25 @@ def test_parse_variables(tmp_path):
                 "type": None,
             },
         ],
+    }
+
+
+def test_references(tmp_path):
+    mod_path = init_module("references", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    aes_bucket, kms_bucket, _ = parsed["aws_s3_bucket"]
+    config1, config2 = parsed["aws_s3_bucket_server_side_encryption_configuration"]
+
+    assert config1["bucket_ref"] == {
+        "__name__": "aes-encrypted-bucket",
+        "__attribute__": "aws_s3_bucket.aes-encrypted-bucket.bucket",
+        "__ref__": aes_bucket["id"],
+        "__type__": "aws_s3_bucket",
+    }
+    assert config2["bucket_ref"] == {
+        "__name__": "kms-encrypted-bucket",
+        "__attribute__": "aws_s3_bucket.kms-encrypted-bucket.bucket",
+        "__ref__": kms_bucket["id"],
+        "__type__": "aws_s3_bucket",
     }
