@@ -173,7 +173,7 @@ func (t *terraformConverter) getAttributeValue(
 			"__name__": rb.NameLabel(),
 		}
 
-		outputType := getExpectedOutput(a)
+		outputType := getAttrOutputType(a)
 		if outputType != attrOutputSkip {
 			paths := t.getPathsFromAttribute(a)
 			if outputType == attrOutputSingle && len(paths) == 1 {
@@ -202,7 +202,10 @@ const (
 	attrOutputSkip
 )
 
-func getExpectedOutput(a *terraform.Attribute) attrOutputType {
+// getAttrOutputType figures out if the attribute is an array of values, a
+//single value, or skipped altogether (in the case of more complex attributes
+//that we don't currently parse properly).
+func getAttrOutputType(a *terraform.Attribute) attrOutputType {
 	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
 	switch hclAttr.Expr.(type) {
 	case *hclsyntax.TupleConsExpr, *hclsyntax.SplatExpr:
@@ -431,38 +434,6 @@ func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) stri
 
 	return fmt.Sprintf("%s.%s", parentPath, blockName)
 }
-
-//func getExpressionsFromAttr(expr hcl.Expression) []hcl.Traverser {
-//	switch e := expr.(type) {
-//	case *hclsyntax.ConditionalExpr:
-//		return getExpressionsFromAttr(e.TrueResult)
-//	case *hclsyntax.FunctionCallExpr:
-//		return nil
-//	case *hclsyntax.LiteralValueExpr:
-//		val, ok := convertCtyToNativeValue(e.Val)
-//		if !ok {
-//			panic("failed to convert " + reflect.TypeOf(e.Val).String())
-//		}
-//
-//		e.
-//	case *hclsyntax.ScopeTraversalExpr:
-//		return e.Traversal
-//	case *hclsyntax.TemplateExpr:
-//		var traversers []hcl.Traverser
-//		for _, e := range e.Parts {
-//			traversers = append(traversers, getExpressionsFromAttr(e)...)
-//		}
-//		return traversers
-//	case *hclsyntax.TupleConsExpr:
-//		var traversers []hcl.Traverser
-//		for _, e := range e.Exprs {
-//			traversers = append(traversers, getExpressionsFromAttr(e)...)
-//		}
-//		return traversers
-//	default:
-//		panic("unexpected type: " + reflect.TypeOf(expr).String())
-//	}
-//}
 
 func getRootPaths(ts []hcl.Traversal) []string {
 	var paths []string
