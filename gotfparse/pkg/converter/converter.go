@@ -7,11 +7,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 )
 
@@ -163,7 +167,23 @@ func (t *terraformConverter) getAttributeValue(
 ) interface{} {
 	rb, _ := t.modules.GetReferencedBlock(a, b)
 	if rb != nil {
-		return rb.ID()
+		meta := map[string]interface{}{
+			"__ref__":  rb.ID(),
+			"__type__": rb.TypeLabel(),
+			"__name__": rb.NameLabel(),
+		}
+
+		outputType := getAttrOutputType(a)
+		if outputType != attrOutputSkip {
+			paths := t.getPathsFromAttribute(a)
+			if outputType == attrOutputSingle && len(paths) == 1 {
+				meta["__attribute__"] = paths[0]
+			} else {
+				meta["__attributes__"] = paths
+			}
+		}
+
+		return meta
 	}
 
 	val := a.Value()
@@ -172,6 +192,29 @@ func (t *terraformConverter) getAttributeValue(
 	}
 
 	return a.GetRawValue()
+}
+
+type attrOutputType int
+
+const (
+	attrOutputSingle attrOutputType = iota
+	attrOutputMulti
+	attrOutputSkip
+)
+
+// getAttrOutputType figures out if the attribute is an array of values, a
+//single value, or skipped altogether (in the case of more complex attributes
+//that we don't currently parse properly).
+func getAttrOutputType(a *terraform.Attribute) attrOutputType {
+	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
+	switch hclAttr.Expr.(type) {
+	case *hclsyntax.TupleConsExpr, *hclsyntax.SplatExpr:
+		return attrOutputMulti
+	case *hclsyntax.ConditionalExpr:
+		return attrOutputSkip
+	default:
+		return attrOutputSingle
+	}
 }
 
 // convertCtyToNativeValue converts a `cty.Value`, used by the
@@ -342,8 +385,7 @@ func (t *terraformConverter) SetStopOnHCLError() {
 func getModuleName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.
-	moduleBlockV := getPrivateValue(b, "moduleBlock")
-	moduleBlock := moduleBlockV.Interface().(*terraform.Block)
+	moduleBlock := getPrivateValue(b, "moduleBlock").(*terraform.Block)
 	if moduleBlock == nil {
 		return ""
 	}
@@ -391,4 +433,65 @@ func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) stri
 	}
 
 	return fmt.Sprintf("%s.%s", parentPath, blockName)
+}
+
+func getRootPaths(ts []hcl.Traversal) []string {
+	var paths []string
+	for _, t := range ts {
+		paths = append(paths, getRootPath(t))
+	}
+
+	return paths
+}
+
+func getRootPath(ts hcl.Traversal) string {
+	var sb strings.Builder
+	for _, t := range ts {
+		switch tt := t.(type) {
+		case hcl.TraverseAttr:
+			sb.WriteString(".")
+			sb.WriteString(tt.Name)
+		case hcl.TraverseRoot:
+			sb.WriteString(tt.Name)
+		case hcl.TraverseIndex:
+			sb.WriteString("[")
+			sb.WriteString(convertCtyToString(tt.Key))
+			sb.WriteString("]")
+		case hcl.TraverseSplat:
+			sb.WriteString("[*]")
+		default:
+			panic(tt)
+		}
+	}
+	return sb.String()
+}
+
+func convertCtyToString(key cty.Value) string {
+	val, ok := convertCtyToNativeValue(key)
+	if !ok {
+		return ""
+	}
+
+	switch d := val.(type) {
+	case string:
+		return d
+	case int, int8, int16, int32, int64, float32, float64:
+		num := d.(int64)
+		return strconv.FormatInt(num, 10)
+	case bool:
+		return strconv.FormatBool(d)
+	default:
+		panic(d)
+	}
+}
+
+func (t *terraformConverter) getPathsFromAttribute(a *terraform.Attribute) []string {
+	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
+	if hclAttr == nil {
+		return []string{}
+	}
+
+	vars := hclAttr.Expr.Variables()
+	rootPaths := getRootPaths(vars)
+	return rootPaths
 }
