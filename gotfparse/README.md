@@ -10,6 +10,10 @@ You can use the `tftest` helper command to easily iterate on terraform and previ
 
     go run cmd/tftest/main.go <path-to-terraform> > output.json
 
+You can use the `tfdump` helper command to reveal the structure that `aquasecurity/defsec` creates to assist with identifying anomalies. It exports the original structure, along with interesting attributes, in json format.  
+
+    go run cmd/tfdump/main.go <path-to-terraform> > output.json
+
 ## Tips
 
 When using a modern IDE like Visual Studio Code or Goland, open the `gotfparse` folder as the root of the workspace to ensure all of the Go tooling works as expected.
