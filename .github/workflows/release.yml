@@ -24,7 +24,7 @@ jobs:
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
-      - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # ratchet:actions/upload-artifact@v3
+      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # ratchet:actions/upload-artifact@v3
         with:
           name: wheels
           path: ./wheelhouse/*.whl
@@ -53,7 +53,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           GOARCH: ${{ matrix.go_arch }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # ratchet:actions/upload-artifact@v3
+        uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # ratchet:actions/upload-artifact@v3
         with:
           name: wheels
           path: ./wheelhouse/*.whl
