@@ -18,7 +18,7 @@ jobs:
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@a34a6b0f72a20272544a22a4d348d0e6cf4f6c88 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@a808017c3962f4d678fe685239668aad8c150932 # ratchet:pypa/cibuildwheel@v2.9.0
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
@@ -47,7 +47,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@a34a6b0f72a20272544a22a4d348d0e6cf4f6c88 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@a808017c3962f4d678fe685239668aad8c150932 # ratchet:pypa/cibuildwheel@v2.9.0
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
