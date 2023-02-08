@@ -382,7 +382,7 @@ def test_modules_located_above_root(tmp_path):
     mod_path = init_module("local-module-above-root", tmp_path)
     parsed = load_from_path(os.path.join(mod_path, "root"))
 
-    output1, output2 = parsed['output']
+    output1, output2 = parsed["output"]
     assert output1["__tfmeta"]["path"] == "output.root-output"
     assert output1["value"] == "hello-world"
     assert output2["__tfmeta"]["path"] == "module.test.output.output"
