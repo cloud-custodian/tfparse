@@ -58,7 +58,7 @@ def test_parse_vpc_module(tmp_path):
         "module": 1,
         "output": 109,
         "terraform": 1,
-        "variable": 183,
+        "variable": 185,
     }
 
 
