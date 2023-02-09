@@ -354,7 +354,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		opt(tfc)
 	}
 
-	fileSystem := newInsecureFS(filePath)
+	fileSystem := newRelativeResolveFs(filePath)
 
 	p := parser.New(fileSystem, "", tfc.parserOptions...)
 	if err := p.ParseFS(context.TODO(), "."); err != nil {
