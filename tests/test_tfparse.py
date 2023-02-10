@@ -24,6 +24,7 @@ def init_module(module_name, tmp_path):
 
     runner = TerraformRunner(mod_path, tf_bin=tf_bin, plugin_cache=plugin_cache)
     runner.init()
+
     return mod_path
 
 
@@ -57,7 +58,7 @@ def test_parse_vpc_module(tmp_path):
         "module": 1,
         "output": 109,
         "terraform": 1,
-        "variable": 183,
+        "variable": 185,
     }
 
 
@@ -375,3 +376,14 @@ def test_references(tmp_path):
         "__ref__": kms_bucket["id"],
         "__type__": "aws_s3_bucket",
     }
+
+
+def test_modules_located_above_root(tmp_path):
+    mod_path = init_module("local-module-above-root", tmp_path)
+    parsed = load_from_path(os.path.join(mod_path, "root"))
+
+    output1, output2 = parsed["output"]
+    assert output1["__tfmeta"]["path"] == "output.root-output"
+    assert output1["value"] == "hello-world"
+    assert output2["__tfmeta"]["path"] == "module.test.output.output"
+    assert output2["value"] == "testing"
