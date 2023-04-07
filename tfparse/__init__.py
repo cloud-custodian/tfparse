@@ -23,9 +23,11 @@ class ParseError(Exception):
 
 
 def load_from_path(
-    filePath: str, stop_on_hcl_error: bool = False, debug: bool = False
+    filePath: str,
+    stop_on_hcl_error: bool = False,
+    debug: bool = False,
+    allow_downloads: bool = False,
 ) -> tp.Dict:
-
     if not isinstance(filePath, (str, Path)):
         raise ValueError("filePath must be str or Path, got %s" % type(filePath))
 
@@ -34,7 +36,8 @@ def load_from_path(
     s = ffi.new("char[]", filePath)
     e1 = ffi.new("int*", 1 if stop_on_hcl_error else 0)
     e2 = ffi.new("int*", 1 if debug else 0)
-    ret = lib.Parse(s, e1, e2)
+    e3 = ffi.new("int*", 1 if allow_downloads else 0)
+    ret = lib.Parse(s, e1, e2, e3)
 
     if ret.err != ffi.NULL:
         err = ffi.string(ret.err)
