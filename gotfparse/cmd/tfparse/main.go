@@ -14,10 +14,11 @@ import (
 )
 
 //export Parse
-func Parse(a *C.char, e1 *C.int, e2 *C.int) (resp C.parseResponse) {
+func Parse(a *C.char, e1 *C.int, e2 *C.int, e3 *C.int) (resp C.parseResponse) {
 	input := C.GoString(a)
 	stopHCL := int(*e1) == 1
 	debug := int(*e2) == 1
+	allowDownloads := int(*e3) == 1
 
 	options := []converter.TerraformConverterOption{}
 	if stopHCL {
@@ -26,6 +27,9 @@ func Parse(a *C.char, e1 *C.int, e2 *C.int) (resp C.parseResponse) {
 
 	if debug {
 		options = append(options, converter.WithDebug())
+	}
+	if allowDownloads {
+		options = append(options, converter.WithAllowDownloads())
 	}
 
 	tfd, err := converter.NewTerraformConverter(input, options...)

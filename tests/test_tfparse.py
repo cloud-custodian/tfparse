@@ -9,7 +9,7 @@ from pytest_terraform.tf import TerraformRunner
 from tfparse import ParseError, load_from_path
 
 
-def init_module(module_name, tmp_path):
+def init_module(module_name, tmp_path, run_init=True):
     tf_bin = shutil.which("terraform")
     if tf_bin is None:
         raise RuntimeError("Terraform binary required on path")
@@ -22,8 +22,9 @@ def init_module(module_name, tmp_path):
     if not plugin_cache.exists():
         plugin_cache.mkdir()
 
-    runner = TerraformRunner(mod_path, tf_bin=tf_bin, plugin_cache=plugin_cache)
-    runner.init()
+    if run_init:
+        runner = TerraformRunner(mod_path, tf_bin=tf_bin, plugin_cache=plugin_cache)
+        runner.init()
 
     return mod_path
 
@@ -39,8 +40,8 @@ def test_parse_no_dir(tmp_path):
 
 
 def test_parse_vpc_module(tmp_path):
-    mod_path = init_module("vpc_module", tmp_path)
-    parsed = load_from_path(mod_path)
+    mod_path = init_module("vpc_module", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path, allow_downloads=True)
     summary = {resource_type: len(items) for resource_type, items in parsed.items()}
 
     assert summary == {
