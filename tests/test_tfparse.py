@@ -1,4 +1,3 @@
-import json
 import os.path
 import shutil
 from pathlib import Path
@@ -42,7 +41,6 @@ def test_parse_no_dir(tmp_path):
 
 def test_vars(tmp_path):
     mod_path = init_module("vars-file", tmp_path, run_init=False)
-    vars_path = Path(__file__).parent / "terraform" / "vars-file" / "example.tfvars"
     parsed = load_from_path(mod_path, vars_path="example.tfvars")
     item = list(parsed["local_file"]).pop()
     assert item["content"] == "goodbye"
