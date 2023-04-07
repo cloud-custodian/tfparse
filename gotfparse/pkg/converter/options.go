@@ -6,6 +6,7 @@ type TerraformConverterOptions interface {
 	SetDebug()
 	SetStopOnHCLError()
 	SetAllowDownloads()
+	SetTFVarsPaths(paths ...string)
 }
 
 type TerraformConverterOption func(t TerraformConverterOptions)
@@ -28,5 +29,11 @@ func WithStopOnHCLError() TerraformConverterOption {
 func WithAllowDownloads() TerraformConverterOption {
 	return func(t TerraformConverterOptions) {
 		t.SetAllowDownloads()
+	}
+}
+
+func WithTFVarsPaths(paths ...string) TerraformConverterOption {
+	return func(t TerraformConverterOptions) {
+		t.SetTFVarsPaths(paths...)
 	}
 }
