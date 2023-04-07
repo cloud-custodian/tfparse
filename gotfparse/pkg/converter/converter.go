@@ -382,8 +382,7 @@ func (t *terraformConverter) SetStopOnHCLError() {
 	t.parserOptions = append(t.parserOptions, parser.OptionStopOnHCLError(true))
 }
 
-// SetStopOnHCLError is a TerraformConverter option that is used to stop the underlying defsec parser when an
-// HCL error is encountered during first parsing phase that happens when calling NewTerraformConverter.
+// SetAllowDownloads is a TerraformConverter option that enables downloading modules.
 func (t *terraformConverter) SetAllowDownloads() {
 	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(true))
 }
