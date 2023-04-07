@@ -96,9 +96,9 @@ type add func(string, interface{})
 type dump func() map[string]interface{}
 
 // newBlockCollector creates a few closures to help flatten
-//lists that are actually singletons.
-//Note: This doesn't guarantee that they're _supposed_ to be singeltons, only
-//that there is only a single item in the list as rendered.
+// lists that are actually singletons.
+// Note: This doesn't guarantee that they're _supposed_ to be singeltons, only
+// that there is only a single item in the list as rendered.
 func newBlockCollector() (add, dump) {
 	collection := make(map[string][]interface{})
 
@@ -160,10 +160,10 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 }
 
 // getAttributeValue converts the attribute into a value that can be
-//encoded into json.
+// encoded into json.
 func (t *terraformConverter) getAttributeValue(
-		a *terraform.Attribute,
-		b *terraform.Block,
+	a *terraform.Attribute,
+	b *terraform.Block,
 ) interface{} {
 	rb, _ := t.modules.GetReferencedBlock(a, b)
 	if rb != nil {
@@ -203,8 +203,8 @@ const (
 )
 
 // getAttrOutputType figures out if the attribute is an array of values, a
-//single value, or skipped altogether (in the case of more complex attributes
-//that we don't currently parse properly).
+// single value, or skipped altogether (in the case of more complex attributes
+// that we don't currently parse properly).
 func getAttrOutputType(a *terraform.Attribute) attrOutputType {
 	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
 	switch hclAttr.Expr.(type) {
@@ -218,8 +218,8 @@ func getAttrOutputType(a *terraform.Attribute) attrOutputType {
 }
 
 // convertCtyToNativeValue converts a `cty.Value`, used by the
-//aquasecurity/defsec library, to a value that can be converted into json by
-//the Jeffail/gabs library.
+// aquasecurity/defsec library, to a value that can be converted into json by
+// the Jeffail/gabs library.
 func convertCtyToNativeValue(val cty.Value) (interface{}, bool) {
 	var (
 		ok bool
@@ -283,9 +283,9 @@ func convertCtyToNativeValue(val cty.Value) (interface{}, bool) {
 // returns a filtered list of the unique children. This is mostly here to avoid
 // issues with dynamic/content blocks.
 // For unknown reasons, dynamic blocks cause two issues:
-// - the block with type 'dynamic' is a template, not a real resource, and
-//   should be skipped
-// - blocks created by the template seem to be duplicated
+//   - the block with type 'dynamic' is a template, not a real resource, and
+//     should be skipped
+//   - blocks created by the template seem to be duplicated
 func getChildBlocks(b *terraform.Block) []*terraform.Block {
 	var (
 		expectedContentBlocks int
@@ -382,6 +382,12 @@ func (t *terraformConverter) SetStopOnHCLError() {
 	t.parserOptions = append(t.parserOptions, parser.OptionStopOnHCLError(true))
 }
 
+// SetStopOnHCLError is a TerraformConverter option that is used to stop the underlying defsec parser when an
+// HCL error is encountered during first parsing phase that happens when calling NewTerraformConverter.
+func (t *terraformConverter) SetAllowDownloads() {
+	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(true))
+}
+
 func getModuleName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.
@@ -400,8 +406,8 @@ func getModuleName(b *terraform.Block) string {
 }
 
 // getModulePath gets a string describing the module's path, such as
-//"module.notify_slack_qa.module.lambda", which would refer to a module called
-//"lambda", which was included in a module called "notify_slack_qa"
+// "module.notify_slack_qa.module.lambda", which would refer to a module called
+// "lambda", which was included in a module called "notify_slack_qa"
 func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 	prefixes := make(map[string]struct{})
 	for _, b := range m.GetBlocks() {
@@ -424,8 +430,8 @@ func (t *terraformConverter) getModulePath(m *terraform.Module) string {
 
 // getPath returns a string describing the location of the block.
 // For example, "module.notify_slack_qa.aws_cloudwatch_log_group.lambda[0]"
-//would describe the first item in the "aws_cloudwatch_log_group" resource
-//array called "lambda", which was created inside a module called "notify_slack_qa".
+// would describe the first item in the "aws_cloudwatch_log_group" resource
+// array called "lambda", which was created inside a module called "notify_slack_qa".
 func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) string {
 	blockName := b.GetMetadata().String()
 	if parentPath == "" {

@@ -5,6 +5,7 @@ package converter
 type TerraformConverterOptions interface {
 	SetDebug()
 	SetStopOnHCLError()
+	SetAllowDownloads()
 }
 
 type TerraformConverterOption func(t TerraformConverterOptions)
@@ -20,5 +21,12 @@ func WithDebug() TerraformConverterOption {
 func WithStopOnHCLError() TerraformConverterOption {
 	return func(t TerraformConverterOptions) {
 		t.SetStopOnHCLError()
+	}
+}
+
+// WithStopOnHCLError sets the underlying defsec parser to error and stop on HCL parsing errors.
+func WithAllowDownloads() TerraformConverterOption {
+	return func(t TerraformConverterOptions) {
+		t.SetAllowDownloads()
 	}
 }

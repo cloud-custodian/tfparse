@@ -19,7 +19,7 @@ ffi.cdef(
             char *err;
         } parseResponse;
 
-        parseResponse Parse(char* a, int* e1, int* e2);
+        parseResponse Parse(char* a, int* e1, int* e2, int* e3);
         void free(void *ptr);
         """
 )
