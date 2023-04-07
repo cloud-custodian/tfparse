@@ -27,7 +27,7 @@ def load_from_path(
     stop_on_hcl_error: bool = False,
     debug: bool = False,
     allow_downloads: bool = False,
-    vars_path: str = ""
+    vars_path: str = "",
 ) -> tp.Dict:
     if not isinstance(filePath, (str, Path)):
         raise ValueError("filePath must be str or Path, got %s" % type(filePath))
