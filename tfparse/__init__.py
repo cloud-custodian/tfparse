@@ -38,7 +38,7 @@ def load_from_path(
     e1 = ffi.new("int*", 1 if stop_on_hcl_error else 0)
     e2 = ffi.new("int*", 1 if debug else 0)
     e3 = ffi.new("int*", 1 if allow_downloads else 0)
-    s2 = ffi.new("char[]", vars_path)
+    s2 = ffi.new("char[]", str(vars_path).encode("utf8"))
 
     ret = lib.Parse(s, e1, e2, e3, s2)
 
