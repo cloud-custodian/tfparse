@@ -387,7 +387,7 @@ func (t *terraformConverter) SetAllowDownloads() {
 	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(true))
 }
 
-// SetAllowDownloads is a TerraformConverter option that enables downloading modules.
+// SetTFVarsPaths is a TerraformConverter option that sets a variables file for HCL interpolation.
 func (t *terraformConverter) SetTFVarsPaths(paths ...string) {
 	t.parserOptions = append(t.parserOptions, parser.OptionWithTFVarsPaths(paths...))
 }

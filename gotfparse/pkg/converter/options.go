@@ -32,6 +32,7 @@ func WithAllowDownloads() TerraformConverterOption {
 	}
 }
 
+// WithTFVarsPaths sets a variables file for hcl interpolation.
 func WithTFVarsPaths(paths ...string) TerraformConverterOption {
 	return func(t TerraformConverterOptions) {
 		t.SetTFVarsPaths(paths...)
