@@ -387,6 +387,11 @@ func (t *terraformConverter) SetAllowDownloads() {
 	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(true))
 }
 
+// SetTFVarsPaths is a TerraformConverter option that sets a variables file for HCL interpolation.
+func (t *terraformConverter) SetTFVarsPaths(paths ...string) {
+	t.parserOptions = append(t.parserOptions, parser.OptionWithTFVarsPaths(paths...))
+}
+
 func getModuleName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.

@@ -39,6 +39,13 @@ def test_parse_no_dir(tmp_path):
     assert "no such file or directory" in str(e_info)
 
 
+def test_vars(tmp_path):
+    mod_path = init_module("vars-file", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path, vars_path="example.tfvars")
+    item = list(parsed["local_file"]).pop()
+    assert item["content"] == "goodbye"
+
+
 def test_parse_vpc_module(tmp_path):
     mod_path = init_module("vpc_module", tmp_path, run_init=False)
     parsed = load_from_path(mod_path, allow_downloads=True)
