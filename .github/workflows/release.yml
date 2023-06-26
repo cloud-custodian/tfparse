@@ -68,6 +68,6 @@ jobs:
           path: dist
       - name: Display downloaded artifacts
         run: ls -lh dist
-      - uses: pypa/gh-action-pypi-publish@a56da0b891b3dc519c7ee3284aff1fad93cc8598 # ratchet:pypa/gh-action-pypi-publish@v1.8.6
+      - uses: pypa/gh-action-pypi-publish@f5622bde02b04381239da3573277701ceca8f6a0 # ratchet:pypa/gh-action-pypi-publish@v1.8.7
         with:
           password: ${{ secrets.PYPI_TOKEN }}
