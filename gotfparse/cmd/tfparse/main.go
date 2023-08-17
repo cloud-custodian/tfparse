@@ -15,7 +15,7 @@ import (
 )
 
 //export Parse
-func Parse(a *C.char, e1 *C.int, e2 *C.int, e3 *C.int, b **C.char) (resp C.parseResponse) {
+func Parse(a *C.char, e1 *C.int, e2 *C.int, e3 *C.int, e4 C.int, b **C.char) (resp C.parseResponse) {
 	input := C.GoString(a)
 	stopHCL := int(*e1) == 1
 	debug := int(*e2) == 1
@@ -33,8 +33,7 @@ func Parse(a *C.char, e1 *C.int, e2 *C.int, e3 *C.int, b **C.char) (resp C.parse
 		options = append(options, converter.WithAllowDownloads())
 	}
 
-	num_var_files := C.getList(&b)
-	for _, v := range unsafe.Slice(b, num_var_files) {
+	for _, v := range unsafe.Slice(b, e4) {
 		options = append(options, converter.WithTFVarsPaths(C.GoString(v)))
 	}
 
