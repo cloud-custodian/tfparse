@@ -27,7 +27,7 @@ def load_from_path(
     stop_on_hcl_error: bool = False,
     debug: bool = False,
     allow_downloads: bool = False,
-    vars_path: str = "",
+    vars_paths: tp.Optional[list[str]] = None,
 ) -> tp.Dict:
     if not isinstance(filePath, (str, Path)):
         raise ValueError("filePath must be str or Path, got %s" % type(filePath))
@@ -38,9 +38,10 @@ def load_from_path(
     e1 = ffi.new("int*", 1 if stop_on_hcl_error else 0)
     e2 = ffi.new("int*", 1 if debug else 0)
     e3 = ffi.new("int*", 1 if allow_downloads else 0)
-    s2 = ffi.new("char[]", str(vars_path).encode("utf8"))
 
-    ret = lib.Parse(s, e1, e2, e3, s2)
+    c_var_paths = [ffi.new("char[]", str(vars_path).encode("utf8")) for vars_path in (vars_paths or [])]
+
+    ret = lib.Parse(s, e1, e2, e3, c_var_paths)
 
     if ret.err != ffi.NULL:
         err = ffi.string(ret.err)
