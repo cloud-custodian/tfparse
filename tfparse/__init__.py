@@ -40,7 +40,6 @@ def load_from_path(
     e3 = ffi.new("int*", 1 if allow_downloads else 0)
 
     num_var_paths = len(vars_paths or [])
-    c_var_paths = None
     c_var_paths = [ffi.new("char[]", str(vars_path).encode("utf8")) for vars_path in (vars_paths or [])] if num_var_paths else []
 
     ret = lib.Parse(s, e1, e2, e3, num_var_paths, c_var_paths)
