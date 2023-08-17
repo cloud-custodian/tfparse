@@ -15,25 +15,22 @@ import (
 )
 
 //export Parse
-func Parse(a *C.char, e1 *C.int, e2 *C.int, e3 *C.int, e4 C.int, b **C.char) (resp C.parseResponse) {
+func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, num_vars_files C.int, vars_files **C.char) (resp C.parseResponse) {
 	input := C.GoString(a)
-	stopHCL := int(*e1) == 1
-	debug := int(*e2) == 1
-	allowDownloads := int(*e3) == 1
 
 	options := []converter.TerraformConverterOption{}
-	if stopHCL {
+	if stopHCL != 0 {
 		options = append(options, converter.WithStopOnHCLError())
 	}
 
-	if debug {
+	if debug != 0 {
 		options = append(options, converter.WithDebug())
 	}
-	if allowDownloads {
+	if allowDownloads != 0 {
 		options = append(options, converter.WithAllowDownloads())
 	}
 
-	for _, v := range unsafe.Slice(b, e4) {
+	for _, v := range unsafe.Slice(vars_files, num_vars_files) {
 		options = append(options, converter.WithTFVarsPaths(C.GoString(v)))
 	}
 
