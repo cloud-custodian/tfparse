@@ -38,9 +38,13 @@ def load_from_path(
 
     vars_paths = vars_paths or []
     num_var_paths = len(vars_paths)
-    c_var_paths = [ffi.new("char[]", str(vars_path).encode("utf8")) for vars_path in vars_paths]
+    c_var_paths = [
+        ffi.new("char[]", str(vars_path).encode("utf8")) for vars_path in vars_paths
+    ]
 
-    ret = lib.Parse(s, stop_on_hcl_error, debug, allow_downloads, num_var_paths, c_var_paths)
+    ret = lib.Parse(
+        s, stop_on_hcl_error, debug, allow_downloads, num_var_paths, c_var_paths
+    )
 
     if ret.err != ffi.NULL:
         err = ffi.string(ret.err)
