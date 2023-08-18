@@ -19,8 +19,8 @@ ffi.cdef(
             char *err;
         } parseResponse;
 
-        parseResponse Parse(char* a, int* e1, int* e2, int* e3, char* b);
+        parseResponse Parse(char* a, int stop_on_error, int debug, int allow_downloads, int num_vars_files, char** vars_files);
         void free(void *ptr);
-        """
+        """  # noqa
 )
 ffi.compile()
