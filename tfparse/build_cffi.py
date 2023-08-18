@@ -21,6 +21,6 @@ ffi.cdef(
 
         parseResponse Parse(char* a, int stop_on_error, int debug, int allow_downloads, int num_vars_files, char** vars_files);
         void free(void *ptr);
-        """
+        """   # noqa
 )
 ffi.compile()
