@@ -56,14 +56,19 @@ def test_multiple_var_files(tmp_path):
         }
 
         resource aws_cloudwatch_log_group "bing" {
-          name = "{var.abc}-{var.def}-logs"
+          name = "${var.abc}-${var.def}-logs"
         }
         """
     )
-    (tmp_path / "var1.tf").write_text('abc = "my"')
-    (tmp_path / "var2.tf").write_text('def = "app"')
-    parsed = load_from_path(tmp_path, vars_paths=[tmp_path / "var1.tf", tmp_path / "var2.tf"])
-    
+    (tmp_path / "var1.tfvars").write_text('abc = "my"')
+    (tmp_path / "var2.tfvars").write_text('def = "app"')
+    parsed = load_from_path(
+        tmp_path, vars_paths=[
+            "var1.tfvars",
+            "var2.tfvars"
+        ],
+        debug=True
+    )
     item = parsed['aws_cloudwatch_log_group'].pop()
     assert item['name'] == "my-app-logs"
     
