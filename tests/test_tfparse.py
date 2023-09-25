@@ -46,6 +46,30 @@ def test_vars(tmp_path):
     assert item["content"] == "goodbye"
 
 
+def test_multiple_var_files(tmp_path):
+    (tmp_path / "main.tf").write_text(
+        """
+        variable "abc" {
+          type = string
+        }
+        variable "def" {
+          type = string
+        }
+
+        resource aws_cloudwatch_log_group "bing" {
+          name = "${var.abc}-${var.def}-logs"
+        }
+        """
+    )
+    (tmp_path / "var1.tfvars").write_text('abc = "my"')
+    (tmp_path / "var2.tfvars").write_text('def = "app"')
+    parsed = load_from_path(
+        tmp_path, vars_paths=["var1.tfvars", "var2.tfvars"], debug=True
+    )
+    item = parsed["aws_cloudwatch_log_group"].pop()
+    assert item["name"] == "my-app-logs"
+
+
 def test_parse_vpc_module(tmp_path):
     mod_path = init_module("vpc_module", tmp_path, run_init=False)
     parsed = load_from_path(mod_path, allow_downloads=True)

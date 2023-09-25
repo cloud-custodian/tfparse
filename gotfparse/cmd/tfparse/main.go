@@ -30,8 +30,12 @@ func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, num_vars
 		options = append(options, converter.WithAllowDownloads())
 	}
 
+	var varFiles []string
 	for _, v := range unsafe.Slice(vars_files, num_vars_files) {
-		options = append(options, converter.WithTFVarsPaths(C.GoString(v)))
+		varFiles = append(varFiles, C.GoString(v))
+	}
+	if len(varFiles) != 0 {
+		options = append(options, converter.WithTFVarsPaths(varFiles...))
 	}
 
 	tfd, err := converter.NewTerraformConverter(input, options...)
