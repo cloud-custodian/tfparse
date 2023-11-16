@@ -383,8 +383,8 @@ func (t *terraformConverter) SetStopOnHCLError() {
 }
 
 // SetAllowDownloads is a TerraformConverter option that enables downloading modules.
-func (t *terraformConverter) SetAllowDownloads() {
-	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(true))
+func (t *terraformConverter) SetAllowDownloads(allowed bool) {
+	t.parserOptions = append(t.parserOptions, parser.OptionWithDownloads(allowed))
 }
 
 // SetTFVarsPaths is a TerraformConverter option that sets a variables file for HCL interpolation.
