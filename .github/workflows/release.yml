@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs: {}
 env:
-  CIBW_BUILD: "c39-* cp310-* cp311-*"
+  CIBW_BUILD: "c39-* cp310-* cp311-* cp312-*"
 jobs:
   Build-Linux:
     runs-on: ubuntu-latest
