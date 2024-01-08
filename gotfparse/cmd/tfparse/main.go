@@ -26,8 +26,11 @@ func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, num_vars
 	if debug != 0 {
 		options = append(options, converter.WithDebug())
 	}
+
 	if allowDownloads != 0 {
-		options = append(options, converter.WithAllowDownloads())
+		options = append(options, converter.WithAllowDownloads(true))
+	} else {
+		options = append(options, converter.WithAllowDownloads(false))
 	}
 
 	var varFiles []string
