@@ -35,10 +35,10 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
         env:
+          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
+          CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
-          CGO_ENABLED: 1
-          GOARCH: ${{ matrix.go_arch }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
         with:
