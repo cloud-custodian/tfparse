@@ -12,10 +12,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner: ubuntu-latest
+          - runner: buildjet-4vcpu-ubuntu-2204-arm
             cibw_arch: aarch64
             go_arch: arm64
-          - runner: ubuntu-latest
+          - runner: buildjet-2vcpu-ubuntu-2204
             cibw_arch: x86_64
             go_arch: amd64
     runs-on: ${{ matrix.runner }}
