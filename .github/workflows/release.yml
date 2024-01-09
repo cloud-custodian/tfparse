@@ -57,13 +57,12 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
-  Provenance:
+
+  Gather:
     needs: [Build-Linux, Build-MacOS]
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      id-token: write
-      contents: write    
+    outputs:
+      hash: ${{ steps.hash.outputs.hash }}      
     steps:
       - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110
         with:
@@ -75,11 +74,23 @@ jobs:
       - name: generate hash
         id: hash
         run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
-      - uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
-        with: 
-          base64-subjects: ${{ needs.build.outputs.hash }}
+
+  Provenance:
+    needs: [Gather]
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    # Can't pin with hash due to how this workflow works.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    with:
+      base64-subjects: ${{ needs.Gather.outputs.hash }}
+
   Release:
+    runs-on: ubuntu-latest    
     needs: [Provenance]
+    permissions:
+      contents: write
     steps:
       - name: Display downloaded artifacts
         run: ls -lh dist
