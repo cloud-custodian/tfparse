@@ -103,13 +103,15 @@ jobs:
     needs: [Release]
     runs-on: ubuntu-latest
 #    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      id-token: write
     steps:
       - name: Display downloaded artifacts
         run: ls -lh dist
 
       - name: Display provenance artifacts
         run: |
-          ls -lh *intoto*
+          ls -lh -- *intoto*
 
 #      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
 #        with:
