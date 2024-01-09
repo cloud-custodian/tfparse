@@ -40,6 +40,7 @@ jobs:
 
   Build-Windows:
     runs-on: windows-latest
+    steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Set up Go
@@ -91,7 +92,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
   Gather:
-    needs: [Build-Linux, Build-MacOS]
+    needs: [Build-Linux, Build-MacOS, Build-Windows]
     runs-on: ubuntu-latest
     outputs:
       hash: ${{ steps.hash.outputs.hash }}
