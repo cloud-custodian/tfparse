@@ -27,10 +27,11 @@ jobs:
         with:
           go-version: "1.21.5"
           cache: true
-          cache-dependency-path: "gotfparse/go.sum"        
+          cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
         uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
         env:
+          PATH: "/opt/hostedtoolcache/go/1.21.5/x64/bin/:$PATH"
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           CGO_ENABLED: 1
