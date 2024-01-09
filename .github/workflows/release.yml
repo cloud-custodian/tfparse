@@ -87,7 +87,7 @@ jobs:
           pattern: "wheels-*"
           path: dist
           merge-multiple: true
-          - name: Display downloaded artifacts
+      - name: Display downloaded artifacts
         run: ls -lh dist
       - name: Generate Hashes
         id: hash
