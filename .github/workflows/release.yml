@@ -24,7 +24,8 @@ jobs:
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
         with:
           name: wheels-linux
           path: ./wheelhouse/*.whl
@@ -64,14 +65,15 @@ jobs:
     outputs:
       hash: ${{ steps.hash.outputs.hash }}      
     steps:
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110
+      - name: Fetch Wheels
+        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110
         with:
           pattern: "wheels-*"
           path: dist
           merge-multiple: true
       - name: Display downloaded artifacts
         run: ls -lh dist
-      - name: generate hash
+      - name: Generate Hashes
         id: hash
         run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
 
