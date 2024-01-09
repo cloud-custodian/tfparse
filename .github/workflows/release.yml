@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner: ubuntu-latest
-            cibw_arch: aarch64
+#          - runner: ubuntu-latest
+#            cibw_arch: aarch64
           - runner: ubuntu-latest
             cibw_arch: x86_64
     runs-on: ${{ matrix.runner }}
@@ -38,14 +38,36 @@ jobs:
           name: wheels-linux-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
 
+  Build-Windows:
+    runs-on: windows-latest
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version: "1.21.5"
+          cache: true
+          cache-dependency-path: "gotfparse/go.sum"
+      - name: Build wheels
+        uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
+        env:
+          CGO_ENABLED: 1
+          CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          GOARCH: ${{ matrix.go_arch }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
+        with:
+          name: wheels-windows-${{ matrix.cibw_arch }}
+          path: ./wheelhouse/*.whl
+
   Build-MacOS:
     strategy:
       matrix:
         include:
           - cibw_arch: "x86_64"
             go_arch: "amd64"
-          - cibw_arch: "arm64"
-            go_arch: "arm64"
+#          - cibw_arch: "arm64"
+#            go_arch: "arm64"
     runs-on: macos-latest
     steps:
       - name: Checkout
