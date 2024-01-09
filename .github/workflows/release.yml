@@ -12,21 +12,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v3.0.2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # ratchet:docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: "x86_64 aarch64"
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # ratchet:actions/upload-artifact@v3
+      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
         with:
-          name: wheels
+          name: wheels-linux
           path: ./wheelhouse/*.whl
   Build-MacOS:
     strategy:
@@ -39,39 +39,57 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v3.0.2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Set up Go
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # ratchet:actions/setup-go@v3
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
           go-version: "1.21.5"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7 # ratchet:pypa/cibuildwheel@v2.9.0
+        uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           GOARCH: ${{ matrix.go_arch }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # ratchet:actions/upload-artifact@v3
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
         with:
-          name: wheels-${{ matrix.cibw_arch }}
+          name: wheels-macos-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
+  Provenance:
+    needs: [Build-Linux, Build-MacOS]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      id-token: write
+      contents: write    
+    steps:
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110
+        with:
+          pattern: "wheels-*"
+          path: dist
+          merge-multiple: true
+      - name: Display downloaded artifacts
+        run: ls -lh dist
+      - name: generate hash
+        id: hash
+        run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
+      - uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+        with: 
+          base64-subjects: ${{ needs.build.outputs.hash }}
   Upload:
     needs: [Build-Linux, Build-MacOS]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+#    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # ratchet:actions/download-artifact@v3.0.0
-        with:
-          name: wheels-x86_64
-          path: dist
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # ratchet:actions/download-artifact@v3.0.0
-        with:
-          name: wheels-arm64
-          path: dist          
       - name: Display downloaded artifacts
         run: ls -lh dist
-      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf # ratchet:pypa/gh-action-pypi-publish@v1.8.11
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Display provenance artifacts
+        run: |
+          ls -lh *intoto*
+
+#      - uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
+#        with:
+#          password: ${{ secrets.PYPI_TOKEN }}
