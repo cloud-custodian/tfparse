@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - runner: ubuntu-latest
-            cibw_arch: arm64
+            cibw_arch: aarch64
             go_arch: arm64
           - runner: ubuntu-latest
             cibw_arch: x86_64
