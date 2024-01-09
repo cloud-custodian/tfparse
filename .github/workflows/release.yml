@@ -9,25 +9,36 @@ env:
   CIBW_BUILD: "c39-* cp310-* cp311-* cp312-*"
 jobs:
   Build-Linux:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - runner: buildjet-4vcpu-ubuntu-2204-arm
+            cibw_arch: arm64
+            go_arch: arm64
+          - runner: buildjet-2vcpu-ubuntu-2204
+            cibw_arch: x86_64
+            go_arch: amd64
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
-          platforms: arm64
+          go-version: "1.21.5"
+          cache: true
+          cache-dependency-path: "gotfparse/go.sum"        
       - name: Build wheels
         uses: pypa/cibuildwheel@fff9ec32ed25a9c576750c91e06b410ed0c15db7
         env:
-          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
-          CIBW_ARCHS: "x86_64 aarch64"
+          CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CGO_ENABLED: 1
+          GOARCH: ${{ matrix.go_arch }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
         with:
-          name: wheels-linux
+          name: wheels-linux-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
   Build-MacOS:
     strategy:
