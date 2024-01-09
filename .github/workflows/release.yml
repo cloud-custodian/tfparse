@@ -24,7 +24,8 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Set up QEMU
         uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3
-        platforms: arm64
+        with:
+          platforms: arm64
       - name: Set up Go
         uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
@@ -86,7 +87,7 @@ jobs:
           pattern: "wheels-*"
           path: dist
           merge-multiple: true
-      - name: Display downloaded artifacts
+          - name: Display downloaded artifacts
         run: ls -lh dist
       - name: Generate Hashes
         id: hash
