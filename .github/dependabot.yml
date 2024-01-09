@@ -4,14 +4,22 @@ updates:
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-      interval: "weekly"
+      interval: "monthly"
   commit-message:
       prefix: ":seedling:"
+  groups:
+    github-actions:
+      patterns:
+        - "*"
 
 - package-ecosystem: "pip"
   directory: "/"
   schedule:
-      interval: "weekly"
+      interval: "monthly"
   commit-message:
       prefix: ":seedling:"
+  groups:
+    python-requirements:
+      patterns:
+        - "*"
 
