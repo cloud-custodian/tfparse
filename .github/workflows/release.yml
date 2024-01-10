@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         include:
-#          - runner: ubuntu-latest
-#            cibw_arch: aarch64
+          - runner: ubuntu-latest
+            cibw_arch: aarch64
           - runner: ubuntu-latest
             cibw_arch: x86_64
     runs-on: ${{ matrix.runner }}
@@ -66,8 +66,8 @@ jobs:
         include:
           - cibw_arch: "x86_64"
             go_arch: "amd64"
-#          - cibw_arch: "arm64"
-#            go_arch: "arm64"
+          - cibw_arch: "arm64"
+            go_arch: "arm64"
     runs-on: macos-latest
     steps:
       - name: Checkout
