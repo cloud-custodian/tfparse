@@ -16,8 +16,9 @@ from defsec to offer a high level interface to parsing terraform modules.
 pip install tfparse
 ```
 
-We currently distribute binaries for MacOS (x86_64, arm64) and Linux (x86_64, aarch64).
+We currently distribute binaries for MacOS (x86_64, arm64) and Linux (x86_64, aarch64) and Windows.
 
+Note on Windows we currently don't free memory allocated on parse results.
 
 # Usage
 
