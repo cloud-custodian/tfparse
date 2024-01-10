@@ -48,10 +48,12 @@ def load_from_path(
 
     if ret.err != ffi.NULL:
         err = ffi.string(ret.err)
-        ffi.gc(ret.err, lib.free)
+        if sys.platform != 'win32':
+            ffi.gc(ret.err, lib.free)
         err = err.decode("utf8")
         raise ParseError(err)
 
     ret_json = ffi.string(ret.json)
-    ffi.gc(ret.json, lib.free)
+    if sys.platform != 'win32':
+        ffi.gc(ret.json, lib.free)
     return json.loads(ret_json)
