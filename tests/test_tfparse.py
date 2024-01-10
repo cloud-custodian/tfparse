@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import sys
 from pathlib import Path
 from unittest.mock import ANY
 
@@ -36,7 +37,10 @@ def test_parse_no_dir(tmp_path):
     with pytest.raises(ParseError) as e_info:
         load_from_path(tmp_path / "xyz")
 
-    assert "no such file or directory" in str(e_info)
+    if sys.platform == "win32":
+        assert "The system cannot find the file specified" in str(e_info)
+    else:
+        assert "no such file or directory" in str(e_info)
 
 
 def test_vars(tmp_path):
