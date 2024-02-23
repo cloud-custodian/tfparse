@@ -12,7 +12,7 @@ case $OS in
     Linux) OS="linux" ;;
 esac    
 	    
-curl "https://storage.googleapis.com/golang/go1.19.2.${OS}-${ARCH}.tar.gz" --silent --location | tar -xz
+curl "https://storage.googleapis.com/golang/go${GOVER}.${OS}-${ARCH}.tar.gz" --silent --location | tar -xz
 
 export PATH="$(pwd)/go/bin:$PATH"
 
