@@ -429,11 +429,7 @@ def test_module_input_output(tmp_path):
     root_path = Path(__file__).parent / "terraform" / "module-in-out"
     parsed = load_from_path(root_path)
 
-    asserted_tags = {
-        "app": "weather",
-        "app-id": "static",
-        "env": "dev"
-    }
+    asserted_tags = {"app": "weather", "app-id": "static", "env": "dev"}
     # check output from tag module
     assert parsed["output"][0]["value"] == asserted_tags
 

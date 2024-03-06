@@ -1,12 +1,12 @@
 
 variable "tags_base" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "additional_tags" {
-  type = map(string)
-  default = {}  
+  type    = map(string)
+  default = {}
 }
 
 

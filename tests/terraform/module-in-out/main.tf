@@ -8,7 +8,7 @@ variable "tags" {
 
 
 module "tags_base" {
-  source = "./module/tags"
+  source    = "./module/tags"
   tags_base = var.tags
 }
 
@@ -19,6 +19,6 @@ locals {
 
 
 module "bucket" {
-  source = "./module/bucket"
+  source       = "./module/bucket"
   default_tags = local.default_tags
 }
