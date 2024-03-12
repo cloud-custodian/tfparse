@@ -423,3 +423,31 @@ def test_modules_located_above_root(tmp_path):
     assert output1["value"] == "hello-world"
     assert output2["__tfmeta"]["path"] == "module.test.output.output"
     assert output2["value"] == "testing"
+
+
+def test_module_input_output(tmp_path):
+    root_path = init_module("module-in-out", tmp_path)
+    parsed = load_from_path(root_path)
+
+    asserted_tags = {"app": "weather", "app-id": "static", "env": "dev"}
+    # check output from tag module
+    assert parsed["output"][0]["value"] == asserted_tags
+
+    # check root module local default tags variable
+    found = False
+    for localv in parsed["locals"]:
+        if localv["__tfmeta"]["filename"] == "main.tf" and "default_tags" in localv:
+            found = True
+            assert localv["default_tags"] == asserted_tags
+    assert found
+
+    # check bucket module input has correct value
+    found = False
+    for module in parsed["module"]:
+        if module["__tfmeta"]["label"] == "bucket" and "default_tags" in module:
+            found = True
+            assert module["default_tags"] == asserted_tags
+    assert found
+
+    # check the bucket has the tags
+    assert parsed["aws_s3_bucket"][0]["tags"] == asserted_tags
