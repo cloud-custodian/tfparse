@@ -67,4 +67,4 @@ require (
 	google.golang.org/protobuf v1.32.0 // indirect
 )
 
-replace github.com/aquasecurity/defsec v0.93.1 => github.com/fwereade/defsec v0.93.2-0.20240312130557-6f84121175f8
+replace github.com/aquasecurity/defsec v0.93.1 => github.com/fwereade/defsec v0.93.2-0.20240320112503-31b908f8c7bf

@@ -249,8 +249,8 @@ github.com/envoyproxy/protoc-gen-validate v1.0.2 h1:QkIBuU5k+x7/QXPvPPnWXWlCdaBF
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
-github.com/fwereade/defsec v0.93.2-0.20240312130557-6f84121175f8 h1:1lLXVSev5bh2bi6fppsf/OGiyeuP3ixzUGtBXQtDPS8=
-github.com/fwereade/defsec v0.93.2-0.20240312130557-6f84121175f8/go.mod h1:i80K4WRNbcIWDOQDWnTHkutBwplzw/uZD4laKbhu4sE=
+github.com/fwereade/defsec v0.93.2-0.20240320112503-31b908f8c7bf h1:V222LCXSrluan0KfkQFewLncsEOZ31THFBFKLgePohI=
+github.com/fwereade/defsec v0.93.2-0.20240320112503-31b908f8c7bf/go.mod h1:i80K4WRNbcIWDOQDWnTHkutBwplzw/uZD4laKbhu4sE=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-git/gcfg v1.5.0 h1:Q5ViNfGF8zFgyJWPqYwA7qGFoMTEiBmdlkcfRmpIMa4=
 github.com/go-git/go-billy/v5 v5.4.0 h1:Vaw7LaSTRJOUric7pe4vnzBSgyuf2KrLsu2Y4ZpQBDE=
