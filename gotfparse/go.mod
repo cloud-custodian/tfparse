@@ -66,3 +66,5 @@ require (
 	google.golang.org/grpc v1.60.1 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 )
+
+replace github.com/aquasecurity/defsec v0.93.1 => github.com/cloud-custodian/defsec v0.93.2-0.20240322122006-69f7f1796542
