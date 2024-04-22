@@ -454,7 +454,7 @@ def test_module_input_output(tmp_path):
 
 def test_funcs(tmp_path):
     parent = init_module("func-check", tmp_path, run_init=False)
-    parsed = load_from_path(parent / "root")
+    parsed = load_from_path(parent / "root", debug=True)
 
     actual = parsed["locals"][0]
     assert actual == {
