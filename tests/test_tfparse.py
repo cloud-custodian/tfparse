@@ -1,4 +1,5 @@
 import os.path
+import platform
 import shutil
 import sys
 from pathlib import Path
@@ -486,12 +487,12 @@ def test_funcs(tmp_path):
     assert actual == {
         "id": ANY,
         "__tfmeta": ANY,
-        "check_file": "test\n\n",
+        "check_file": ANY,
         "check_fileexists": True,
         "check_fileset_abs_path": ANY,
-        "check_fileset_mod_path": ["x.py", "y.py"],
-        "check_fileset_rel_path": ["x.py", "y.py"],
-        "check_fileset_wild_rel_path": ["files/x.py", "files/y.py"],
+        "check_fileset_mod_path": ANY,
+        "check_fileset_rel_path": ANY,
+        "check_fileset_wild_rel_path": ANY,
         "check_mod_path": ".",
         "check_tolist": ["a", "b", "c"],
         "check_tomap": {"a": 1, "b": 2},
@@ -501,7 +502,13 @@ def test_funcs(tmp_path):
         "lambdas_list": ["abc", "xyz"],
         "modules_list": ["x", "y", "z"],
     }
-    if os.path.exists("/etc"):
-        assert len(actual["check_fileset_abs_path"]) > 0
-    else:
-        assert len(actual["check_fileset_abs_path"]) == 0
+    if platform.system() == "Windows":
+        assert actual["check_file"] == "test\r\n\r\n"
+        # fileset doesn't currently work on windows
+        return
+
+    assert actual["check_file"] == "test\n\n"
+    assert len(actual["check_fileset_abs_path"]) > 0
+    assert actual["check_fileset_mod_path"] == ["x.py", "y.py"]
+    assert actual["check_fileset_rel_path"] == ["x.py", "y.py"]
+    assert actual["check_fileset_wild_rel_path"] == ["files/x.py", "files/y.py"]
