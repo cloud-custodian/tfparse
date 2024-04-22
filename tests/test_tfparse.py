@@ -452,6 +452,32 @@ def test_module_input_output(tmp_path):
     assert parsed["aws_s3_bucket"][0]["tags"] == asserted_tags
 
 
+def test_module_input_output_nested(tmp_path):
+    root_path = init_module("module-in-out-nested", tmp_path)
+    parsed = load_from_path(root_path)
+
+    expect_tag_value = "APPID-000000000"
+
+    # check tags module input has correct value
+    found = False
+    for module in parsed["module"]:
+        if module["__tfmeta"]["label"] == "tags_base" and "tags_base" in module:
+            found = True
+            assert module["tags_base"] == {"tag_important_tag": expect_tag_value}
+    assert found
+
+    # check bucket module input has correct value
+    found = False
+    for module in parsed["module"]:
+        if module["__tfmeta"]["label"] == "bucket" and "default_tags" in module:
+            found = True
+            assert module["default_tags"] == {"important-tag": expect_tag_value}
+    assert found
+
+    # check the tag made it all the way to the bucket
+    assert parsed["aws_s3_bucket"][0]["tags"] == {"important-tag": expect_tag_value}
+
+
 def test_funcs(tmp_path):
     parent = init_module("func-check", tmp_path, run_init=False)
     parsed = load_from_path(parent / "root", debug=True)
