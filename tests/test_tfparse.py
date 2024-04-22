@@ -260,7 +260,7 @@ def test_parse_dynamic_content(tmp_path):
                 "id": ANY,
                 "other": False,
             },
-            # {   # This _should_ be picked up, but is not, because of https://github.com/aquasecurity/trivy/commit/13190e92d9fea1277389fc09fba0418c05c5f44f#diff-b10704f6636c4e99c08df82aeb21c2283a75a61953d50b6f800289dbfa44979eR300
+            # {   # This _should_ be picked up, but is not, because of https://github.com/aquasecurity/trivy/commit/13190e92d9fea1277389fc09fba0418c05c5f44f#diff-b10704f6636c4e99c08df82aeb21c2283a75a61953d50b6f800289dbfa44979eR300  # noqa
             #     # We're currently considering this an edge case that's rare in practical usage.
             #     "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
             #     "id": ANY,
