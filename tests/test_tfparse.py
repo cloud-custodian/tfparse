@@ -499,14 +499,12 @@ def test_funcs(tmp_path):
         "check_toset_int": [1, 2, 3],
         "check_toset_str": ["a", "b", "c"],
         "check_trimprefix": "/def",
-        "lambdas_list": ANY,
+        "lambdas_list": ["abc", "xyz"],
         "modules_list": ["x", "y", "z"],
     }
     if platform.system() == "Windows":
         assert actual["check_file"] == "test\r\n\r\n"
-        # fileset outside root doesn't currently work on windows
-        return
-
-    assert actual["check_file"] == "test\n\n"
-    assert len(actual["check_fileset_abs_path"]) > 0
-    assert actual["lambdas_list"] == ["abc", "xyz"]
+        # don't know where to guarantee files will exist on windows
+    else:
+        assert actual["check_file"] == "test\n\n"
+        assert len(actual["check_fileset_abs_path"]) > 0
