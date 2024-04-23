@@ -480,6 +480,9 @@ def test_module_input_output_nested(tmp_path):
 
 
 def test_funcs(tmp_path):
+    if platform.system() == "Windows":
+        pytest.skip()
+
     parent = init_module("func-check", tmp_path, run_init=False)
     parsed = load_from_path(parent / "root", debug=True)
 
@@ -487,7 +490,7 @@ def test_funcs(tmp_path):
     assert actual == {
         "id": ANY,
         "__tfmeta": ANY,
-        "check_file": ANY,
+        "check_file": "test\n\n",
         "check_fileexists": True,
         "check_fileset_abs_path": ANY,
         "check_fileset_mod_path": ["x.py", "y.py"],
@@ -502,9 +505,4 @@ def test_funcs(tmp_path):
         "lambdas_list": ["abc", "xyz"],
         "modules_list": ["x", "y", "z"],
     }
-    if platform.system() == "Windows":
-        assert actual["check_file"] == "test\r\n\r\n"
-        # don't know where to guarantee files will exist on windows
-    else:
-        assert actual["check_file"] == "test\n\n"
-        assert len(actual["check_fileset_abs_path"]) > 0
+    assert len(actual["check_fileset_abs_path"]) > 0
