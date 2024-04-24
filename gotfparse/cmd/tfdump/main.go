@@ -11,8 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/terraform/parser"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/zclconf/go-cty/cty"
 )
 
@@ -76,7 +76,7 @@ func dumpBlock(m *terraform.Module, b *terraform.Block) map[string]interface{} {
 	object := make(map[string]interface{})
 	object["__full_name__"] = b.FullName()
 	object["__id__"] = b.ID()
-	object["__is_count_expanded"] = b.IsCountExpanded()
+	object["__is_expanded"] = b.IsExpanded()
 	object["__is_empty__"] = b.IsEmpty()
 	object["__in_module__"] = b.InModule()
 	object["__is_nil__"] = b.IsNil()

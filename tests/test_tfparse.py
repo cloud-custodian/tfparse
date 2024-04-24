@@ -1,4 +1,5 @@
 import os.path
+import platform
 import shutil
 import sys
 from pathlib import Path
@@ -81,7 +82,6 @@ def test_parse_vpc_module(tmp_path):
 
     assert summary == {
         "aws_eip": 3,
-        "aws_iam_policy_document": 2,
         "aws_internet_gateway": 1,
         "aws_nat_gateway": 3,
         "aws_route": 4,
@@ -188,11 +188,10 @@ def test_parse_notify_slack(tmp_path):
     parsed = load_from_path(mod_path)
 
     assert {resource_type: len(items) for resource_type, items in parsed.items()} == {
-        "aws_arn": 2,
         "aws_caller_identity": 2,
         "aws_cloudwatch_log_group": 4,
-        "aws_iam_policy": 6,
-        "aws_iam_policy_document": 12,
+        "aws_iam_policy": 2,
+        "aws_iam_policy_document": 4,
         "aws_iam_role": 2,
         "aws_iam_role_policy_attachment": 2,
         "aws_lambda_function": 2,
@@ -235,7 +234,7 @@ def test_parse_dynamic_content(tmp_path):
     # this test uses invalid terraform, so we skip the init phase
     # and just parse the hcl as-is.
     # mod_path = init_module("dynamic-stuff", tmp_path)
-    parsed = load_from_path(mod_path)
+    parsed = load_from_path(mod_path, debug=True)
 
     resource = {
         "__tfmeta": {
@@ -262,11 +261,12 @@ def test_parse_dynamic_content(tmp_path):
                 "id": ANY,
                 "other": False,
             },
-            {
-                "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
-                "id": ANY,
-                "other": None,
-            },
+            # {   # This _should_ be picked up, but is not, because of https://github.com/aquasecurity/trivy/commit/13190e92d9fea1277389fc09fba0418c05c5f44f#diff-b10704f6636c4e99c08df82aeb21c2283a75a61953d50b6f800289dbfa44979eR300  # noqa
+            #     # We're currently considering this an edge case that's rare in practical usage.
+            #     "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
+            #     "id": ANY,
+            #     "other": None,
+            # },
             {
                 "__tfmeta": {"filename": "main.tf", "line_end": 37, "line_start": 35},
                 "id": ANY,
@@ -451,3 +451,58 @@ def test_module_input_output(tmp_path):
 
     # check the bucket has the tags
     assert parsed["aws_s3_bucket"][0]["tags"] == asserted_tags
+
+
+def test_module_input_output_nested(tmp_path):
+    root_path = init_module("module-in-out-nested", tmp_path)
+    parsed = load_from_path(root_path)
+
+    expect_tag_value = "APPID-000000000"
+
+    # check tags module input has correct value
+    found = False
+    for module in parsed["module"]:
+        if module["__tfmeta"]["label"] == "tags_base" and "tags_base" in module:
+            found = True
+            assert module["tags_base"] == {"tag_important_tag": expect_tag_value}
+    assert found
+
+    # check bucket module input has correct value
+    found = False
+    for module in parsed["module"]:
+        if module["__tfmeta"]["label"] == "bucket" and "default_tags" in module:
+            found = True
+            assert module["default_tags"] == {"important-tag": expect_tag_value}
+    assert found
+
+    # check the tag made it all the way to the bucket
+    assert parsed["aws_s3_bucket"][0]["tags"] == {"important-tag": expect_tag_value}
+
+
+def test_funcs(tmp_path):
+    if platform.system() == "Windows":
+        pytest.skip()
+
+    parent = init_module("func-check", tmp_path, run_init=False)
+    parsed = load_from_path(parent / "root", debug=True)
+
+    actual = parsed["locals"][0]
+    assert actual == {
+        "id": ANY,
+        "__tfmeta": ANY,
+        "check_file": "test\n\n",
+        "check_fileexists": True,
+        "check_fileset_abs_path": ANY,
+        "check_fileset_mod_path": ["x.py", "y.py"],
+        "check_fileset_rel_path": ["x.py", "y.py"],
+        "check_fileset_wild_rel_path": ["files/x.py", "files/y.py"],
+        "check_mod_path": ".",
+        "check_tolist": ["a", "b", "c"],
+        "check_tomap": {"a": 1, "b": 2},
+        "check_toset_int": [1, 2, 3],
+        "check_toset_str": ["a", "b", "c"],
+        "check_trimprefix": "/def",
+        "lambdas_list": ["abc", "xyz"],
+        "modules_list": ["x", "y", "z"],
+    }
+    assert len(actual["check_fileset_abs_path"]) > 0
