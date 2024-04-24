@@ -22,7 +22,7 @@ func (i relativeResolveFs) Open(name string) (fs.File, error) {
 
 // Path subverts the FS concept by allowing clients to get the real path.
 func (i relativeResolveFs) Path() string {
-	return filepath.ToSlash(i.rootDir)
+	return i.rootDir
 }
 
 var _ fs.FS = new(relativeResolveFs)
