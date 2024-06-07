@@ -75,6 +75,32 @@ def test_multiple_var_files(tmp_path):
     assert item["name"] == "my-app-logs"
 
 
+def test_vars_bad_types(tmp_path):
+    # NOTE that the "quoted_type" test case is to allow rudimentary support for TF
+    # versions older than 0.12, which are still sometimes seen in the wild. It's
+    # not valid in any TF that's less than 5 years old.
+    mod_path = init_module("vars-bad-types", tmp_path, run_init=False)
+    assert get_outputs(load_from_path(mod_path)) == {
+        "empty_block": None,
+        "default_only": "huh",
+        "quoted_type": None,
+    }
+    assert get_outputs(load_from_path(mod_path, vars_paths=["numbers.tfvars"])) == {
+        "empty_block": 123,
+        "default_only": 456,  # default value doesn't imply type
+        "quoted_type": "789",  # quoted type is handled, value is coerced
+    }
+    assert get_outputs(load_from_path(mod_path, vars_paths=["strings.tfvars"])) == {
+        "empty_block": "one",
+        "default_only": "two",
+        "quoted_type": "three",
+    }
+
+
+def get_outputs(parsed):
+    return {block["__tfmeta"]["label"]: block["value"] for block in parsed["output"]}
+
+
 def test_parse_vpc_module(tmp_path):
     mod_path = init_module("vpc_module", tmp_path, run_init=False)
     parsed = load_from_path(mod_path, allow_downloads=True)
