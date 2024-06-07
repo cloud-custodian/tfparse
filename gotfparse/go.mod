@@ -74,4 +74,4 @@ require (
 	google.golang.org/protobuf v1.33.0 // indirect
 )
 
-replace github.com/aquasecurity/trivy v0.50.1 => github.com/cloud-custodian/trivy v0.0.0-20240607095740-ad380819f2c5
+replace github.com/aquasecurity/trivy v0.50.1 => github.com/cloud-custodian/trivy v0.0.0-20240607110140-7d824ace9240
