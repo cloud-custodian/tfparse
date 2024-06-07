@@ -76,6 +76,9 @@ def test_multiple_var_files(tmp_path):
 
 
 def test_vars_bad_types(tmp_path):
+    # NOTE that the "quoted_type" test case is to allow rudimentary support for TF
+    # versions older than 0.11, which are still sometimes seen in the wild. It's
+    # not valid in any TF that's less than 5 years old.
     mod_path = init_module("vars-bad-types", tmp_path, run_init=False)
     assert get_outputs(load_from_path(mod_path)) == {
         "empty_block": None,
