@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	"github.com/Jeffail/gabs/v2"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	trivy_log "github.com/aquasecurity/trivy/pkg/log"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
@@ -26,7 +26,7 @@ type terraformConverter struct {
 	modules       terraform.Modules
 	debug         bool
 	stopOnError   bool
-	parserOptions []options.ParserOption
+	parserOptions []parser.Option
 
 	countsByParentPathBlockName map[string]map[string]int
 }
@@ -345,7 +345,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		filePath:      filePath,
 		debug:         false,
 		stopOnError:   false,
-		parserOptions: []options.ParserOption{},
+		parserOptions: []parser.Option{},
 
 		countsByParentPathBlockName: make(map[string]map[string]int),
 	}
@@ -373,7 +373,10 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 
 // SetDebug is a TerraformConverter option that is uesd to the debug output in the underlying defsec parser.
 func (t *terraformConverter) SetDebug() {
-	t.parserOptions = append(t.parserOptions, options.ParserWithDebug(os.Stderr))
+	opt := func(p *parser.Parser) {
+		trivy_log.InitLogger(true, false)
+	}
+	t.parserOptions = append(t.parserOptions, opt)
 }
 
 // SetStopOnHCLError is a TerraformConverter option that is used to stop the underlying defsec parser when an
