@@ -413,7 +413,7 @@ def test_parse_variables(tmp_path):
                     "path": "variable.no_default",
                 },
                 "id": ANY,
-                "type": None,
+                "type": "string",
             },
         ],
     }
