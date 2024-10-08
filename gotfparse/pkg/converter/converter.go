@@ -137,7 +137,15 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 	}
 
 	for _, a := range b.GetAttributes() {
-		obj[a.Name()] = t.getAttributeValue(a, b)
+		attrName := a.Name()
+		if b.Type() == "variable" && attrName == "type" {
+			// for variable type, the plain value is nil (unless the type has
+			// been provided in quotes), look at the variable type instead
+			var_type, _, _ := a.DecodeVarType()
+			obj[attrName] = var_type.FriendlyName()
+		} else {
+			obj[attrName] = t.getAttributeValue(a, b)
+		}
 	}
 
 	id := b.ID()
