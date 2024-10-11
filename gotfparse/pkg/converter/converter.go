@@ -21,6 +21,22 @@ import (
 
 var logger = log.New(os.Stderr, "converter", 1)
 
+type stringSet map[string]bool
+
+func (s *stringSet) Add(str string) {
+	if !(*s)[str] {
+		(*s)[str] = true
+	}
+}
+
+func (s stringSet) Entries() []string {
+	entries := make([]string, len(s))
+	for entry, _ := range s {
+		entries = append(entries, entry)
+	}
+	return entries
+}
+
 type terraformConverter struct {
 	filePath      string
 	modules       terraform.Modules
@@ -29,6 +45,8 @@ type terraformConverter struct {
 	parserOptions []parser.Option
 
 	countsByParentPathBlockName map[string]map[string]int
+
+	blocksByReference map[string]*terraform.Block
 }
 
 // VisitJSON visits each of the Terraform JSON blocks that the Terraform converter
@@ -55,6 +73,8 @@ func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Containe
 
 // visitBlock takes a block, and either builds a json model of the resource or ignores it.
 func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
+	t.blocksByReference[b.Reference().String()] = b
+
 	switch b.Type() {
 	// These blocks don't have to conform to policies, and they don't have
 	//children that should have policies applied to them, so we ignore them.
@@ -136,6 +156,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		obj[key] = result
 	}
 
+	allRefs := stringSet{}
 	for _, a := range b.GetAttributes() {
 		attrName := a.Name()
 		if b.Type() == "variable" && attrName == "type" {
@@ -144,12 +165,15 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 			var_type, _, _ := a.DecodeVarType()
 			obj[attrName] = var_type.FriendlyName()
 		} else {
-			obj[attrName] = t.getAttributeValue(a, b)
+			obj[attrName] = t.getAttributeValue(a)
+		}
+
+		for _, ref := range a.AllReferences() {
+			allRefs.Add(ref.String())
 		}
 	}
 
-	id := b.ID()
-	if id != "" {
+	if id := b.ID(); id != "" {
 		obj["id"] = id
 	}
 
@@ -159,41 +183,33 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		"line_start": r.GetStartLine(),
 		"line_end":   r.GetEndLine(),
 	}
+	if refs := t.getAttributeRefsMeta(allRefs.Entries()); len(refs) > 0 {
+		meta["references"] = refs
+	}
 	if tl := b.TypeLabel(); tl != "" {
 		meta["label"] = tl
 	}
 	obj["__tfmeta"] = meta
-
 	return obj
 }
 
-// getAttributeValue converts the attribute into a value that can be
-// encoded into json.
-func (t *terraformConverter) getAttributeValue(
-	a *terraform.Attribute,
-	b *terraform.Block,
-) interface{} {
-	rb, _ := t.modules.GetReferencedBlock(a, b)
-	if rb != nil {
-		meta := map[string]interface{}{
-			"__ref__":  rb.ID(),
-			"__type__": rb.TypeLabel(),
-			"__name__": rb.NameLabel(),
-		}
-
-		outputType := getAttrOutputType(a)
-		if outputType != attrOutputSkip {
-			paths := t.getPathsFromAttribute(a)
-			if outputType == attrOutputSingle && len(paths) == 1 {
-				meta["__attribute__"] = paths[0]
-			} else {
-				meta["__attributes__"] = paths
+func (t *terraformConverter) getAttributeRefsMeta(refs []string) []map[string]any {
+	refsMeta := [](map[string]any){}
+	for _, ref := range refs {
+		if block, ok := t.blocksByReference[ref]; ok {
+			meta := map[string]any{
+				"id":    block.ID(),
+				"label": block.TypeLabel(),
+				"name":  block.NameLabel(),
 			}
+			refsMeta = append(refsMeta, meta)
 		}
-
-		return meta
 	}
+	return refsMeta
+}
 
+// getAttributeValue returns the value for the attribute
+func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 	val := a.Value()
 	if raw, ok := convertCtyToNativeValue(val); ok {
 		return raw
@@ -356,6 +372,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		parserOptions: []parser.Option{},
 
 		countsByParentPathBlockName: make(map[string]map[string]int),
+		blocksByReference:           make(map[string]*terraform.Block),
 	}
 
 	for _, opt := range opts {
