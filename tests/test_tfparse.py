@@ -425,19 +425,22 @@ def test_references(tmp_path):
 
     aes_bucket, kms_bucket, _ = parsed["aws_s3_bucket"]
     config1, config2 = parsed["aws_s3_bucket_server_side_encryption_configuration"]
-
-    assert config1["bucket_ref"] == {
-        "__name__": "aes-encrypted-bucket",
-        "__attribute__": "aws_s3_bucket.aes-encrypted-bucket.bucket",
-        "__ref__": aes_bucket["id"],
-        "__type__": "aws_s3_bucket",
-    }
-    assert config2["bucket_ref"] == {
-        "__name__": "kms-encrypted-bucket",
-        "__attribute__": "aws_s3_bucket.kms-encrypted-bucket.bucket",
-        "__ref__": kms_bucket["id"],
-        "__type__": "aws_s3_bucket",
-    }
+    assert config1["bucket_ref"] == "my-aes-encrypted-bucket"
+    assert config1["__tfmeta"]["references"] == [
+        {
+            "id": aes_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "aes-encrypted-bucket",
+        },
+    ]
+    assert config2["bucket_ref"] == "my-kms-encrypted-bucket"
+    assert config2["__tfmeta"]["references"] == [
+        {
+            "id": kms_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "kms-encrypted-bucket",
+        },
+    ]
 
 
 def test_modules_located_above_root(tmp_path):
