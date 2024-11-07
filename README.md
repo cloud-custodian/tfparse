@@ -5,7 +5,7 @@ A python extension for parsing and evaluating terraform using defsec.
 
 While terraform uses HCL as its configuration format, it requires numerous
 forms of variable interpolation, function and expression evaluation, which
-is beyond the typical usage of an hcl parser. To achieve compatiblity
+is beyond the typical usage of an hcl parser. To achieve compatibility
 with the myriad real world usages of terraform, this library uses the
 canonical implementation from terraform, along with the interpolation and evaluation
 from defsec to offer a high level interface to parsing terraform modules.
