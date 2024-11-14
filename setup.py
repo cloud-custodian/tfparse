@@ -20,7 +20,7 @@ setup(
     maintainer="Cloud Custodian Project",
     maintainer_email="cloud-custodian@googlegroups.com",
     license="Apache-2.0",
-    version="0.6.12",
+    version="0.6.13",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
