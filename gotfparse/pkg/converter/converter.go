@@ -7,19 +7,31 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	trivy_log "github.com/aquasecurity/trivy/pkg/log"
-	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 )
 
 var logger = log.New(os.Stderr, "converter", 1)
+
+type stringSet map[string]bool
+
+func (s *stringSet) Add(str string) {
+	if !(*s)[str] {
+		(*s)[str] = true
+	}
+}
+
+func (s stringSet) Entries() []string {
+	entries := make([]string, len(s))
+	for entry, _ := range s {
+		entries = append(entries, entry)
+	}
+	return entries
+}
 
 type terraformConverter struct {
 	filePath      string
@@ -29,6 +41,8 @@ type terraformConverter struct {
 	parserOptions []parser.Option
 
 	countsByParentPathBlockName map[string]map[string]int
+
+	blocksByReference map[string]*terraform.Block
 }
 
 // VisitJSON visits each of the Terraform JSON blocks that the Terraform converter
@@ -55,6 +69,8 @@ func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Containe
 
 // visitBlock takes a block, and either builds a json model of the resource or ignores it.
 func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
+	t.blocksByReference[b.Reference().String()] = b
+
 	switch b.Type() {
 	// These blocks don't have to conform to policies, and they don't have
 	//children that should have policies applied to them, so we ignore them.
@@ -136,6 +152,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		obj[key] = result
 	}
 
+	allRefs := stringSet{}
 	for _, a := range b.GetAttributes() {
 		attrName := a.Name()
 		if b.Type() == "variable" && attrName == "type" {
@@ -144,12 +161,15 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 			var_type, _, _ := a.DecodeVarType()
 			obj[attrName] = var_type.FriendlyName()
 		} else {
-			obj[attrName] = t.getAttributeValue(a, b)
+			obj[attrName] = t.getAttributeValue(a)
+		}
+
+		for _, ref := range a.AllReferences() {
+			allRefs.Add(ref.String())
 		}
 	}
 
-	id := b.ID()
-	if id != "" {
+	if id := b.ID(); id != "" {
 		obj["id"] = id
 	}
 
@@ -159,70 +179,39 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		"line_start": r.GetStartLine(),
 		"line_end":   r.GetEndLine(),
 	}
+	if refs := t.getAttributeRefsMeta(allRefs.Entries()); len(refs) > 0 {
+		meta["references"] = refs
+	}
 	if tl := b.TypeLabel(); tl != "" {
 		meta["label"] = tl
 	}
 	obj["__tfmeta"] = meta
-
 	return obj
 }
 
-// getAttributeValue converts the attribute into a value that can be
-// encoded into json.
-func (t *terraformConverter) getAttributeValue(
-	a *terraform.Attribute,
-	b *terraform.Block,
-) interface{} {
-	rb, _ := t.modules.GetReferencedBlock(a, b)
-	if rb != nil {
-		meta := map[string]interface{}{
-			"__ref__":  rb.ID(),
-			"__type__": rb.TypeLabel(),
-			"__name__": rb.NameLabel(),
-		}
-
-		outputType := getAttrOutputType(a)
-		if outputType != attrOutputSkip {
-			paths := t.getPathsFromAttribute(a)
-			if outputType == attrOutputSingle && len(paths) == 1 {
-				meta["__attribute__"] = paths[0]
-			} else {
-				meta["__attributes__"] = paths
+func (t *terraformConverter) getAttributeRefsMeta(refs []string) []map[string]any {
+	refsMeta := [](map[string]any){}
+	for _, ref := range refs {
+		if block, ok := t.blocksByReference[ref]; ok {
+			meta := map[string]any{
+				"id":    block.ID(),
+				"label": block.TypeLabel(),
+				"name":  block.NameLabel(),
 			}
+			refsMeta = append(refsMeta, meta)
 		}
-
-		return meta
 	}
+	return refsMeta
+}
 
+// getAttributeValue returns the value for the attribute
+func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 	val := a.Value()
 	if raw, ok := convertCtyToNativeValue(val); ok {
 		return raw
 	}
 
 	return a.GetRawValue()
-}
-
-type attrOutputType int
-
-const (
-	attrOutputSingle attrOutputType = iota
-	attrOutputMulti
-	attrOutputSkip
-)
-
-// getAttrOutputType figures out if the attribute is an array of values, a
-// single value, or skipped altogether (in the case of more complex attributes
-// that we don't currently parse properly).
-func getAttrOutputType(a *terraform.Attribute) attrOutputType {
-	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
-	switch hclAttr.Expr.(type) {
-	case *hclsyntax.TupleConsExpr, *hclsyntax.SplatExpr:
-		return attrOutputMulti
-	case *hclsyntax.ConditionalExpr:
-		return attrOutputSkip
-	default:
-		return attrOutputSingle
-	}
 }
 
 // convertCtyToNativeValue converts a `cty.Value`, used by the
@@ -356,6 +345,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		parserOptions: []parser.Option{},
 
 		countsByParentPathBlockName: make(map[string]map[string]int),
+		blocksByReference:           make(map[string]*terraform.Block),
 	}
 
 	for _, opt := range opts {
@@ -454,65 +444,4 @@ func (t *terraformConverter) getPath(b *terraform.Block, parentPath string) stri
 	}
 
 	return fmt.Sprintf("%s.%s", parentPath, blockName)
-}
-
-func getRootPaths(ts []hcl.Traversal) []string {
-	var paths []string
-	for _, t := range ts {
-		paths = append(paths, getRootPath(t))
-	}
-
-	return paths
-}
-
-func getRootPath(ts hcl.Traversal) string {
-	var sb strings.Builder
-	for _, t := range ts {
-		switch tt := t.(type) {
-		case hcl.TraverseAttr:
-			sb.WriteString(".")
-			sb.WriteString(tt.Name)
-		case hcl.TraverseRoot:
-			sb.WriteString(tt.Name)
-		case hcl.TraverseIndex:
-			sb.WriteString("[")
-			sb.WriteString(convertCtyToString(tt.Key))
-			sb.WriteString("]")
-		case hcl.TraverseSplat:
-			sb.WriteString("[*]")
-		default:
-			panic(tt)
-		}
-	}
-	return sb.String()
-}
-
-func convertCtyToString(key cty.Value) string {
-	val, ok := convertCtyToNativeValue(key)
-	if !ok {
-		return ""
-	}
-
-	switch d := val.(type) {
-	case string:
-		return d
-	case int, int8, int16, int32, int64, float32, float64:
-		num := d.(int64)
-		return strconv.FormatInt(num, 10)
-	case bool:
-		return strconv.FormatBool(d)
-	default:
-		panic(d)
-	}
-}
-
-func (t *terraformConverter) getPathsFromAttribute(a *terraform.Attribute) []string {
-	hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
-	if hclAttr == nil {
-		return []string{}
-	}
-
-	vars := hclAttr.Expr.Variables()
-	rootPaths := getRootPaths(vars)
-	return rootPaths
 }
