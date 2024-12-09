@@ -19,7 +19,7 @@ ffi.cdef(
             char *err;
         } parseResponse;
 
-        parseResponse Parse(char* a, int stop_on_error, int debug, int allow_downloads, int num_vars_files, char** vars_files);
+        parseResponse Parse(char* a, int stop_on_error, int debug, int allow_downloads, char* workspace_name, int num_vars_files, char** vars_files);
         void free(void *ptr);
         """  # noqa
 )

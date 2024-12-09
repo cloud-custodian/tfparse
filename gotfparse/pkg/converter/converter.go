@@ -403,6 +403,11 @@ func (t *terraformConverter) SetTFVarsPaths(paths ...string) {
 	t.parserOptions = append(t.parserOptions, parser.OptionWithTFVarsPaths(paths...))
 }
 
+// SetWorkspaceName is a TerraformConverter option that sets the value for the workspace name.
+func (t *terraformConverter) SetWorkspaceName(workspace string) {
+	t.parserOptions = append(t.parserOptions, parser.OptionWithWorkspaceName(workspace))
+}
+
 func getModuleName(b *terraform.Block) string {
 	// This field is unexported, but necessary to generate the path of the
 	// module. Hopefully aquasecurity/defsec exports this in a future release.

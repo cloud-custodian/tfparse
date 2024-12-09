@@ -7,6 +7,7 @@ type TerraformConverterOptions interface {
 	SetStopOnHCLError()
 	SetAllowDownloads(allowed bool)
 	SetTFVarsPaths(paths ...string)
+	SetWorkspaceName(workspace string)
 }
 
 type TerraformConverterOption func(t TerraformConverterOptions)
@@ -36,5 +37,12 @@ func WithAllowDownloads(allowed bool) TerraformConverterOption {
 func WithTFVarsPaths(paths ...string) TerraformConverterOption {
 	return func(t TerraformConverterOptions) {
 		t.SetTFVarsPaths(paths...)
+	}
+}
+
+// WithWorkspaceName sets the Terraform workspace name.
+func WithWorkspaceName(workspace string) TerraformConverterOption {
+	return func(t TerraformConverterOptions) {
+		t.SetWorkspaceName(workspace)
 	}
 }
