@@ -15,7 +15,7 @@ import (
 )
 
 //export Parse
-func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, num_vars_files C.int, vars_files **C.char) (resp C.parseResponse) {
+func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, workspaceName *C.char, num_vars_files C.int, vars_files **C.char) (resp C.parseResponse) {
 	input := C.GoString(a)
 
 	options := []converter.TerraformConverterOption{}
@@ -32,6 +32,8 @@ func Parse(a *C.char, stopHCL C.int, debug C.int, allowDownloads C.int, num_vars
 	} else {
 		options = append(options, converter.WithAllowDownloads(false))
 	}
+
+	options = append(options, converter.WithWorkspaceName(C.GoString(workspaceName)))
 
 	var varFiles []string
 	for _, v := range unsafe.Slice(vars_files, num_vars_files) {

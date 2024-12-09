@@ -532,3 +532,17 @@ def test_funcs(tmp_path):
         "modules_list": ["x", "y", "z"],
     }
     assert len(actual["check_fileset_abs_path"]) > 0
+
+
+def test_workspace(tmp_path):
+    mod_path = init_module("workspace", tmp_path)
+
+    parsed = load_from_path(mod_path)
+    value, workspace = parsed["output"]
+    assert workspace["value"] == "default"
+    assert value["value"] == "DEFAULT"
+
+    parsed = load_from_path(mod_path, workspace_name="other")
+    value, workspace = parsed["output"]
+    assert workspace["value"] == "other"
+    assert value["value"] == "OTHER"
