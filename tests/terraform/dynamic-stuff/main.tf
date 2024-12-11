@@ -7,7 +7,7 @@ resource "some_resource" "this" {
     for_each = [true, false, null]
 
     content {
-      other = each.value
+      other = loop_one.value
     }
   }
 
@@ -21,7 +21,7 @@ resource "some_resource" "this" {
     for_each = [1, 2, 3]
 
     content {
-      other = each.value
+      other = loop_two.value
     }
   }
 
@@ -33,7 +33,7 @@ resource "some_resource" "this" {
     for_each = ["aaa", "bbb", "ccc"]
 
     content {
-      other = each.value
+      other = loop_one.value
     }
   }
 
