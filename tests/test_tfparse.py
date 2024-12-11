@@ -273,9 +273,6 @@ def test_parse_dynamic_content(tmp_path):
         },
         "count": 2,
         "id": ANY,
-        "prop1": "one",
-        "prop2": "two",
-        "prop3": "end",
         "loop_one": [
             {
                 "__tfmeta": {"filename": "main.tf", "line_end": 11, "line_start": 9},
@@ -326,6 +323,9 @@ def test_parse_dynamic_content(tmp_path):
                 "other": 3,
             },
         ],
+        "prop1": "one",
+        "prop2": "two",
+        "prop3": "end",
         "static": [
             {
                 "__tfmeta": {"filename": "main.tf", "line_end": 16, "line_start": 14},
