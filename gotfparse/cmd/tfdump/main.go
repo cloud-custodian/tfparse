@@ -84,7 +84,7 @@ func dumpBlock(m *terraform.Module, b *terraform.Block) map[string]interface{} {
 	object["__label__"] = b.Label()
 	object["__labels__"] = b.Labels()
 	object["__local_name__"] = b.LocalName()
-	object["__module_name__"] = b.ModuleName()
+	object["__module_name__"] = b.ModuleKey()
 	object["__name_label__"] = b.NameLabel()
 	object["__type__"] = b.Type()
 	object["__type_label__"] = b.TypeLabel()
