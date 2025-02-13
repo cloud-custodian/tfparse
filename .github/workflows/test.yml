@@ -79,7 +79,7 @@ jobs:
         shell: bash
         run: |
            ls
-	   ls custodian
+           ls custodian
       - name: Install c7n-left
         shell: bash
         working-directory: custodian/tools/c7n-left
