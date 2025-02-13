@@ -32,7 +32,7 @@ jobs:
         run: |
           flake8 tfparse tests
   LeftTests:
-    needs: Lint
+    needs: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -99,7 +99,7 @@ jobs:
         run: pytest tools/c7n_left/tests
 
   Tests:
-    needs: LeftTests
+    needs: Lint
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
