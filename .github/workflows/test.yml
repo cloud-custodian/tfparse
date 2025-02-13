@@ -94,7 +94,7 @@ jobs:
         run: pytest tools/c7n_left/tests
 
   Tests:
-    needs: Lint
+    needs: LeftTests
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
