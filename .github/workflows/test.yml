@@ -82,7 +82,7 @@ jobs:
            ls custodian
       - name: Install c7n-left
         shell: bash
-        working-directory: custodian/tools/c7n-left
+        working-directory: custodian/tools/c7n_left
         run: poetry install
 
       - name: Install dependencies
