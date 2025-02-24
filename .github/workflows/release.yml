@@ -20,20 +20,20 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3
+        uses: docker/setup-qemu-action@53851d14592bedcffcf25ea515637cff71ef929a
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@7940a4c0e76eb2030e473a5f864f291f63ee879b
+        uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: wheels-linux-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
@@ -42,20 +42,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Set up Go
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version: "1.21.5"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@7940a4c0e76eb2030e473a5f864f291f63ee879b
+        uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: AMD64
       - name: Upload Artifacts
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: wheels-windows
           path: ./wheelhouse/*.whl
@@ -71,21 +71,21 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Set up Go
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version: "1.21.5"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@8d945475ac4b1aac4ae08b2fd27db9917158b6ce
+        uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           GOARCH: ${{ matrix.go_arch }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: wheels-macos-${{ matrix.cibw_arch }}
           path: ./wheelhouse/*.whl
@@ -97,7 +97,7 @@ jobs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
       - name: Fetch Wheels
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
           pattern: "wheels-*"
           path: dist
@@ -115,7 +115,7 @@ jobs:
       id-token: write
       contents: write
     # Can't pin with hash due to how this workflow works.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
       base64-subjects: ${{ needs.Gather.outputs.hash }}
 
@@ -127,9 +127,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Fetch Wheels
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
           pattern: "*"
           path: dist
@@ -150,10 +150,10 @@ jobs:
       id-token: write
     steps:
       - name: Fetch Wheels
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
           pattern: "wheels-*"
           path: dist
           merge-multiple: true
       - name: Upload to PYPI
-        uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
