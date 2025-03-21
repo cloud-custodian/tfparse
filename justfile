@@ -38,8 +38,8 @@ lint: venv
 check: fmt-check lint
 
 # Run tests with pytest
-test: venv
-    . .venv/bin/activate && pytest tests
+test *args: venv
+    . .venv/bin/activate && pytest {{args}}
 
 # Run tests with coverage
 test-cov: venv
