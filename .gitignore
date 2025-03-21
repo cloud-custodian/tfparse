@@ -4,6 +4,7 @@ build/*
 tfparse.egg-info
 tfparse/_tfparse.py
 venv/**
+.venv/**
 .tfcache
 *.so
 .python-version
