@@ -60,4 +60,12 @@ clean:
     find . -type d -name ".pytest_cache" -exec rm -r {} +
     find . -type d -name ".coverage" -exec rm -r {} +
     find . -type d -name "htmlcov" -exec rm -r {} +
-    rm -rf .venv 
+    rm -rf .venv
+
+# Install Delve if not present
+install-dlv:
+    go install github.com/go-delve/delve/cmd/dlv@latest
+
+# Debug Go code with Delve
+debug cmd args: install-dlv
+    cd gotfparse && dlv debug --check-go-version=false ./cmd/{{cmd}}/main.go -- ../{{args}} 
