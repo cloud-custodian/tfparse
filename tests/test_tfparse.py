@@ -546,3 +546,33 @@ def test_workspace(tmp_path):
     value, workspace = parsed["output"]
     assert workspace["value"] == "other"
     assert value["value"] == "OTHER"
+
+
+def test_ec2_tags(tmp_path):
+    mod_path = init_module("ec2-tags", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    # Test tagged_known_preset_values instance
+    known_tags = parsed["aws_instance"][0]["tags"]
+    assert known_tags == {
+        "Var1": "current-region-test",
+        "Var2": "test",
+        "Var3": "current-region",
+        "Name": "tagged known",
+        "Environment": "sandbox",
+    }
+
+    # Test tagged_unknown_values instance
+    unknown_tags = parsed["aws_instance"][1]["tags"]
+    assert unknown_tags == {
+        "Var1": "current-region-test",
+        "Var2": "test",
+        "Var3": "current-region",
+        "Unknown": None,
+        "Environment": "sandbox",
+        "Name": "tagged unknown",
+    }
+
+    # Test untagged instance
+    untagged = parsed["aws_instance"][2]
+    assert untagged["tags"] is None

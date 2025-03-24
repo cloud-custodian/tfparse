@@ -5,7 +5,7 @@ package converter
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -17,9 +17,21 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/function"
 )
 
-var logger = log.New(os.Stderr, "converter", 1)
+// Default to INFO level
+var logger = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+	Level: slog.LevelInfo,
+}))
+
+// SetLogLevel sets the logging level
+func SetLogLevel(level slog.Level) {
+	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: level,
+	})
+	logger = slog.New(handler)
+}
 
 type terraformConverter struct {
 	filePath      string
@@ -78,7 +90,7 @@ func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, j
 
 		jsonOut.ArrayAppendP(json, key)
 	default:
-		logger.Printf("unknown block type: %s", b.Type())
+		logger.Info("unknown block type", "type", b.Type())
 	}
 }
 
@@ -194,12 +206,44 @@ func (t *terraformConverter) getAttributeValue(
 		return meta
 	}
 
+	// First try using the parsed value directly
 	val := a.Value()
+
+	// Only attempt to handle functions manually if the value is null or not known
+	// This ensures we don't interfere with functions that have been successfully resolved
+	if val.IsNull() || !val.IsKnown() {
+		// Check if it's a function call that might have failed due to unresolvable variables
+		hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
+		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
+			logger.Debug("Function call detected", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
+
+			// Get the function from Trivy's function map
+			functions := parser.Functions(os.DirFS("."), ".")
+			if fn, exists := functions[funcExpr.Name]; exists {
+				return t.handleGenericFunction(funcExpr, fn)
+			}
+		}
+	}
+
+	// Try to convert the value to a native type
 	if raw, ok := convertCtyToNativeValue(val); ok {
 		return raw
 	}
 
+	// If we get this far, just return the raw value
 	return a.GetRawValue()
+}
+
+// findVariableBlock finds a variable block by name
+func (t *terraformConverter) findVariableBlock(name string) *terraform.Block {
+	for _, m := range t.modules {
+		for _, block := range m.GetBlocks() {
+			if block.Type() == "variable" && block.Label() == name {
+				return block
+			}
+		}
+	}
+	return nil
 }
 
 type attrOutputType int
@@ -381,6 +425,9 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 
 // SetDebug is a TerraformConverter option that is uesd to the debug output in the underlying defsec parser.
 func (t *terraformConverter) SetDebug() {
+	// Enable debug logging
+	SetLogLevel(slog.LevelDebug)
+	// Set debug in trivy
 	opt := func(p *parser.Parser) {
 		trivy_log.InitLogger(true, false)
 	}
@@ -520,4 +567,115 @@ func (t *terraformConverter) getPathsFromAttribute(a *terraform.Attribute) []str
 	vars := hclAttr.Expr.Variables()
 	rootPaths := getRootPaths(vars)
 	return rootPaths
+}
+
+// handleGenericFunction processes any non-merge function
+func (t *terraformConverter) handleGenericFunction(funcExpr *hclsyntax.FunctionCallExpr, fn function.Function) interface{} {
+	logger.Debug("Processing function call", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
+
+	// Prepare arguments for the function
+	var args []cty.Value
+
+	// Process each argument
+	for _, arg := range funcExpr.Args {
+		switch expr := arg.(type) {
+		case *hclsyntax.ObjectConsExpr:
+			// For object expressions, extract keys and values
+			attrs := make(map[string]cty.Value)
+			for _, item := range expr.Items {
+				key := t.extractKey(item.KeyExpr)
+				if key == "" {
+					continue
+				}
+
+				// Handle different value expression types
+				switch valExpr := item.ValueExpr.(type) {
+				case *hclsyntax.LiteralValueExpr:
+					// Direct literal value
+					attrs[key] = valExpr.Val
+				case *hclsyntax.TemplateExpr:
+					// Template with literals
+					if len(valExpr.Parts) == 1 {
+						if lit, ok := valExpr.Parts[0].(*hclsyntax.LiteralValueExpr); ok {
+							attrs[key] = lit.Val
+							continue
+						}
+					}
+					// Use null for complex templates instead of a placeholder
+					attrs[key] = cty.NullVal(cty.String)
+				default:
+					// For other expression types, just use null value
+					// This preserves the key while setting a null value
+					attrs[key] = cty.NullVal(cty.String)
+				}
+			}
+			if len(attrs) > 0 {
+				args = append(args, cty.ObjectVal(attrs))
+			}
+
+		case *hclsyntax.ScopeTraversalExpr:
+			// For variable references, try to use default values
+			rootName := expr.Traversal.RootName()
+			if rootName == "var" && len(expr.Traversal) > 1 {
+				varName := expr.Traversal[1].(hcl.TraverseAttr).Name
+				if varBlock := t.findVariableBlock(varName); varBlock != nil {
+					if defaultAttr := varBlock.GetAttribute("default"); defaultAttr != nil {
+						args = append(args, defaultAttr.Value())
+						continue
+					} else {
+						// Variable exists but has no default - use an empty object
+						// This allows functions to still operate on the variable
+						logger.Debug("Variable has no default, using empty object", "varName", varName)
+						args = append(args, cty.EmptyObjectVal)
+						continue
+					}
+				} else {
+					// Variable not found - use an empty object
+					logger.Debug("Variable not found, using empty object", "varName", varName)
+					args = append(args, cty.EmptyObjectVal)
+					continue
+				}
+			}
+			// If not a variable or something more complex, include the traversal path in the value
+			// This preserves important reference information for downstream processors
+			path := getRootPath(expr.Traversal)
+			args = append(args, cty.StringVal(fmt.Sprintf("${%s}", path)))
+		}
+	}
+
+	// Call the function with our arguments
+	if len(args) > 0 {
+		result, err := fn.Call(args)
+		if err == nil {
+			if raw, ok := convertCtyToNativeValue(result); ok {
+				return raw
+			}
+		}
+	}
+	return nil
+}
+
+// extractKey extracts a string key from a key expression
+func (t *terraformConverter) extractKey(keyExpr hcl.Expression) string {
+	// Check if it's an ObjectConsKeyExpr (the special type used in HCL for object keys)
+	if wrappedKeyExpr, ok := keyExpr.(*hclsyntax.ObjectConsKeyExpr); ok {
+		// This is the wrapper type - need to get the actual key name
+		keyExpr = wrappedKeyExpr.Wrapped
+	}
+
+	// Now handle the actual key expression
+	if templateExpr, ok := keyExpr.(*hclsyntax.TemplateExpr); ok && len(templateExpr.Parts) == 1 {
+		if lit, ok := templateExpr.Parts[0].(*hclsyntax.LiteralValueExpr); ok {
+			key := lit.Val.AsString()
+			logger.Debug("Extracted key from template", "key", key)
+			return key
+		}
+	} else if litExpr, ok := keyExpr.(*hclsyntax.LiteralValueExpr); ok {
+		key := litExpr.Val.AsString()
+		logger.Debug("Extracted key from literal", "key", key)
+		return key
+	}
+
+	logger.Debug("Failed to extract key", "exprType", fmt.Sprintf("%T", keyExpr))
+	return ""
 }
