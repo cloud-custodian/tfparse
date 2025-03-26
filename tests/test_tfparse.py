@@ -154,6 +154,23 @@ def test_parse_eks(tmp_path):
         "line_end": 15,
         "path": "aws_eks_cluster.example",
         "type": "resource",
+        "references": [
+            {
+                "id": ANY,
+                "label": "aws_iam_role",
+                "name": "cluster_example",
+            },
+            {
+                "id": ANY,
+                "label": "aws_iam_role_policy_attachment",
+                "name": "example-AmazonEKSClusterPolicy",
+            },
+            {
+                "id": ANY,
+                "label": "aws_iam_role_policy_attachment",
+                "name": "example-AmazonEKSVPCResourceController",
+            },
+        ],
     }
 
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
@@ -35,6 +36,54 @@ func (s stringSet) Entries() []string {
 	return entries
 }
 
+type blockReferences struct {
+	refs []string
+	// block metadata
+	meta *map[string]any
+}
+
+type referenceTracker struct {
+	// track blocks by their string reference
+	blocksByReference map[string]*terraform.Block
+	// track all processed blocks that might have references
+	blocksWithReferences []*blockReferences
+}
+
+func (r *referenceTracker) AddBlock(b *terraform.Block) {
+	r.blocksByReference[b.FullName()] = b
+}
+
+func (r *referenceTracker) AddBlockReferences(refs []string, blockMeta *map[string]any) {
+	slices.Sort(refs) // for consistent ordering in block metadata
+	r.blocksWithReferences = append(r.blocksWithReferences, &blockReferences{refs: refs, meta: blockMeta})
+}
+
+func (r *referenceTracker) ProcessBlocksReferences() {
+	for _, blockRef := range r.blocksWithReferences {
+		refsMeta := [](map[string]any){}
+		for _, ref := range blockRef.refs {
+			if block, ok := r.blocksByReference[ref]; ok {
+				meta := map[string]any{
+					"id":    block.ID(),
+					"label": block.TypeLabel(),
+					"name":  block.NameLabel(),
+				}
+				refsMeta = append(refsMeta, meta)
+			}
+		}
+		if len(refsMeta) > 0 {
+			(*blockRef.meta)["references"] = refsMeta
+		}
+	}
+}
+
+func newReferenceTracker() referenceTracker {
+	return referenceTracker{
+		blocksByReference:    make(map[string]*terraform.Block),
+		blocksWithReferences: []*blockReferences{},
+	}
+}
+
 type terraformConverter struct {
 	filePath      string
 	modules       terraform.Modules
@@ -42,9 +91,7 @@ type terraformConverter struct {
 	stopOnError   bool
 	parserOptions []parser.Option
 
-	countsByParentPathBlockName map[string]map[string]int
-
-	blocksByReference map[string]*terraform.Block
+	referenceTracker referenceTracker
 }
 
 // VisitJSON visits each of the Terraform JSON blocks that the Terraform converter
@@ -56,6 +103,10 @@ func (t *terraformConverter) VisitJSON() *gabs.Container {
 	for _, m := range t.modules {
 		t.visitModule(m, jsonOut)
 	}
+
+	// Now that all blocks have been processed, fill metadata about related
+	// blocks for labels collected during visiting
+	t.referenceTracker.ProcessBlocksReferences()
 
 	return jsonOut
 }
@@ -71,7 +122,7 @@ func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Containe
 
 // visitBlock takes a block, and either builds a json model of the resource or ignores it.
 func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
-	t.blocksByReference[b.FullName()] = b
+	t.referenceTracker.AddBlock(b)
 
 	switch b.Type() {
 	// These blocks don't have to conform to policies, and they don't have
@@ -181,29 +232,15 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		"line_start": r.GetStartLine(),
 		"line_end":   r.GetEndLine(),
 	}
-	if refs := t.getAttributeRefsMeta(allRefs.Entries()); len(refs) > 0 {
-		meta["references"] = refs
+
+	if refs := allRefs.Entries(); len(refs) > 0 {
+		t.referenceTracker.AddBlockReferences(refs, &meta)
 	}
 	if tl := b.TypeLabel(); tl != "" {
 		meta["label"] = tl
 	}
 	obj["__tfmeta"] = meta
 	return obj
-}
-
-func (t *terraformConverter) getAttributeRefsMeta(refs []string) []map[string]any {
-	refsMeta := [](map[string]any){}
-	for _, ref := range refs {
-		if block, ok := t.blocksByReference[ref]; ok {
-			meta := map[string]any{
-				"id":    block.ID(),
-				"label": block.TypeLabel(),
-				"name":  block.NameLabel(),
-			}
-			refsMeta = append(refsMeta, meta)
-		}
-	}
-	return refsMeta
 }
 
 // getAttributeValue returns the value for the attribute
@@ -341,13 +378,11 @@ func getChildBlocks(b *terraform.Block) []*terraform.Block {
 // These blocks get extrated as JSON structured data for use by other tools.
 func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*terraformConverter, error) {
 	tfc := &terraformConverter{
-		filePath:      filePath,
-		debug:         false,
-		stopOnError:   false,
-		parserOptions: []parser.Option{},
-
-		countsByParentPathBlockName: make(map[string]map[string]int),
-		blocksByReference:           make(map[string]*terraform.Block),
+		filePath:         filePath,
+		debug:            false,
+		stopOnError:      false,
+		parserOptions:    []parser.Option{},
+		referenceTracker: newReferenceTracker(),
 	}
 
 	for _, opt := range opts {
