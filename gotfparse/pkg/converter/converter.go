@@ -71,7 +71,7 @@ func (t *terraformConverter) visitModule(m *terraform.Module, out *gabs.Containe
 
 // visitBlock takes a block, and either builds a json model of the resource or ignores it.
 func (t *terraformConverter) visitBlock(b *terraform.Block, parentPath string, jsonOut *gabs.Container) {
-	t.blocksByReference[b.Reference().String()] = b
+	t.blocksByReference[b.FullName()] = b
 
 	switch b.Type() {
 	// These blocks don't have to conform to policies, and they don't have
