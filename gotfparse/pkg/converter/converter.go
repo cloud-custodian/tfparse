@@ -27,8 +27,10 @@ func (s *stringSet) Add(str string) {
 
 func (s stringSet) Entries() []string {
 	entries := make([]string, len(s))
+	i := 0
 	for entry, _ := range s {
-		entries = append(entries, entry)
+		entries[i] = entry
+		i++
 	}
 	return entries
 }
