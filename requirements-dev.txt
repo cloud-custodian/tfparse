@@ -1,5 +1,5 @@
 black==25.1.0
-flake8==7.1.1
+flake8==7.2.0
 
 pytest==8.3.4
 pytest-forked==1.6.0
