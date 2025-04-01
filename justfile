@@ -7,12 +7,12 @@ default:
 # Create virtualenv if it doesn't exist or is missing dependencies
 venv:
     #!/usr/bin/env bash
-    if [ ! -d ".venv" ] || ! . .venv/bin/activate && pip freeze | grep -q "pytest"; then
+    set -e -o pipefail
+    if [ ! -d ".venv" ] || (! . .venv/bin/activate && pip freeze | grep -q "pytest"); then
         echo "Creating new virtualenv..."
         python -m venv .venv
-        . .venv/bin/activate && python -m pip install --upgrade pip
-        . .venv/bin/activate && pip install -r requirements-dev.txt
-        . .venv/bin/activate && pip install -e .
+        . .venv/bin/activate
+        pip install --upgrade pip -r requirements-dev.txt -e .
     else
         echo "Using existing virtualenv..."
     fi

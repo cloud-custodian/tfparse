@@ -2,6 +2,7 @@ import os.path
 import platform
 import shutil
 import sys
+from operator import itemgetter
 from pathlib import Path
 from unittest.mock import ANY
 
@@ -153,6 +154,23 @@ def test_parse_eks(tmp_path):
         "line_end": 15,
         "path": "aws_eks_cluster.example",
         "type": "resource",
+        "references": [
+            {
+                "id": ANY,
+                "label": "aws_iam_role",
+                "name": "cluster_example",
+            },
+            {
+                "id": ANY,
+                "label": "aws_iam_role_policy_attachment",
+                "name": "example-AmazonEKSClusterPolicy",
+            },
+            {
+                "id": ANY,
+                "label": "aws_iam_role_policy_attachment",
+                "name": "example-AmazonEKSVPCResourceController",
+            },
+        ],
     }
 
 
@@ -423,21 +441,38 @@ def test_references(tmp_path):
     mod_path = init_module("references", tmp_path)
     parsed = load_from_path(mod_path)
 
-    aes_bucket, kms_bucket, _ = parsed["aws_s3_bucket"]
+    aes_bucket, kms_bucket, log_bucket, sample_bucket = parsed["aws_s3_bucket"]
     config1, config2 = parsed["aws_s3_bucket_server_side_encryption_configuration"]
-
-    assert config1["bucket_ref"] == {
-        "__name__": "aes-encrypted-bucket",
-        "__attribute__": "aws_s3_bucket.aes-encrypted-bucket.bucket",
-        "__ref__": aes_bucket["id"],
-        "__type__": "aws_s3_bucket",
-    }
-    assert config2["bucket_ref"] == {
-        "__name__": "kms-encrypted-bucket",
-        "__attribute__": "aws_s3_bucket.kms-encrypted-bucket.bucket",
-        "__ref__": kms_bucket["id"],
-        "__type__": "aws_s3_bucket",
-    }
+    assert config1["bucket"] == "my-aes-encrypted-bucket"
+    assert config1["__tfmeta"]["references"] == [
+        {
+            "id": aes_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "aes-encrypted-bucket",
+        },
+    ]
+    assert config2["bucket"] == "my-kms-encrypted-bucket"
+    assert config2["__tfmeta"]["references"] == [
+        {
+            "id": kms_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "kms-encrypted-bucket",
+        },
+    ]
+    # all reference to other blocks are reported
+    [bucket_logging] = parsed["aws_s3_bucket_logging"]
+    assert sorted(bucket_logging["__tfmeta"]["references"], key=itemgetter("name")) == [
+        {
+            "id": log_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "log-bucket",
+        },
+        {
+            "id": sample_bucket["id"],
+            "label": "aws_s3_bucket",
+            "name": "sample-bucket",
+        },
+    ]
 
 
 def test_modules_located_above_root(tmp_path):
