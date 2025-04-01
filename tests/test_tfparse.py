@@ -619,17 +619,11 @@ def test_apply_time_vals(tmp_path):
 
     # Test resource with local.default_tags merged with apply-time values
     with_local_tags = parsed["aws_db_parameter_group"][1]["tags"]
-    assert with_local_tags == {
-        "Environment": "sandbox",
-        "ApplyTimeVal": None
-    }
+    assert with_local_tags == {"Environment": "sandbox", "ApplyTimeVal": None}
 
     # Test resource with var.tags merged with apply-time values
     with_var_tags = parsed["aws_db_parameter_group"][2]["tags"]
-    assert with_var_tags == {
-        "Environment": "sandbox",
-        "ApplyTimeVal": None
-    }
+    assert with_var_tags == {"Environment": "sandbox", "ApplyTimeVal": None}
 
     # Test untagged resource
     untagged = parsed["aws_db_parameter_group"][0]
