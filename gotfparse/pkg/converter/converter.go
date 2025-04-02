@@ -303,6 +303,24 @@ func (t *terraformConverter) findVariableBlock(name string) *terraform.Block {
 	return nil
 }
 
+// findLocalsBlock finds a locals block that contains a specific attribute
+func (t *terraformConverter) findLocalsBlock(name string) *terraform.Attribute {
+	logger.Debug("Looking for local", "name", name)
+	for _, m := range t.modules {
+		for _, block := range m.GetBlocks() {
+			if block.Type() == "locals" {
+				logger.Debug("Found locals block")
+				if attr := block.GetAttribute(name); attr != nil {
+					logger.Debug("Found attribute in locals block", "name", name)
+					return attr
+				}
+			}
+		}
+	}
+	logger.Debug("Local not found", "name", name)
+	return nil
+}
+
 // convertCtyToNativeValue converts a `cty.Value`, used by the
 // aquasecurity/defsec library, to a value that can be converted into json by
 // the Jeffail/gabs library.
@@ -616,6 +634,9 @@ func (t *terraformConverter) handleGenericFunction(funcExpr *hclsyntax.FunctionC
 					}
 					// Use null for complex templates instead of a placeholder
 					attrs[key] = cty.NullVal(cty.String)
+				case *hclsyntax.ScopeTraversalExpr:
+					// If the value is a data reference, use null
+					attrs[key] = cty.NullVal(cty.String)
 				default:
 					// For other expression types, just use null value
 					// This preserves the key while setting a null value
@@ -638,21 +659,31 @@ func (t *terraformConverter) handleGenericFunction(funcExpr *hclsyntax.FunctionC
 					} else {
 						// Variable exists but has no default - use an empty object
 						// This allows functions to still operate on the variable
-						logger.Debug("Variable has no default, using empty object", "varName", varName)
 						args = append(args, cty.EmptyObjectVal)
 						continue
 					}
 				} else {
 					// Variable not found - use an empty object
-					logger.Debug("Variable not found, using empty object", "varName", varName)
+					args = append(args, cty.EmptyObjectVal)
+					continue
+				}
+			} else if rootName == "local" && len(expr.Traversal) > 1 {
+				// Handle local references
+				localName := expr.Traversal[1].(hcl.TraverseAttr).Name
+				if localAttr := t.findLocalsBlock(localName); localAttr != nil {
+					args = append(args, localAttr.Value())
+					continue
+				} else {
+					// Local not found - use an empty object
 					args = append(args, cty.EmptyObjectVal)
 					continue
 				}
 			}
 			// If not a variable or something more complex, include the traversal path in the value
 			// This preserves important reference information for downstream processors
-			path := getRootPath(expr.Traversal)
-			args = append(args, cty.StringVal(fmt.Sprintf("${%s}", path)))
+			getRootPath(expr.Traversal)
+			// Use null for all unresolvable references so they're included in the final output
+			args = append(args, cty.NullVal(cty.String))
 		}
 	}
 
@@ -680,15 +711,24 @@ func (t *terraformConverter) extractKey(keyExpr hcl.Expression) string {
 	if templateExpr, ok := keyExpr.(*hclsyntax.TemplateExpr); ok && len(templateExpr.Parts) == 1 {
 		if lit, ok := templateExpr.Parts[0].(*hclsyntax.LiteralValueExpr); ok {
 			key := lit.Val.AsString()
-			logger.Debug("Extracted key from template", "key", key)
 			return key
 		}
 	} else if litExpr, ok := keyExpr.(*hclsyntax.LiteralValueExpr); ok {
 		key := litExpr.Val.AsString()
-		logger.Debug("Extracted key from literal", "key", key)
 		return key
+	} else if traversalExpr, ok := keyExpr.(*hclsyntax.ScopeTraversalExpr); ok {
+		// If it's a scope traversal expression, use the last part of the traversal as the key
+		if len(traversalExpr.Traversal) > 0 {
+			// Try to get the last part of the traversal
+			lastPart := traversalExpr.Traversal[len(traversalExpr.Traversal)-1]
+			if attrPart, ok := lastPart.(hcl.TraverseAttr); ok {
+				// Get the attribute name
+				return attrPart.Name
+			} else if rootPart, ok := lastPart.(hcl.TraverseRoot); ok {
+				return rootPart.Name
+			}
+		}
 	}
 
-	logger.Debug("Failed to extract key", "exprType", fmt.Sprintf("%T", keyExpr))
 	return ""
 }
