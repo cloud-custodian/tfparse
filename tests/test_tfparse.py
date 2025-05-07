@@ -628,3 +628,15 @@ def test_apply_time_vals(tmp_path):
     # Test untagged resource
     untagged = parsed["aws_db_parameter_group"][0]
     assert "tags" not in untagged
+
+    # Test attribute handling for different scenarios
+    role_attributes = {
+        role["__tfmeta"]["path"]: role.get("permissions_boundary")
+        for role in parsed["aws_iam_role"]
+    }
+    assert role_attributes["aws_iam_role.attribute_not_present"] is None
+    assert role_attributes["aws_iam_role.attribute_with_direct_reference"] == {}
+    assert (
+        role_attributes["aws_iam_role.attribute_with_interpolated_reference"]
+        == "arn:aws:iam:::policy/BoundaryPolicy"
+    )
