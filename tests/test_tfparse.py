@@ -82,9 +82,9 @@ def test_vars_bad_types(tmp_path):
     # not valid in any TF that's less than 5 years old.
     mod_path = init_module("vars-bad-types", tmp_path, run_init=False)
     assert get_outputs(load_from_path(mod_path)) == {
-        "empty_block": None,
+        "empty_block": {},
         "default_only": "huh",
-        "quoted_type": None,
+        "quoted_type": {},
     }
     assert get_outputs(load_from_path(mod_path, vars_paths=["numbers.tfvars"])) == {
         "empty_block": 123,
@@ -267,7 +267,7 @@ def test_moved_blocks(tmp_path):
     parsed = load_from_path(mod_path)
 
     (item,) = parsed["moved"]
-    assert item["from"] is None
+    assert item["from"] == {}
     assert len(item["to"]) == 2
 
 
@@ -610,7 +610,7 @@ def test_ec2_tags(tmp_path):
 
     # Test untagged instance
     untagged = parsed["aws_instance"][2]
-    assert untagged["tags"] is None
+    assert untagged["tags"] == {}
 
 
 def test_apply_time_vals(tmp_path):
