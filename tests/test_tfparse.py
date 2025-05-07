@@ -82,9 +82,9 @@ def test_vars_bad_types(tmp_path):
     # not valid in any TF that's less than 5 years old.
     mod_path = init_module("vars-bad-types", tmp_path, run_init=False)
     assert get_outputs(load_from_path(mod_path)) == {
-        "empty_block": {'__attribute__': 'var.empty_block', '__name__': 'empty_block'},
+        "empty_block": {"__attribute__": "var.empty_block", "__name__": "empty_block"},
         "default_only": "huh",
-        "quoted_type": {'__attribute__': 'var.quoted_type', '__name__': 'quoted_type'},
+        "quoted_type": {"__attribute__": "var.quoted_type", "__name__": "quoted_type"},
     }
     assert get_outputs(load_from_path(mod_path, vars_paths=["numbers.tfvars"])) == {
         "empty_block": 123,
