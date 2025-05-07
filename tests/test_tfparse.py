@@ -82,9 +82,9 @@ def test_vars_bad_types(tmp_path):
     # not valid in any TF that's less than 5 years old.
     mod_path = init_module("vars-bad-types", tmp_path, run_init=False)
     assert get_outputs(load_from_path(mod_path)) == {
-        "empty_block": None,
+        "empty_block": {'__attribute__': 'var.empty_block', '__name__': 'empty_block'},
         "default_only": "huh",
-        "quoted_type": None,
+        "quoted_type": {'__attribute__': 'var.quoted_type', '__name__': 'quoted_type'},
     }
     assert get_outputs(load_from_path(mod_path, vars_paths=["numbers.tfvars"])) == {
         "empty_block": 123,
@@ -267,7 +267,7 @@ def test_moved_blocks(tmp_path):
     parsed = load_from_path(mod_path)
 
     (item,) = parsed["moved"]
-    assert item["from"] is None
+    assert item["from"] == {"__attribute__": "aws_instance.a", "__name__": "a"}
     assert len(item["to"]) == 2
 
 
@@ -610,7 +610,10 @@ def test_ec2_tags(tmp_path):
 
     # Test untagged instance
     untagged = parsed["aws_instance"][2]
-    assert untagged["tags"] is None
+    assert untagged["tags"] == {
+        "__attribute__": "var.additional_tags",
+        "__name__": "additional_tags",
+    }
 
 
 def test_apply_time_vals(tmp_path):
@@ -628,3 +631,20 @@ def test_apply_time_vals(tmp_path):
     # Test untagged resource
     untagged = parsed["aws_db_parameter_group"][0]
     assert "tags" not in untagged
+
+    # Test attribute handling for different scenarios
+    role_attributes = {
+        role["__tfmeta"]["path"]: role.get("permissions_boundary")
+        for role in parsed["aws_iam_role"]
+    }
+    assert role_attributes["aws_iam_role.attribute_not_present"] is None
+    assert role_attributes["aws_iam_role.attribute_with_direct_reference"] == {
+        "__attribute__": "data.aws_caller_identity.current.account_id",
+        "__name__": "current",
+        "__ref__": "aws_caller_identity.current",
+        "__type__": "aws_caller_identity",
+    }
+    assert (
+        role_attributes["aws_iam_role.attribute_with_interpolated_reference"]
+        == "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/BoundaryPolicy"
+    )

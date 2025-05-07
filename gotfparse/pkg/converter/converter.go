@@ -271,14 +271,18 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 	if val.IsNull() || !val.IsKnown() {
 		// Check if it's a function call that might have failed due to unresolvable variables
 		hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
-		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
-			logger.Debug("Function call detected", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
 
-			// Get the function from Trivy's function map
-			functions := parser.Functions(os.DirFS("."), ".")
-			if fn, exists := functions[funcExpr.Name]; exists {
-				return t.handleGenericFunction(funcExpr, fn)
-			}
+		// Try different expression types in order of precedence
+		if templateExpr, isTemplate := hclAttr.Expr.(*hclsyntax.TemplateExpr); isTemplate {
+			return t.handleTemplateExpression(a, templateExpr)
+		}
+
+		if traversalExpr, isTraversal := hclAttr.Expr.(*hclsyntax.ScopeTraversalExpr); isTraversal {
+			return t.handleScopeTraversal(traversalExpr)
+		}
+
+		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
+			return t.handleFunctionCall(funcExpr)
 		}
 	}
 
@@ -289,6 +293,177 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 
 	// If we get this far, just return the raw value
 	return a.GetRawValue()
+}
+
+// handleTemplateExpression processes string interpolation expressions
+func (t *terraformConverter) handleTemplateExpression(a *terraform.Attribute, templateExpr *hclsyntax.TemplateExpr) any {
+	// For string interpolation that couldn't be fully resolved,
+	// try to reconstruct the original template
+	rawValue := a.GetRawValue()
+	if rawValue != nil && rawValue != "" && rawValue != "null" {
+		// If we have a non-empty raw value, use it
+		return rawValue
+	}
+
+	// If raw value isn't helpful, try to reconstruct the template from its parts
+	reconstructed := reconstructTemplate(templateExpr)
+	if reconstructed != "" {
+		return reconstructed
+	}
+
+	// Fallback to template placeholder
+	return fmt.Sprintf("<template with %d parts>", len(templateExpr.Parts))
+}
+
+// handleScopeTraversal processes direct references to resources or attributes
+func (t *terraformConverter) handleScopeTraversal(traversalExpr *hclsyntax.ScopeTraversalExpr) any {
+	// Only process if we have enough parts for a meaningful reference
+	if len(traversalExpr.Traversal) <= 1 {
+		return nil
+	}
+
+	// Generic processing for all references
+	var refString strings.Builder
+	var resourceType, resourceName string
+
+	// First determine if this is a data source reference or direct resource reference
+	isData := traversalExpr.Traversal[0].(hcl.TraverseRoot).Name == "data"
+
+	// Build the full reference string and extract key components
+	for i, step := range traversalExpr.Traversal {
+		// Add separator between parts if not the first one
+		if i > 0 {
+			refString.WriteString(".")
+		}
+
+		// Handle different traversal types
+		switch s := step.(type) {
+		case hcl.TraverseRoot:
+			refString.WriteString(s.Name)
+		case hcl.TraverseAttr:
+			refString.WriteString(s.Name)
+
+			// Extract resource type and name based on position in traversal
+			if isData {
+				// For data sources: data.aws_type.name...
+				if i == 1 {
+					resourceType = s.Name // Second part is the resource type (aws_type)
+				} else if i == 2 {
+					resourceName = s.Name // Third part is the resource name
+				}
+			} else {
+				// For direct resource references: aws_type.name...
+				if i == 0 {
+					resourceType = s.Name // First part is the resource type
+				} else if i == 1 {
+					resourceName = s.Name // Second part is the resource name
+				}
+			}
+		case hcl.TraverseIndex:
+			refString.WriteString("[")
+			appendTraverseIndexValue(&refString, s.Key)
+			refString.WriteString("]")
+		}
+	}
+
+	// Construct the reference object with all available information
+	refObj := map[string]interface{}{
+		"__attribute__": refString.String(),
+	}
+
+	// Always add type information if available
+	if resourceType != "" {
+		refObj["__type__"] = resourceType
+	}
+
+	// Add name if available
+	if resourceName != "" {
+		refObj["__name__"] = resourceName
+	}
+
+	// Build a __ref__ that combines type and name if both are available
+	if resourceType != "" && resourceName != "" {
+		refObj["__ref__"] = fmt.Sprintf("%s.%s", resourceType, resourceName)
+	}
+
+	return refObj
+}
+
+// handleFunctionCall processes function call expressions
+func (t *terraformConverter) handleFunctionCall(funcExpr *hclsyntax.FunctionCallExpr) any {
+	logger.Debug("Function call detected", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
+
+	// Get the function from Trivy's function map
+	functions := parser.Functions(os.DirFS("."), ".")
+	if fn, exists := functions[funcExpr.Name]; exists {
+		return t.handleGenericFunction(funcExpr, fn)
+	}
+
+	return nil
+}
+
+// reconstructTemplate tries to reconstruct a template string from its parts
+func reconstructTemplate(expr *hclsyntax.TemplateExpr) string {
+	var templateParts []string
+
+	for _, part := range expr.Parts {
+		switch p := part.(type) {
+		case *hclsyntax.LiteralValueExpr:
+			// For static text parts
+			if p.Val.Type() == cty.String {
+				templateParts = append(templateParts, p.Val.AsString())
+			}
+		case *hclsyntax.ScopeTraversalExpr:
+			// For variable references like ${data.aws_caller_identity.current.account_id}
+			// Try to get a simple string representation of the traversal
+			var sb strings.Builder
+			sb.WriteString("${")
+
+			// Simple concatenation of traversal parts
+			for i, step := range p.Traversal {
+				if i > 0 {
+					if _, ok := step.(hcl.TraverseAttr); ok {
+						sb.WriteString(".")
+					}
+				}
+
+				switch s := step.(type) {
+				case hcl.TraverseRoot:
+					sb.WriteString(s.Name)
+				case hcl.TraverseAttr:
+					sb.WriteString(s.Name)
+				case hcl.TraverseIndex:
+					sb.WriteString("[")
+					appendTraverseIndexValue(&sb, s.Key)
+					sb.WriteString("]")
+				}
+			}
+
+			sb.WriteString("}")
+			templateParts = append(templateParts, sb.String())
+		default:
+			// For other types of expressions inside ${...} that we can't easily reconstruct
+			templateParts = append(templateParts, "${...}")
+		}
+	}
+
+	return strings.Join(templateParts, "")
+}
+
+// appendTraverseIndexValue writes the string representation of an index key to a string builder
+func appendTraverseIndexValue(sb *strings.Builder, key cty.Value) {
+	if key.Type() == cty.String {
+		sb.WriteString(key.AsString())
+	} else if key.Type() == cty.Number {
+		bf := key.AsBigFloat()
+		if num := bf.String(); num != "" {
+			sb.WriteString(num)
+		} else {
+			// Fall back to float representation
+			f, _ := bf.Float64()
+			sb.WriteString(fmt.Sprintf("%g", f))
+		}
+	}
 }
 
 // findVariableBlock finds a variable block by name
