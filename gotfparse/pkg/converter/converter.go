@@ -266,20 +266,34 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 	// First try using the parsed value directly
 	val := a.Value()
 
-	// Only attempt to handle functions manually if the value is null or not known
-	// This ensures we don't interfere with functions that have been successfully resolved
+	// Use some special case processing _only_ if an attribute value is null or not known
+	// This ensures we don't interfere with expressions that have been successfully resolved
 	if val.IsNull() || !val.IsKnown() {
-		// Check if it's a function call that might have failed due to unresolvable variables
 		hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
-		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
-			logger.Debug("Function call detected", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
+		switch expr := hclAttr.Expr.(type) {
+		case *hclsyntax.FunctionCallExpr:
+			// Function call that might have failed due to unresolvable variables
+			logger.Debug("Function call detected", "name", expr.Name, "argCount", len(expr.Args))
 
 			// Get the function from Trivy's function map
 			functions := parser.Functions(os.DirFS("."), ".")
-			if fn, exists := functions[funcExpr.Name]; exists {
-				return t.handleGenericFunction(funcExpr, fn)
+			if fn, exists := functions[expr.Name]; exists {
+				return t.handleGenericFunction(expr, fn)
 			}
+		case *hclsyntax.TemplateExpr:
+			// For template strings, return a string containing only the literal portions
+			var sb strings.Builder
+			for _, part := range expr.Parts {
+				if lit, ok := part.(*hclsyntax.LiteralValueExpr); ok {
+					sb.WriteString(lit.Val.AsString())
+				}
+			}
+			return sb.String()
+		case *hclsyntax.ScopeTraversalExpr:
+			// Use a null for unresolvable references so they still show up as defined
+			return cty.NullVal(cty.String)
 		}
+
 	}
 
 	// Try to convert the value to a native type
