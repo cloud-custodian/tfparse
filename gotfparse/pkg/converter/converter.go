@@ -14,7 +14,6 @@ import (
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	trivy_log "github.com/aquasecurity/trivy/pkg/log"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
@@ -639,7 +638,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		return nil, err
 	}
 
-	m, _, err := p.EvaluateAll(context.TODO())
+	m, err := p.EvaluateAll(context.TODO())
 	if err != nil {
 		return nil, err
 	}
@@ -653,11 +652,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 func (t *terraformConverter) SetDebug() {
 	// Enable debug logging
 	SetLogLevel(slog.LevelDebug)
-	// Set debug in trivy
-	opt := func(p *parser.Parser) {
-		trivy_log.InitLogger(true, false)
-	}
-	t.parserOptions = append(t.parserOptions, opt)
+	t.parserOptions = append(t.parserOptions, parser.OptionWithLogger(logger))
 }
 
 // SetStopOnHCLError is a TerraformConverter option that is used to stop the underlying defsec parser when an

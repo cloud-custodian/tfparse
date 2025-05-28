@@ -20,7 +20,7 @@ setup(
     maintainer="Cloud Custodian Project",
     maintainer_email="cloud-custodian@googlegroups.com",
     license="Apache-2.0",
-    version="0.6.15",
+    version="0.6.16",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -28,7 +28,6 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
-        "License :: OSI Approved :: Apache Software License",
     ],
     packages=find_packages(),
     install_requires=["cffi>=1.0.0"],
