@@ -34,8 +34,7 @@ func main() {
 	err = p.ParseFS(ctx, ".")
 	check(err)
 
-	// second parameter always seems to be an empty map
-	modules, _, err := p.EvaluateAll(ctx)
+	modules, err := p.EvaluateAll(ctx)
 	check(err)
 
 	objects, err := dumpJson(modules)

@@ -639,7 +639,7 @@ func NewTerraformConverter(filePath string, opts ...TerraformConverterOption) (*
 		return nil, err
 	}
 
-	m, _, err := p.EvaluateAll(context.TODO())
+	m, err := p.EvaluateAll(context.TODO())
 	if err != nil {
 		return nil, err
 	}
