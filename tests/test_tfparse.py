@@ -280,11 +280,25 @@ def test_parse_dynamic_content(tmp_path):
     # mod_path = init_module("dynamic-stuff", tmp_path)
     parsed = load_from_path(mod_path, debug=True)
 
+    vars = [
+        {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "label": "unknown",
+                "line_end": 53,
+                "line_start": 51,
+                "path": "variable.unknown",
+            },
+            "id": ANY,
+            "type": "set of string",
+        }
+    ]
+
     resource = {
         "__tfmeta": {
             "filename": "main.tf",
             "label": "some_resource",
-            "line_end": 41,
+            "line_end": 49,
             "line_start": 1,
             "path": ANY,
             "type": "resource",
@@ -363,6 +377,7 @@ def test_parse_dynamic_content(tmp_path):
             resource,
             resource,
         ],
+        "variable": vars,
     }
 
 
