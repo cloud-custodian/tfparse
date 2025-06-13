@@ -505,6 +505,10 @@ func convertCtyToNativeValue(val cty.Value) (interface{}, bool) {
 		vType = val.Type()
 	)
 
+	if val.IsMarked() {
+		return nil, true
+	}
+
 	if val.IsNull() {
 		return nil, true
 	}
