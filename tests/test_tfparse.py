@@ -648,3 +648,10 @@ def test_apply_time_vals(tmp_path):
         role_attributes["aws_iam_role.attribute_with_interpolated_reference"]
         == "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/BoundaryPolicy"
     )
+
+
+def test_handle_sensitive_value(tmp_path):
+    mod_path = init_module("sensitive", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+    assert parsed["locals"][0]["sensitive-thing"] is None
+    assert parsed["locals"][0]["non-sensitive-thing"] == "NON-SENSITIVE-THING"
