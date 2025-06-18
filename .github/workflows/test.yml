@@ -68,16 +68,17 @@ jobs:
 
       - name: Install uv
         id: setup-uv-lint
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # ratchet:astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
+          activate-environment: true
 
       - name: Install c7n-left
         shell: bash
         working-directory: custodian/tools/c7n_left
         run: |
-          uv sync --frozen --inexact
+          uv sync --frozen --inexact --active
 
       - name: Install dependencies
         run: |
