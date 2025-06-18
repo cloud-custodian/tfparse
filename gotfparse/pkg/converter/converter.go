@@ -235,7 +235,12 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		}
 
 		for _, ref := range a.AllReferences() {
-			allRefs.Add(ref.String())
+			// We don't have access to ref.parent here to capture parent module
+			// path info. However, for references inside modules HumanReadable()
+			// joins the module and resource paths together with a colon. That's
+			// one replace away from matching the full resource path that
+			// ProcessBlocksReferences() looks for.
+			allRefs.Add(strings.Replace(ref.HumanReadable(), ":", ".", -1))
 		}
 	}
 
