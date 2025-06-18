@@ -91,7 +91,7 @@ jobs:
       - name: Run c7n-left tests
         working-directory: custodian
         run: |
-          uv run pytest tools/c7n_left/tests
+          uv run --active pytest tools/c7n_left/tests
 
   Tests:
     needs: Lint
