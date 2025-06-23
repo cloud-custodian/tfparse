@@ -280,11 +280,25 @@ def test_parse_dynamic_content(tmp_path):
     # mod_path = init_module("dynamic-stuff", tmp_path)
     parsed = load_from_path(mod_path, debug=True)
 
+    vars = [
+        {
+            "__tfmeta": {
+                "filename": "main.tf",
+                "label": "unknown",
+                "line_end": 53,
+                "line_start": 51,
+                "path": "variable.unknown",
+            },
+            "id": ANY,
+            "type": "set of string",
+        }
+    ]
+
     resource = {
         "__tfmeta": {
             "filename": "main.tf",
             "label": "some_resource",
-            "line_end": 41,
+            "line_end": 49,
             "line_start": 1,
             "path": ANY,
             "type": "resource",
@@ -363,6 +377,7 @@ def test_parse_dynamic_content(tmp_path):
             resource,
             resource,
         ],
+        "variable": vars,
     }
 
 
@@ -473,6 +488,24 @@ def test_references(tmp_path):
             "name": "sample-bucket",
         },
     ]
+
+
+def test_module_references(tmp_path):
+    mod_path = init_module("module-references", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["aws_s3_bucket"]
+    public_access_blocks = parsed["aws_s3_bucket_public_access_block"]
+
+    for bucket, public_access_block in zip(buckets, public_access_blocks):
+        assert bucket["id"] == public_access_block["__tfmeta"]["references"][0]["id"]
+        assert (
+            bucket["__tfmeta"]["label"]
+            == public_access_block["__tfmeta"]["references"][0]["label"]
+        )
+        assert bucket["__tfmeta"]["path"].endswith(
+            public_access_block["__tfmeta"]["references"][0]["name"]
+        )
 
 
 def test_modules_located_above_root(tmp_path):

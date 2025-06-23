@@ -38,4 +38,16 @@ resource "some_resource" "this" {
   }
 
   prop3 = "end"
+
+  dynamic "unknown_loop" {
+    for_each = var.unknown
+
+    content {
+      other = each.value
+    }
+  }
+}
+
+variable "unknown" {
+  type = set(string)
 }
