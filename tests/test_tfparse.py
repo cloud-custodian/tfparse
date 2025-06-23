@@ -490,6 +490,24 @@ def test_references(tmp_path):
     ]
 
 
+def test_module_references(tmp_path):
+    mod_path = init_module("module-references", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["aws_s3_bucket"]
+    public_access_blocks = parsed["aws_s3_bucket_public_access_block"]
+
+    for bucket, public_access_block in zip(buckets, public_access_blocks):
+        assert bucket["id"] == public_access_block["__tfmeta"]["references"][0]["id"]
+        assert (
+            bucket["__tfmeta"]["label"]
+            == public_access_block["__tfmeta"]["references"][0]["label"]
+        )
+        assert bucket["__tfmeta"]["path"].endswith(
+            public_access_block["__tfmeta"]["references"][0]["name"]
+        )
+
+
 def test_modules_located_above_root(tmp_path):
     mod_path = init_module("local-module-above-root", tmp_path)
     parsed = load_from_path(os.path.join(mod_path, "root"))

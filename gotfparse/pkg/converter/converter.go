@@ -102,6 +102,22 @@ func newReferenceTracker() referenceTracker {
 	}
 }
 
+// Get a reference's fully qualified path in the form of `parent.type.name`,
+// to help preserve reference tracking for resources inside modules.
+//
+// The upstream implementation of reference.HumanReadable() was the closest
+// way to get a fully qualified path using only public members. We implement
+// a tweaked version of that function here, rather than performing a local
+// replace on the HumanReadable() value. This is _probably_ the more stable
+// option, but it's still a hack.
+func getPath(r *terraform.Reference) string {
+	parent := getPrivateValue(r, "parent").(string)
+	if parent == "" {
+		return r.String()
+	}
+	return fmt.Sprintf("%s.%s", parent, r.String())
+}
+
 type terraformConverter struct {
 	filePath         string
 	modules          terraform.Modules
@@ -235,7 +251,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 		}
 
 		for _, ref := range a.AllReferences() {
-			allRefs.Add(ref.String())
+			allRefs.Add(getPath(ref))
 		}
 	}
 
