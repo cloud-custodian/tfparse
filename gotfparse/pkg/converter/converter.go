@@ -13,6 +13,7 @@ import (
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/funcs"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -520,6 +521,10 @@ func convertCtyToNativeValue(val cty.Value) (interface{}, bool) {
 
 		vType = val.Type()
 	)
+
+	if val.HasMark(funcs.MarkedSensitive) {
+		return "(sensitive value)", true
+	}
 
 	if val.IsNull() {
 		return nil, true
