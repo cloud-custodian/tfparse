@@ -653,5 +653,5 @@ def test_apply_time_vals(tmp_path):
 def test_handle_sensitive_value(tmp_path):
     mod_path = init_module("sensitive", tmp_path, run_init=False)
     parsed = load_from_path(mod_path)
-    assert parsed["locals"][0]["sensitive-thing"] is None
+    assert parsed["locals"][0]["sensitive-thing"] == "(sensitive value)"
     assert parsed["locals"][0]["non-sensitive-thing"] == "NON-SENSITIVE-THING"
