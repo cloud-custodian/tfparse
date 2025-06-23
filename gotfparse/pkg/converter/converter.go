@@ -592,7 +592,7 @@ func getChildBlocks(b *terraform.Block) []*terraform.Block {
 		attr := b.GetAttribute("for_each")
 
 		value := attr.Value()
-		if value.IsNull() {
+		if value.IsNull() || !value.IsKnown() {
 			return 0
 		}
 
