@@ -284,7 +284,7 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 
 	// Only attempt to handle functions manually if the value is null or not known
 	// This ensures we don't interfere with functions that have been successfully resolved
-	if val.IsNull() || !val.IsKnown() {
+	if val.IsNull() || !val.IsKnown() || !val.IsWhollyKnown() {
 		// Check if it's a function call that might have failed due to unresolvable variables
 		hclAttr := getPrivateValue(a, "hclAttribute").(*hcl.Attribute)
 

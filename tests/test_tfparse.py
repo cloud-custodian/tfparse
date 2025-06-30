@@ -688,3 +688,19 @@ def test_handle_sensitive_value(tmp_path):
     parsed = load_from_path(mod_path)
     assert parsed["locals"][0]["sensitive-thing"] == "(sensitive value)"
     assert parsed["locals"][0]["non-sensitive-thing"] == "NON-SENSITIVE-THING"
+
+
+def test_wholly_known_foreach(tmp_path):
+    mod_path = init_module("wholly-known-for_each", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+    assert parsed["locals"][0]["current_month"] == 6
+    assert parsed["locals"][0]["last_month"] == 5
+    assert parsed["terraform_data"][0]["for_each"] == [5, 6]
+
+
+def test_not_wholly_known_foreach(tmp_path):
+    mod_path = init_module("not-wholly-known-for_each", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+    assert parsed["locals"][0]["current_month"] is None
+    assert parsed["locals"][0]["last_month"] is None
+    assert parsed["terraform_data"][0]["for_each"] is None
