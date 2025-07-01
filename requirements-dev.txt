@@ -1,7 +1,7 @@
 black==25.1.0
-flake8==7.2.0
+flake8==7.3.0
 
-pytest==8.3.5
+pytest==8.4.1
 pytest-forked==1.6.0
 pytest-terraform==0.7.0
-pytest-xdist==3.7.0
+pytest-xdist==3.8.0
