@@ -1,0 +1,7 @@
+black
+flake8
+
+pytest
+pytest-forked
+pytest-terraform
+pytest-xdist

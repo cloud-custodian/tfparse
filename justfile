@@ -69,3 +69,8 @@ install-dlv:
 # Debug Go code with Delve
 debug cmd args: install-dlv
     cd gotfparse && dlv debug --check-go-version=false ./cmd/{{cmd}}/main.go -- ../{{args}} 
+
+# Update dev dependencies
+update-dev-dependencies:
+    uv version || (echo "Please install uv, see: https://docs.astral.sh/uv/getting-started/installation/"; exit 1)
+    uv tool run --from pip-tools pip-compile requirements-dev.in
