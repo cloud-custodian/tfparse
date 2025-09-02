@@ -20,13 +20,13 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@5f22145df44122af0f5a201f93cf0207171beca7
+        uses: pypa/cibuildwheel@c923d83ad9c1bc00211c5041d0c3f73294ff88f6
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
@@ -42,7 +42,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
       - name: Set up Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
         with:
@@ -50,7 +50,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@5f22145df44122af0f5a201f93cf0207171beca7
+        uses: pypa/cibuildwheel@c923d83ad9c1bc00211c5041d0c3f73294ff88f6
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: AMD64
@@ -71,7 +71,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
       - name: Set up Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
         with:
@@ -79,7 +79,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@5f22145df44122af0f5a201f93cf0207171beca7
+        uses: pypa/cibuildwheel@c923d83ad9c1bc00211c5041d0c3f73294ff88f6
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
@@ -97,7 +97,7 @@ jobs:
       hash: ${{ steps.hash.outputs.hash }}
     steps:
       - name: Fetch Wheels
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           pattern: "wheels-*"
           path: dist
@@ -127,9 +127,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
       - name: Fetch Wheels
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           pattern: "*"
           path: dist
@@ -150,7 +150,7 @@ jobs:
       id-token: write
     steps:
       - name: Fetch Wheels
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           pattern: "wheels-*"
           path: dist
