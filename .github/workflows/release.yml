@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs: {}
 env:
-  CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
+  CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
 jobs:
 
   Build-Linux:
@@ -26,7 +26,7 @@ jobs:
         with:
           platforms: arm64
       - name: Build wheels
-        uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c
+        uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc # v3.3.0
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
           CIBW_BEFORE_ALL: sh ci-setup-golang.sh
@@ -50,7 +50,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c
+        uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc # v3.3.0
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: AMD64
@@ -79,7 +79,7 @@ jobs:
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Build wheels
-        uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c
+        uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc # v3.3.0
         env:
           CGO_ENABLED: 1
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
