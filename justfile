@@ -72,5 +72,5 @@ debug cmd args: install-dlv
 
 # Update dev dependencies
 update-dev-dependencies:
-    uv version || (echo "Please install uv, see: https://docs.astral.sh/uv/getting-started/installation/"; exit 1)
+    uv --version || (echo "Please install uv, see: https://docs.astral.sh/uv/getting-started/installation/"; exit 1)
     uv tool run --from pip-tools pip-compile requirements-dev.in
