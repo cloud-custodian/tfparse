@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements-dev.in
 #
-black==25.9.0
+black==25.11.0
     # via -r requirements-dev.in
 click==8.2.1
     # via black
@@ -40,7 +40,7 @@ pyflakes==3.4.0
     # via flake8
 pygments==2.19.2
     # via pytest
-pytest==8.4.2
+pytest==9.0.1
     # via
     #   -r requirements-dev.in
     #   pytest-forked
@@ -54,5 +54,5 @@ pytest-xdist==3.8.0
     # via
     #   -r requirements-dev.in
     #   pytest-terraform
-pytokens==0.1.10
+pytokens==0.3.0
     # via black
