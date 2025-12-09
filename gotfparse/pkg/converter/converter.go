@@ -294,7 +294,7 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 		}
 
 		if traversalExpr, isTraversal := hclAttr.Expr.(*hclsyntax.ScopeTraversalExpr); isTraversal {
-			return t.handleScopeTraversal(traversalExpr)
+			return t.handleScopeTraversal(traversalExpr, val)
 		}
 
 		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
@@ -332,7 +332,7 @@ func (t *terraformConverter) handleTemplateExpression(a *terraform.Attribute, te
 }
 
 // handleScopeTraversal processes direct references to resources or attributes
-func (t *terraformConverter) handleScopeTraversal(traversalExpr *hclsyntax.ScopeTraversalExpr) any {
+func (t *terraformConverter) handleScopeTraversal(traversalExpr *hclsyntax.ScopeTraversalExpr, val cty.Value) any {
 	// Only process if we have enough parts for a meaningful reference
 	if len(traversalExpr.Traversal) <= 1 {
 		return nil
@@ -382,9 +382,29 @@ func (t *terraformConverter) handleScopeTraversal(traversalExpr *hclsyntax.Scope
 		}
 	}
 
+	fullRef := refString.String()
+
+	// Special case: If this is an unknown JSON string (detected via refinements),
+	// return a parseable JSON placeholder instead of a reference object.
+	// This allows downstream tools like JMESPath's from_json() to work while
+	// still preserving the reference information for debugging.
+	if !val.IsKnown() && val.Type() == cty.String {
+		if rng := val.Range(); rng.StringPrefix() != "" {
+			prefix := rng.StringPrefix()
+
+			if prefix == "[" {
+				// Return JSON array placeholder with unresolved marker
+				return fmt.Sprintf("[{\"__unresolved__\": \"%s\"}]", fullRef)
+			} else if prefix == "{" {
+				// Return JSON object placeholder with unresolved marker
+				return fmt.Sprintf("{\"__unresolved__\": \"%s\"}", fullRef)
+			}
+		}
+	}
+
 	// Construct the reference object with all available information
 	refObj := map[string]interface{}{
-		"__attribute__": refString.String(),
+		"__attribute__": fullRef,
 	}
 
 	// Always add type information if available
