@@ -704,3 +704,62 @@ def test_not_wholly_known_foreach(tmp_path):
     assert parsed["locals"][0]["current_month"] is None
     assert parsed["locals"][0]["last_month"] is None
     assert parsed["terraform_data"][0]["for_each"] is None
+
+
+def test_module_output_json_string(tmp_path):
+    """
+    Test that module outputs that should be JSON strings are handled correctly.
+
+    For unresolvable module outputs that have JSON refinements (start with "[" or "{"),
+    we should return a parseable JSON placeholder instead of a reference object.
+
+    This prevents JMESPath errors when using from_json():
+    JMESPathTypeError: In function from_json(), invalid type for value:
+    {'__attribute__': 'module.container.json_map_encoded_list', '__name__': 'container'},
+    expected one of: ['string'], received: "object"
+    """
+    mod_path = init_module("module-output-json-string", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    assert "aws_ecs_task_definition" in parsed
+    assert len(parsed["aws_ecs_task_definition"]) == 2  # direct and wrapped
+
+    # Test 1: Direct module reference - fully resolvable
+    direct_task = [
+        t for t in parsed["aws_ecs_task_definition"] if t["family"] == "direct-task"
+    ][0]
+    direct_container_defs = direct_task["container_definitions"]
+
+    assert isinstance(direct_container_defs, str), (
+        f"Expected direct container_definitions to be a string (JSON-encoded), "
+        f"but got {type(direct_container_defs).__name__}: {direct_container_defs}"
+    )
+
+    import json
+
+    parsed_direct = json.loads(direct_container_defs)
+    assert parsed_direct[0]["name"] == "direct-container"
+
+    # Test 2: Nested module reference - unresolvable, should get JSON placeholder
+    # The wrapped task's family is also unresolvable, so find it by path
+    wrapped_task = [
+        t
+        for t in parsed["aws_ecs_task_definition"]
+        if "task_wrapper" in t.get("__tfmeta", {}).get("path", "")
+    ][0]
+    nested_container_defs = wrapped_task["container_definitions"]
+
+    # Should be a string (JSON), not a reference object
+    assert isinstance(nested_container_defs, str), (
+        f"Expected nested container_definitions to be a string (JSON-encoded), "
+        f"but got {type(nested_container_defs).__name__}: {nested_container_defs}"
+    )
+
+    # Should be parseable JSON with __unresolved__ marker
+    parsed_nested = json.loads(nested_container_defs)
+    assert isinstance(parsed_nested, list), "Should be a JSON array"
+    assert len(parsed_nested) == 1, "Should have one placeholder item"
+    assert "__unresolved__" in parsed_nested[0], "Should have __unresolved__ marker"
+    assert (
+        "module.container.json_map_encoded_list" in parsed_nested[0]["__unresolved__"]
+    ), "Should preserve the reference path"
