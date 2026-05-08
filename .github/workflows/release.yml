@@ -15,8 +15,10 @@ jobs:
         include:
           - runner: ubuntu-latest
             cibw_arch: aarch64
+            go_arch: arm64
           - runner: ubuntu-latest
             cibw_arch: x86_64
+            go_arch: amd64
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -25,11 +27,23 @@ jobs:
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392
         with:
           platforms: arm64
+      - name: Log target architecture
+        id: archlog
+        run: |
+          echo "Target architecture: ${{ matrix.go_arch }}" > goarch.txt
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+        with:
+          go-version-file: ".tool-versions"
+          cache: true
+          cache-dependency-path: |
+            gotfparse/go.sum
+            goarch.txt
+
+
       - name: Build wheels
         uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc # v3.3.0
         env:
-          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_ALL: sh ci-setup-golang.sh
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
       - name: Upload Artifacts
