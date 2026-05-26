@@ -27,31 +27,16 @@ jobs:
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
         with:
           platforms: arm64
-      - name: Log target architecture
-        id: archlog
-        run: |
-          echo "Target architecture: ${{ matrix.go_arch }}" > goarch.txt
-      - name: Set up Go
-        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
-        with:
-          go-version-file: ".tool-versions"
-          cache: true
-          cache-dependency-path: |
-            gotfparse/go.sum
-            goarch.txt
-      - name: Export Go paths for cibuildwheel
-        run: |
-          GOROOT_VAL=$(go env GOROOT)
-          GOPATH_VAL=$(go env GOPATH)
-          echo "GOROOT=$GOROOT_VAL" >> $GITHUB_ENV
-          echo "GOPATH=$GOPATH_VAL" >> $GITHUB_ENV
-          # Write literal Go bin paths but leave $PATH to be expanded inside the container
-          echo "CIBW_ENVIRONMENT=PATH=$GOROOT_VAL/bin:$GOPATH_VAL/bin:\$PATH GOROOT=$GOROOT_VAL GOPATH=$GOPATH_VAL" >> $GITHUB_ENV
       - name: Build wheels
         uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e # v3.3.1
         env:
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CIBW_BEFORE_ALL_LINUX: |
+            GO_VERSION=$(grep '^golang ' /project/.tool-versions | awk '{print $2}')
+            curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${{ matrix.go_arch }}.tar.gz" \
+              | tar -C /usr/local -xz
+          CIBW_ENVIRONMENT_LINUX: PATH=/usr/local/go/bin:$PATH
       - name: Upload Artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
