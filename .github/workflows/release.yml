@@ -41,19 +41,15 @@ jobs:
             goarch.txt
       - name: Export Go paths for cibuildwheel
         run: |
-          GOROOT_VAL=$(go env GOROOT)
-          GOPATH_VAL=$(go env GOPATH)
-          echo "GOROOT=$GOROOT_VAL" >> $GITHUB_ENV
-          echo "GOPATH=$GOPATH_VAL" >> $GITHUB_ENV
-          # Build the literal path string so cibuildwheel doesn't need to expand vars
-          echo "CGO_GO_BIN=$GOROOT_VAL/bin" >> $GITHUB_ENV
+          echo "GOROOT=$(go env GOROOT)" >> $GITHUB_ENV
+          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
+          # Construct the full PATH value as a literal string on the host
+          echo "CIBW_ENVIRONMENT=PATH=$(go env GOROOT)/bin:$PATH GOROOT=$(go env GOROOT) GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
       - name: Build wheels
         uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e # v3.3.1
         env:
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
-          CIBW_ENVIRONMENT_PASS_LINUX: "GOROOT GOPATH CGO_GO_BIN"
-          CIBW_ENVIRONMENT: "PATH=$CGO_GO_BIN:$PATH GOROOT=$GOROOT GOPATH=$GOPATH"
       - name: Upload Artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
