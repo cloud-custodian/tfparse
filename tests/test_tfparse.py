@@ -53,8 +53,7 @@ def test_vars(tmp_path):
 
 
 def test_multiple_var_files(tmp_path):
-    (tmp_path / "main.tf").write_text(
-        """
+    (tmp_path / "main.tf").write_text("""
         variable "abc" {
           type = string
         }
@@ -65,8 +64,7 @@ def test_multiple_var_files(tmp_path):
         resource aws_cloudwatch_log_group "bing" {
           name = "${var.abc}-${var.def}-logs"
         }
-        """
-    )
+        """)
     (tmp_path / "var1.tfvars").write_text('abc = "my"')
     (tmp_path / "var2.tfvars").write_text('def = "app"')
     parsed = load_from_path(
