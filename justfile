@@ -68,7 +68,47 @@ install-dlv:
 
 # Debug Go code with Delve
 debug cmd args: install-dlv
-    cd gotfparse && dlv debug --check-go-version=false ./cmd/{{cmd}}/main.go -- ../{{args}} 
+    cd gotfparse && dlv debug --check-go-version=false ./cmd/{{cmd}}/main.go -- ../{{args}}
+
+# Update Go dependencies
+update-go-dependencies:
+    #!/usr/bin/env bash
+
+    # Define the cooldown period in seconds (5 days)
+    COOLDOWN_SEC=$((5 * 24 * 60 * 60))
+    CURRENT_TIME=$(date +%s)
+
+    # Get all direct dependencies that have an update available
+    # We output in JSON format to get the Time field of the latest version
+    pushd gotfparse
+    echo "$PWD"
+    echo "Checking for updates to direct dependencies..."
+    go list -m -u -json all | jq -c 'select(.Update != null and .Indirect == false)' | while read -r mod; do
+        echo "Processing module: $mod"
+        MOD_PATH=$(echo "$mod" | jq -r '.Path')
+        NEXT_VER=$(echo "$mod" | jq -r '.Update.Version')
+        NEXT_TIME_STR=$(echo "$mod" | jq -r '.Update.Time')
+
+        # Convert ISO8601 time to unix timestamp
+        # Note: MacOS 'date' syntax may differ slightly from Linux/GNU
+        NEXT_TIME=$(date -d "$NEXT_TIME_STR" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$NEXT_TIME_STR" +%s)
+
+        AGE=$((CURRENT_TIME - NEXT_TIME))
+
+        if [ "$AGE" -ge "$COOLDOWN_SEC" ]; then
+            echo "Updating $MOD_PATH to $NEXT_VER (Age: $((AGE/86400)) days)"
+            go get -v "$MOD_PATH@$NEXT_VER"
+        else
+            echo "Skipping $MOD_PATH ($NEXT_VER is only $((AGE/86400)) days old)"
+        fi
+    done
+
+    echo "Tidying..."
+    # Clean up go.mod and go.sum
+    go mod tidy -v
+
+    popd
+    echo "Done"
 
 # Update dev dependencies
 update-dev-dependencies:
