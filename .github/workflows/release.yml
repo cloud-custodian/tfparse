@@ -41,10 +41,12 @@ jobs:
             goarch.txt
       - name: Export Go paths for cibuildwheel
         run: |
-          echo "GOROOT=$(go env GOROOT)" >> $GITHUB_ENV
-          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
-          # Construct the full PATH value as a literal string on the host
-          echo "CIBW_ENVIRONMENT=PATH=$(go env GOROOT)/bin:$PATH GOROOT=$(go env GOROOT) GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
+          GOROOT_VAL=$(go env GOROOT)
+          GOPATH_VAL=$(go env GOPATH)
+          echo "GOROOT=$GOROOT_VAL" >> $GITHUB_ENV
+          echo "GOPATH=$GOPATH_VAL" >> $GITHUB_ENV
+          # Write literal Go bin paths but leave $PATH to be expanded inside the container
+          echo "CIBW_ENVIRONMENT=PATH=$GOROOT_VAL/bin:$GOPATH_VAL/bin:\$PATH GOROOT=$GOROOT_VAL GOPATH=$GOPATH_VAL" >> $GITHUB_ENV
       - name: Build wheels
         uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e # v3.3.1
         env:
