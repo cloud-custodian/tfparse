@@ -62,7 +62,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
-          go-version: "1.25.4"
+          go-version-file: ".tool-versions"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
 
@@ -122,7 +122,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
-          go-version: "1.25.4"
+          go-version-file: ".tool-versions"
           cache: true
           cache-dependency-path: "gotfparse/go.sum"
       - name: Install dependencies
