@@ -4,49 +4,47 @@
 #
 #    pip-compile requirements-dev.in
 #
-black==26.1.0
+black==26.5.1
     # via -r requirements-dev.in
-click==8.2.1
+click==8.4.2
     # via black
-execnet==2.1.1
+execnet==2.1.2
     # via pytest-xdist
 flake8==7.3.0
     # via -r requirements-dev.in
-iniconfig==2.1.0
+iniconfig==2.3.0
     # via pytest
-jmespath==1.0.1
+jmespath==1.1.0
     # via pytest-terraform
 mccabe==0.7.0
     # via flake8
 mypy-extensions==1.1.0
     # via black
-packaging==25.0
+packaging==26.3
     # via
     #   black
     #   pytest
-pathspec==1.0.4
+pathspec==1.1.1
     # via black
-platformdirs==4.3.8
+platformdirs==4.11.3
     # via black
 pluggy==1.6.0
     # via pytest
-portalocker==3.2.0
+portalocker==4.1.0
     # via pytest-terraform
-py==1.11.0
-    # via pytest-forked
 pycodestyle==2.14.0
     # via flake8
 pyflakes==3.4.0
     # via flake8
-pygments==2.19.2
+pygments==2.21.0
     # via pytest
-pytest==9.0.2
+pytest==9.1.1
     # via
     #   -r requirements-dev.in
     #   pytest-forked
     #   pytest-terraform
     #   pytest-xdist
-pytest-forked==1.6.0
+pytest-forked==1.7.5
     # via -r requirements-dev.in
 pytest-terraform==0.7.0
     # via -r requirements-dev.in

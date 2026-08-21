@@ -576,7 +576,14 @@ def test_funcs(tmp_path):
         pytest.skip()
 
     parent = init_module("func-check", tmp_path, run_init=False)
-    parsed = load_from_path(parent / "root", debug=True)
+    root = parent / "root"
+
+    # The fixture takes the absolute path to its own files/ directory as a var,
+    # so the absolute-path branch of fileset() is exercised against a directory
+    # the test controls rather than against whatever this host has in /etc.
+    (root / "abs.tfvars").write_text(f'abs_files_dir = "{root / "files"}"\n')
+
+    parsed = load_from_path(root, debug=True, vars_paths=["abs.tfvars"])
 
     actual = parsed["locals"][0]
     assert actual == {
@@ -584,7 +591,7 @@ def test_funcs(tmp_path):
         "__tfmeta": ANY,
         "check_file": "test\n\n",
         "check_fileexists": True,
-        "check_fileset_abs_path": ANY,
+        "check_fileset_abs_path": ["x.py", "y.py"],
         "check_fileset_mod_path": ["x.py", "y.py"],
         "check_fileset_rel_path": ["x.py", "y.py"],
         "check_fileset_wild_rel_path": ["files/x.py", "files/y.py"],
@@ -597,7 +604,6 @@ def test_funcs(tmp_path):
         "lambdas_list": ["abc", "xyz"],
         "modules_list": ["x", "y", "z"],
     }
-    assert len(actual["check_fileset_abs_path"]) > 0
 
 
 def test_workspace(tmp_path):
