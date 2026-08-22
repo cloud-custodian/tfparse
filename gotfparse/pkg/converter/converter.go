@@ -280,7 +280,7 @@ func (t *terraformConverter) buildBlock(b *terraform.Block) map[string]interface
 // getAttributeValue returns the value for the attribute
 func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 	// First try using the parsed value directly
-	val := a.Value()
+	val := a.MarkedValue()
 
 	// Only attempt to handle functions manually if the value is null or not known
 	// This ensures we don't interfere with functions that have been successfully resolved

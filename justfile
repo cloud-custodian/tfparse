@@ -113,4 +113,45 @@ update-go-dependencies:
 # Update dev dependencies
 update-dev-dependencies:
     uv --version || (echo "Please install uv, see: https://docs.astral.sh/uv/getting-started/installation/"; exit 1)
-    uv tool run --from pip-tools pip-compile requirements-dev.in
+    uv tool run --from pip-tools pip-compile requirements-dev.in > requirements-dev.txt
+
+# Show which trivy source the go module currently resolves to
+show-trivy:
+    @grep '^replace github.com/aquasecurity/trivy' gotfparse/go.mod
+
+# Point trivy at a local checkout (clone or worktree) and rebuild
+use-local-trivy path: venv
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Use this to validate a fork change end to end before opening a PR.
+    # The edit is local-only: a filesystem path must never be committed, so
+    # restore it with `just use-pinned-trivy <ref>` when you are done.
+    target="$(cd "{{ path }}" && pwd)"
+    if [ ! -f "$target/go.mod" ]; then
+        echo "error: no go.mod found in $target" >&2
+        exit 1
+    fi
+    (cd gotfparse && go mod edit -replace github.com/aquasecurity/trivy="$target")
+    . .venv/bin/activate && pip install -e . >/dev/null
+    grep '^replace github.com/aquasecurity/trivy' gotfparse/go.mod
+
+# Pin trivy to a gitref (branch, tag or SHA) on the cloud-custodian fork
+use-pinned-trivy ref="main": venv
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # `go list -m` resolves the ref to a pseudo-version, so the base version
+    # and commit timestamp are computed by go rather than assembled by hand.
+    # The ref must exist on the fork remote -- upstream-only tags will not
+    # resolve, since the fork does not carry them.
+    fork=github.com/cloud-custodian/trivy
+    cd gotfparse
+    version="$(go list -m "$fork@{{ ref }}" | awk '{print $2}')"
+    if [ -z "$version" ]; then
+        echo "error: could not resolve {{ ref }} on $fork" >&2
+        exit 1
+    fi
+    go mod edit -replace github.com/aquasecurity/trivy="$fork@$version"
+    go mod tidy
+    cd ..
+    . .venv/bin/activate && pip install -e . >/dev/null
+    grep '^replace github.com/aquasecurity/trivy' gotfparse/go.mod
