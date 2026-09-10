@@ -744,6 +744,48 @@ def test_not_wholly_known_foreach(tmp_path):
     assert parsed["terraform_data"][0]["for_each"] is None
 
 
+def test_for_each_over_module_output(tmp_path):
+    """A for_each collection holding a module output still expands.
+
+    Module outputs only resolve once submodules have been evaluated, which
+    happens after the expansion rounds -- so the resource used to be left
+    unexpanded with each.key/each.value unbound. See #283.
+    """
+    mod_path = init_module("for-each-module-output", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["google_storage_bucket"]
+    assert len(buckets) == 1
+    bucket = buckets[0]
+
+    assert bucket["__tfmeta"]["path"] == 'google_storage_bucket.x["storage"]'
+    assert bucket["name"] == "static-name-storage"
+    assert bucket["labels"] == {"name": "a", "static": "x"}
+
+
+def test_for_each_over_module_output_across_modules(tmp_path):
+    """The same deref works when for_each and the module output cross modules.
+
+    Here the collection reaches the resource as a module input, and the
+    submodule holding the resource is evaluated before the one producing the
+    output -- so the expanded instance also has to pick up the resolved
+    each.value on a later pass. See #283.
+    """
+    mod_path = init_module("for-each-module-output-nested", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["google_storage_bucket"]
+    assert len(buckets) == 1
+    bucket = buckets[0]
+
+    assert (
+        bucket["__tfmeta"]["path"]
+        == 'module.child["a"].google_storage_bucket.x["storage"]'
+    )
+    assert bucket["name"] == "static-name-storage"
+    assert bucket["labels"] == {"name": "a", "static": "x"}
+
+
 def test_module_output_json_string(tmp_path):
     """
     Test that module outputs that should be JSON strings are handled correctly.
