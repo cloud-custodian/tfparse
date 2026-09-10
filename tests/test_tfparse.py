@@ -488,6 +488,40 @@ def test_references(tmp_path):
     ]
 
 
+def test_data_references(tmp_path):
+    """Resource blocks record their references to data blocks.
+
+    Reference paths used to keep the trailing attribute name, so
+    `data.x.example.offering_id` never matched the `data.x.example` block it
+    points at. Resource references were unaffected only because their block
+    type is left out of the path. See #277.
+    """
+    mod_path = init_module("data-references", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    [offering] = parsed["aws_rds_reserved_instance_offering"]
+    [reserved] = parsed["aws_rds_reserved_instance"]
+    [instance] = parsed["aws_db_instance"]
+
+    # resource -> data
+    assert reserved["__tfmeta"]["references"] == [
+        {
+            "id": offering["id"],
+            "label": "aws_rds_reserved_instance_offering",
+            "name": "example",
+        },
+    ]
+
+    # resource -> resource, including a nested attribute reference
+    assert instance["__tfmeta"]["references"] == [
+        {
+            "id": reserved["id"],
+            "label": "aws_rds_reserved_instance",
+            "name": "example",
+        },
+    ]
+
+
 def test_module_references(tmp_path):
     mod_path = init_module("module-references", tmp_path)
     parsed = load_from_path(mod_path)
