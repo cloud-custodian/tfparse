@@ -100,8 +100,8 @@ github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK3
 github.com/cenkalti/backoff/v4 v4.3.0/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/cloud-custodian/trivy v0.0.0-20260821210141-935427cb1907 h1:pI6NnSO5+O3fRlRHYnbn70beSwxQzR/bIp/Soo53fzo=
-github.com/cloud-custodian/trivy v0.0.0-20260821210141-935427cb1907/go.mod h1:Wf+eykRx2CxQsmo0e0gy8t7byAVbj6FpevuipHcodCc=
+github.com/cloud-custodian/trivy v0.0.0-20260910170940-2360a66b9fee h1:538DMQT4rhwukGVP3aNMtzSa0uXJ8aAHUxT4JOP5N9c=
+github.com/cloud-custodian/trivy v0.0.0-20260910170940-2360a66b9fee/go.mod h1:Wf+eykRx2CxQsmo0e0gy8t7byAVbj6FpevuipHcodCc=
 github.com/cloudflare/circl v1.6.4 h1:pOXuDTCEYyzydgUpQ0CQz3LsinKjiSk6nNP5Lt5K64U=
 github.com/cloudflare/circl v1.6.4/go.mod h1:YxarevkLlbaHuWsxG6vmYNWBEsSp4pnp7j+4VljMavY=
 github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 h1:aBangftG7EVZoUb69Os8IaYg++6uMOdKK83QtkkvJik=
