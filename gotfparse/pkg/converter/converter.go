@@ -112,11 +112,29 @@ func newReferenceTracker() referenceTracker {
 // replace on the HumanReadable() value. This is _probably_ the more stable
 // option, but it's still a hack.
 func getPath(r *terraform.Reference) string {
+	base := getBlockRef(r)
 	parent := getPrivateValue(r, "parent").(string)
 	if parent == "" {
-		return r.String()
+		return base
 	}
-	return fmt.Sprintf("%s.%s", parent, r.String())
+	return fmt.Sprintf("%s.%s", parent, base)
+}
+
+// Get the path of the block a reference points at, dropping any attribute
+// names trailing it.
+//
+// Reference.String() keeps those names, so `data.aws_ami.ubuntu.id` renders in
+// full and never matches the path of the block it refers to,
+// `data.aws_ami.ubuntu`. Only resource references are unaffected, because the
+// block type is left out of their path, which shifts everything up by one and
+// leaves the common `type.name.attr` form with nothing trailing to drop.
+func getBlockRef(r *terraform.Reference) string {
+	ref := r.String()
+	remainder, ok := getPrivateValue(r, "remainder").([]string)
+	if !ok || len(remainder) == 0 {
+		return ref
+	}
+	return strings.TrimSuffix(ref, "."+strings.Join(remainder, "."))
 }
 
 type terraformConverter struct {
