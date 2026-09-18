@@ -116,4 +116,4 @@ require (
 	k8s.io/utils v0.0.0-20260319190234-28399d86e0b5 // indirect
 )
 
-replace github.com/aquasecurity/trivy => github.com/cloud-custodian/trivy v0.0.0-20260822002643-e934e74a3056
+replace github.com/aquasecurity/trivy => github.com/cloud-custodian/trivy v0.0.0-20260918214643-0ed990bcb292
