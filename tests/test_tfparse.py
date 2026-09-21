@@ -488,6 +488,40 @@ def test_references(tmp_path):
     ]
 
 
+def test_data_references(tmp_path):
+    """Resource blocks record their references to data blocks.
+
+    Reference paths used to keep the trailing attribute name, so
+    `data.x.example.offering_id` never matched the `data.x.example` block it
+    points at. Resource references were unaffected only because their block
+    type is left out of the path. See #277.
+    """
+    mod_path = init_module("data-references", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    [offering] = parsed["aws_rds_reserved_instance_offering"]
+    [reserved] = parsed["aws_rds_reserved_instance"]
+    [instance] = parsed["aws_db_instance"]
+
+    # resource -> data
+    assert reserved["__tfmeta"]["references"] == [
+        {
+            "id": offering["id"],
+            "label": "aws_rds_reserved_instance_offering",
+            "name": "example",
+        },
+    ]
+
+    # resource -> resource, including a nested attribute reference
+    assert instance["__tfmeta"]["references"] == [
+        {
+            "id": reserved["id"],
+            "label": "aws_rds_reserved_instance",
+            "name": "example",
+        },
+    ]
+
+
 def test_module_references(tmp_path):
     mod_path = init_module("module-references", tmp_path)
     parsed = load_from_path(mod_path)
@@ -708,6 +742,48 @@ def test_not_wholly_known_foreach(tmp_path):
     assert parsed["locals"][0]["current_month"] is None
     assert parsed["locals"][0]["last_month"] is None
     assert parsed["terraform_data"][0]["for_each"] is None
+
+
+def test_for_each_over_module_output(tmp_path):
+    """A for_each collection holding a module output still expands.
+
+    Module outputs only resolve once submodules have been evaluated, which
+    happens after the expansion rounds -- so the resource used to be left
+    unexpanded with each.key/each.value unbound. See #283.
+    """
+    mod_path = init_module("for-each-module-output", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["google_storage_bucket"]
+    assert len(buckets) == 1
+    bucket = buckets[0]
+
+    assert bucket["__tfmeta"]["path"] == 'google_storage_bucket.x["storage"]'
+    assert bucket["name"] == "static-name-storage"
+    assert bucket["labels"] == {"name": "a", "static": "x"}
+
+
+def test_for_each_over_module_output_across_modules(tmp_path):
+    """The same deref works when for_each and the module output cross modules.
+
+    Here the collection reaches the resource as a module input, and the
+    submodule holding the resource is evaluated before the one producing the
+    output -- so the expanded instance also has to pick up the resolved
+    each.value on a later pass. See #283.
+    """
+    mod_path = init_module("for-each-module-output-nested", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+
+    buckets = parsed["google_storage_bucket"]
+    assert len(buckets) == 1
+    bucket = buckets[0]
+
+    assert (
+        bucket["__tfmeta"]["path"]
+        == 'module.child["a"].google_storage_bucket.x["storage"]'
+    )
+    assert bucket["name"] == "static-name-storage"
+    assert bucket["labels"] == {"name": "a", "static": "x"}
 
 
 def test_module_output_json_string(tmp_path):
