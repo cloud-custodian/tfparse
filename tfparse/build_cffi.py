@@ -12,8 +12,7 @@ ffi.set_source(
     libraries=[],
 )
 
-ffi.cdef(
-    """
+ffi.cdef("""
         typedef struct {
             char *json;
             char *err;
@@ -21,6 +20,5 @@ ffi.cdef(
 
         parseResponse Parse(char* a, int stop_on_error, int debug, int allow_downloads, char* workspace_name, int num_vars_files, char** vars_files);
         void free(void *ptr);
-        """  # noqa
-)
+        """)  # noqa
 ffi.compile()
