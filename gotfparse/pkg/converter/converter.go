@@ -318,6 +318,10 @@ func (t *terraformConverter) getAttributeValue(a *terraform.Attribute) any {
 		if funcExpr, isFuncCall := hclAttr.Expr.(*hclsyntax.FunctionCallExpr); isFuncCall {
 			return t.handleFunctionCall(funcExpr)
 		}
+
+		if partial, ok := t.handlePartialCollection(hclAttr.Expr, val); ok {
+			return partial
+		}
 	}
 
 	// Try to convert the value to a native type
@@ -444,6 +448,90 @@ func (t *terraformConverter) handleScopeTraversal(traversalExpr *hclsyntax.Scope
 }
 
 // handleFunctionCall processes function call expressions
+// handlePartialCollection converts a list or object literal whose value is known
+// but not wholly known element by element, so an element that is a reference to
+// an unknown value keeps that reference ({"__attribute__": ...}) instead of
+// collapsing to null alongside its known siblings. ok is false when the
+// expression is not such a literal, leaving the caller's conversion in place.
+func (t *terraformConverter) handlePartialCollection(expr hcl.Expression, val cty.Value) (any, bool) {
+	if !val.IsKnown() || val.IsNull() || val.IsMarked() {
+		return nil, false
+	}
+	switch e := expr.(type) {
+	case *hclsyntax.TupleConsExpr:
+		if !(val.Type().IsTupleType() || val.Type().IsListType()) || val.LengthInt() != len(e.Exprs) {
+			return nil, false
+		}
+		out := make([]any, len(e.Exprs))
+		for i, item := range e.Exprs {
+			out[i] = t.partialElement(item, val.Index(cty.NumberIntVal(int64(i))))
+		}
+		return out, true
+	case *hclsyntax.ObjectConsExpr:
+		if !(val.Type().IsObjectType() || val.Type().IsMapType()) {
+			return nil, false
+		}
+		out := make(map[string]any, len(e.Items))
+		for _, item := range e.Items {
+			key, literal := literalObjectKey(item.KeyExpr)
+			if !literal || !val.Type().IsObjectType() && !val.HasIndex(cty.StringVal(key)).True() ||
+				val.Type().IsObjectType() && !val.Type().HasAttribute(key) {
+				return nil, false
+			}
+			var elem cty.Value
+			if val.Type().IsObjectType() {
+				elem = val.GetAttr(key)
+			} else {
+				elem = val.Index(cty.StringVal(key))
+			}
+			out[key] = t.partialElement(item.ValueExpr, elem)
+		}
+		return out, true
+	}
+	return nil, false
+}
+
+// partialElement converts one element of a partially known collection literal.
+func (t *terraformConverter) partialElement(expr hcl.Expression, val cty.Value) any {
+	if val.IsWhollyKnown() {
+		if raw, ok := convertCtyToNativeValue(val); ok {
+			return raw
+		}
+		return nil
+	}
+	if traversalExpr, ok := expr.(*hclsyntax.ScopeTraversalExpr); ok {
+		return t.handleScopeTraversal(traversalExpr, val)
+	}
+	if partial, ok := t.handlePartialCollection(expr, val); ok {
+		return partial
+	}
+	if raw, ok := convertCtyToNativeValue(val); ok {
+		return raw
+	}
+	return nil
+}
+
+// literalObjectKey returns an object constructor key written as a literal name
+// or string; a computed key such as (var.x) is not literal.
+func literalObjectKey(keyExpr hclsyntax.Expression) (string, bool) {
+	if wrapped, ok := keyExpr.(*hclsyntax.ObjectConsKeyExpr); ok {
+		if wrapped.ForceNonLiteral {
+			return "", false
+		}
+		if traversal, ok := wrapped.Wrapped.(*hclsyntax.ScopeTraversalExpr); ok && len(traversal.Traversal) == 1 {
+			return traversal.Traversal.RootName(), true
+		}
+		keyExpr = wrapped.Wrapped
+	}
+	if template, ok := keyExpr.(*hclsyntax.TemplateExpr); ok && len(template.Parts) == 1 {
+		keyExpr = template.Parts[0]
+	}
+	if lit, ok := keyExpr.(*hclsyntax.LiteralValueExpr); ok && lit.Val.Type() == cty.String {
+		return lit.Val.AsString(), true
+	}
+	return "", false
+}
+
 func (t *terraformConverter) handleFunctionCall(funcExpr *hclsyntax.FunctionCallExpr) any {
 	logger.Debug("Function call detected", "name", funcExpr.Name, "argCount", len(funcExpr.Args))
 

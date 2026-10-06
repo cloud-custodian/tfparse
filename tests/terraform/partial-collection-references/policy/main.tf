@@ -1,0 +1,2 @@
+variable "principals" {}
+variable "grants" {}

@@ -843,3 +843,28 @@ def test_module_output_json_string(tmp_path):
     assert (
         "module.container.json_map_encoded_list" in parsed_nested[0]["__unresolved__"]
     ), "Should preserve the reference path"
+
+
+def test_partial_collection_keeps_unknown_references(tmp_path):
+    """A list or object literal with one apply-time element keeps its known
+    siblings and reports the unknown element as a reference, not null."""
+    mod_path = init_module("partial-collection-references", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+    policy = next(m for m in parsed["module"] if m["__tfmeta"]["label"] == "policy")
+
+    group = "arn:aws:iam::123456789012:group/admins"
+    assert policy["principals"][0] == group
+    assert policy["principals"][1]["__attribute__"] == "aws_iam_role.app.unique_id"
+    assert policy["grants"]["owner"] == group
+    assert policy["grants"]["reader"]["__attribute__"] == "aws_iam_role.app.unique_id"
+
+
+def test_for_each_over_local_with_unknown_values(tmp_path):
+    """A for_each whose keys are known expands even when every value holds an
+    apply-time attribute, as Terraform does; the deferral used to leave it
+    unexpanded with each.key unbound."""
+    mod_path = init_module("for-each-local-unknown-values", tmp_path, run_init=False)
+    parsed = load_from_path(mod_path)
+    nodes = [m for m in parsed["module"] if m["__tfmeta"]["label"].startswith("node")]
+    assert sorted(m["__tfmeta"]["label"] for m in nodes) == ['node["a"]', 'node["b"]']
+    assert sorted(m["hostname"] for m in nodes) == ["a", "b"]
