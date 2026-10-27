@@ -29,6 +29,7 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: 3.15",
     ],
     packages=find_packages(),
     install_requires=["cffi>=1.0.0"],
