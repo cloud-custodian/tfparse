@@ -33,7 +33,7 @@ print(parsed.keys())
 # Developing
 
 - requires Go >= 1.18
-- requires Python >= 3.10
+- requires Python >= 3.11
 
 ## Installing from source
 
@@ -68,9 +68,9 @@ pytest
 You can test our cross compiling CI/CD builds by running the following:
 
 ```
-CIBW_BUILD=cp310* cibuildwheel --platform macos --archs x86_64
+CIBW_BUILD=cp315* cibuildwheel --platform macos --archs x86_64
 ```
-This will try to build an intel wheel on python3.10
+This will try to build an intel wheel on python3.15
 
 
 # Credits
