@@ -269,6 +269,15 @@ def test_moved_blocks(tmp_path):
     assert len(item["to"]) == 2
 
 
+def test_removed_blocks(tmp_path):
+    mod_path = init_module("removed", tmp_path)
+    parsed = load_from_path(mod_path)
+
+    (item,) = parsed["removed"]
+    assert item["from"] == {"__attribute__": "aws_instance.a", "__name__": "a"}
+    assert item["lifecycle"]["destroy"] is False
+
+
 def test_parse_dynamic_content(tmp_path):
     here = os.path.dirname(__file__)
     mod_path = os.path.join(here, "terraform", "dynamic-stuff")
